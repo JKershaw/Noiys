@@ -19,13 +19,8 @@ app.get('/status', function(request, response) {
 	// send the response
 	message = {"text" : "This is a sample status. Woo stuff!"};
 
-	var jsonpCallback = request.query.jsonp; //Assuming you are using express
-	message = JSON.stringify(message);
-	message = jsonpCallback + "(" + message + ");";
-
-	//response.setHeader('Content-Type', 'application/json');
+	response.contentType('json');
 	response.send(message);
-	response.end();
 
 
 });
