@@ -7,7 +7,7 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 
 app.get('/', function(request, response) {
-  response.render('index.htm');
+  response.render('index.html');
 });
 
 app.post('/status', function(request, response) {
