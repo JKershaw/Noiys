@@ -39,17 +39,18 @@ function get_and_show_random_status() {
  		$("#statuses").prepend("<p>" + data.text + "</p>");
  		$("#statuses p:first-child").hide().fadeIn();
 
- 		setTimeout(get_and_show_random_status, 5000);
+ 		setTimeout(get_and_show_random_status, 10000);
         }
     );        
 }
 
 $(document).ready(function () {
-        setTimeout(get_and_show_random_status, 5000);
+        setTimeout(get_and_show_random_status, 10000);
     });
 
 $( "#post_status" ).click(function() {
-  alert( "Handler for .click() called." );
+  $('post_status').prop('disabled', true);
+  $('post_status').text("Posting ...");
 });
 </script>
   </body>
