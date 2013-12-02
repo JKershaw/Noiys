@@ -23,7 +23,7 @@ app.get('/status', function(request, response) {
 	message = JSON.stringify(message);
 	message = jsonpCallback + "(" + message + ");";
 
-	response.setHeader('Content-Type', 'application/json');
+	//response.setHeader('Content-Type', 'application/json');
 	response.send(message);
 	response.end();
 
