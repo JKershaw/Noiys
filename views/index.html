@@ -38,14 +38,14 @@
 
 function get_and_show_random_status() {
 	console.log("get_and_show_random_status called");
-		$.ajax({
-            url: "/status",
-            crossDomain: true,
-            dataType: 'json',
-            success: function(data) {
-            	console.log(data);
-            }
-        });
+
+ 	$.ajax({
+        dataType: "json",
+        url: 'status',
+        success: function(data) {
+            console.debug(data);
+        }
+    });        
 }
 
 $(document).ready(function () {
