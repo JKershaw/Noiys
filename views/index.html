@@ -41,6 +41,7 @@ function get_and_show_random_status() {
 	console.log("get_and_show_random_status called");
 
  	$.get( "status", function( data ) {
+ 		console.debug(data);
  		$("#statuses").prepend("<div class='panel panel-default'><div class='panel-body>" + data.text + "</div></div>");
  		window.setTimeout(get_and_show_random_status(), 20000);
         }
