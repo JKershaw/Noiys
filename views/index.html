@@ -40,8 +40,8 @@ function get_and_show_random_status()
 {
 	$.getJSON( "/status", function( data ) {
 	 
-	  $(data.text).appendTo( "statuses" );
-
+	  $(data.text).prependTo("#statuses");
+	  console.log(data.text);
 	  window.setTimeout("get_and_show_random_status",2000);
 	});
 }
