@@ -41,7 +41,7 @@ function get_and_show_random_status() {
 		$.ajax({
             url: "/status",
             crossDomain: true,
-            dataType: 'jsonp',
+            dataType: 'json',
             success: function(data) {
             	console.log(data);
             }
