@@ -25,7 +25,7 @@
 
     <p><textarea class="form-control" rows="3"></textarea></p>
     <p><small>Your status will be automatically deleted after 24 hours</small></p>
-	<p><button type="button" class="btn btn-primary btn-lg">Post Status</button></p>
+	<p><button type="button" class="btn btn-primary btn-lg" id="post_status">Post Status</button></p>
     
 	<div id="statuses">
 	</div>
@@ -37,7 +37,7 @@ function get_and_show_random_status() {
 
  	$.get( "status", function( data ) {
  		$("#statuses").prepend("<p>" + data.text + "</p>");
- 		$("#statuses").first().hide().fadeIn();
+ 		$("#statuses p:first-child").hide().fadeIn();
 
  		setTimeout(get_and_show_random_status, 5000);
         }
@@ -48,7 +48,9 @@ $(document).ready(function () {
         setTimeout(get_and_show_random_status, 5000);
     });
 
-
+$( "#post_status" ).click(function() {
+  alert( "Handler for .click() called." );
+});
 </script>
   </body>
 </html>
