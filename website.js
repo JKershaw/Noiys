@@ -16,7 +16,8 @@ app.post('/status', function(request, response) {
 });
 
 app.get('/status', function(request, response) {
-	// save the response
+	// send the response
+	response.setHeader('Content-Type', 'application/json');
   response.send("{text:'This is a random status.'}");
 });
 
