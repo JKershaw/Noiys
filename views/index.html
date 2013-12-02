@@ -36,8 +36,8 @@
 </div>
 <script type="text/javascript">
 
-function get_and_show_random_status()
-{
+function get_and_show_random_status() {
+	console.log("get_and_show_random_status called");
 	$.getJSON( "/status", function( data ) {
 	 
 	  $(data.text).prependTo("#statuses");
@@ -45,7 +45,11 @@ function get_and_show_random_status()
 	  window.setTimeout(get_and_show_random_status,2000);
 	});
 }
-get_and_show_random_status();
+
+$(document).ready(function () {
+        get_and_show_random_status();
+    });
+
 
 </script>
   </body>
