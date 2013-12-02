@@ -17,7 +17,7 @@ app.post('/status', function(request, response) {
 
 app.get('/status', function(request, response) {
 	// save the response
-  response.send("This is a status");
+  response.send("{text:'This is a random status.'}");
 });
 
 

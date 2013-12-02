@@ -26,16 +26,27 @@
     <p><button type="button" class="btn btn-primary btn-lg">Post Status</button></p>
     <p><small>Your status will be deleted after 24 hours</small></p>
 
-	<div class="panel panel-default">
-	  <div class="panel-body">
-	    Sample status
-	  </div>
-	</div>
-	<div class="panel panel-default">
-	  <div class="panel-body">
-	    And another
-	  </div>
+	<div id="statuses">
+		<div class="panel panel-default">
+		  <div class="panel-body">
+		    Sample status
+		  </div>
+		</div>
 	</div>
 </div>
+<script type="text/javascript">
+
+function get_and_show_random_status()
+{
+	$.getJSON( "/status", function( data ) {
+	 
+	  $(data.text).appendTo( "statuses" );
+
+	  window.setTimeout("get_and_show_random_status",2000);
+	});
+}
+	  window.setTimeout("get_and_show_random_status",2000);
+
+</script>
   </body>
 </html>
