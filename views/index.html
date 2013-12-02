@@ -39,13 +39,11 @@
 function get_and_show_random_status() {
 	console.log("get_and_show_random_status called");
 
- 	$.ajax({
-        dataType: "json",
-        url: 'status',
-        success: function(data) {
+ 	$.get( "ajax/test.html", function( data ) {
+ 		alert(data);
             console.debug(data);
         }
-    });        
+    );        
 }
 
 $(document).ready(function () {
