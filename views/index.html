@@ -38,12 +38,14 @@
 
 function get_and_show_random_status() {
 	console.log("get_and_show_random_status called");
-	$.getJSON( "/status", function( data ) {
-	 
-	  $(data.text).prependTo("#statuses");
-	  console.log(data.text);
-	  window.setTimeout(get_and_show_random_status,2000);
-	});
+		$.ajax({
+            url: "/status",
+            crossDomain: true,
+            dataType: 'jsonp',
+            success: function(data) {
+            	console.log(data);
+            }
+        });
 }
 
 $(document).ready(function () {
