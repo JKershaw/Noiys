@@ -24,9 +24,9 @@
     <p>Post a status anonymously. It's viewed by many, and deleted after 24 hours.</p>
 
     <p><textarea class="form-control" rows="3"></textarea></p>
-    <p><button type="button" class="btn btn-primary btn-lg">Post Status</button></p>
     <p><small>Your status will be automatically deleted after 24 hours</small></p>
-
+	<p><button type="button" class="btn btn-primary btn-lg">Post Status</button></p>
+    
 	<div id="statuses">
 		<div class="panel panel-default">
 		  <div class="panel-body">
@@ -42,14 +42,15 @@ function get_and_show_random_status() {
 
  	$.get( "status", function( data ) {
  		$("#statuses").prepend("<p>" + data.text + "</p>");
- 		$("#statuses").first().fadeIn();
+ 		$("#statuses").first().css( "background-color", "red" );
+
  		setTimeout(get_and_show_random_status, 2000);
         }
     );        
 }
 
 $(document).ready(function () {
-        get_and_show_random_status();
+        setTimeout(get_and_show_random_status, 2000);
     });
 
 
