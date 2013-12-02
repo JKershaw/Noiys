@@ -42,10 +42,10 @@ function get_and_show_random_status()
 	 
 	  $(data.text).prependTo("#statuses");
 	  console.log(data.text);
-	  window.setTimeout(get_and_show_random_status(),2000);
+	  window.setTimeout(get_and_show_random_status,2000);
 	});
 }
-	  window.setTimeout(get_and_show_random_status(),2000);
+get_and_show_random_status();
 
 </script>
   </body>
