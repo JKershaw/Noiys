@@ -1,57 +1,92 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>NOIYS - Post, read, forget</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- JavaScript plugins (requires jQuery) -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<head>
+		<title>
+			NOIYS - Post, read, forget
+		</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- JavaScript plugins (requires jQuery) -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+								        
+		</script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js">
+												            
+			</script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js">
+												            
+			</script>
+		<![endif]-->
+		<!-- Include all compiled plugins (below), or include individual files as needed
+		-->
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js">
+								        
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				NOIYS
+			</h1>
+			<p>
+				Post a status anonymously. It's viewed by many, and deleted after 24 hours.
+			</p>
+			<p>
+				<textarea class="form-control" rows="3" id="statusText"></textarea>
+			</p>
+			<p>
+				<small>
+					Your status will be automatically deleted after 24 hours
+				</small>
+			</p>
+			<p>
+				<button type="button" class="btn btn-primary btn-lg" id="post_status">
+					Post Status
+				</button>
+			</p>
+			<div id="statuses">
+			</div>
+		</div>
+		<script type="text/javascript">
+						function get_and_show_random_status() {
+							console.log("get_and_show_random_status called");
 
-    <!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+							$.get("status", function(data) {
+								$("#statuses").prepend("<p>" + data.text + "</p>");
+								$("#statuses p:first-child").hide().fadeIn();
 
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-  	<div class="container">
-    <h1>NOIYS</h1>
-    <p>Post a status anonymously. It's viewed by many, and deleted after 24 hours.</p>
+								setTimeout(get_and_show_random_status, 10000);
+							});
+						}
 
-    <p><textarea class="form-control" rows="3"></textarea></p>
-    <p><small>Your status will be automatically deleted after 24 hours</small></p>
-	<p><button type="button" class="btn btn-primary btn-lg" id="post_status">Post Status</button></p>
-    
-	<div id="statuses">
-	</div>
-</div>
-<script type="text/javascript">
+						$(document).ready(function() {
+							setTimeout(get_and_show_random_status, 10000);
+						});
 
-function get_and_show_random_status() {
-	console.log("get_and_show_random_status called");
+						$("#post_status").click(function() {
+							$('#post_status').prop('disabled', true);
+							$('#post_status').text("Posting ...");
 
- 	$.get( "status", function( data ) {
- 		$("#statuses").prepend("<p>" + data.text + "</p>");
- 		$("#statuses p:first-child").hide().fadeIn();
 
- 		setTimeout(get_and_show_random_status, 10000);
-        }
-    );        
-}
+							$.ajax({
+								url: '/status',
+								type: 'POST',
+								contentType: 'application/json',
+								data: JSON.stringify({
+									text: $('#statusText').val()
+								})
+							}).done(function(data) {
+								$('#post_status').prop('disabled', false);
+								$('#post_status').text("Posted!");
+								$('#statusText').val("");
+							});
 
-$(document).ready(function () {
-        setTimeout(get_and_show_random_status, 10000);
-    });
+						});
+		</script>
+	</body>
 
-$( "#post_status" ).click(function() {
-  $('#post_status').prop('disabled', true);
-  $('#post_status').text("Posting ...");
-});
-</script>
-  </body>
 </html>
