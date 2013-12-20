@@ -77,7 +77,7 @@
 								type: 'POST',
 								contentType: 'application/json',
 								data: JSON.stringify({
-									text: $('#statusText').val()
+									text: $('#statusText').val().replace(/[^\w\s]/gi, '')
 								})
 							}).done(function(data) {
 								$('#post_status').prop('disabled', false);

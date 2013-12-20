@@ -20,7 +20,7 @@ app.get('/', function(request, response) {
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
 	db.statuses.save({
-		text: request.body.text,
+		text: request.body.text.replace(/[^\w\s]/gi, ''),
 		timestamp: Math.round(new Date().getTime() / 1000)
 	}, function(err, saved) {
 		if (err || !saved) console.log("Not saved: " + err);
