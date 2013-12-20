@@ -21,13 +21,24 @@ app.post('/status', function(request, response) {
 	console.log("POSTING a status");
 	db.statuses.save({
 		text: HTMLEncode(request.body.text),
-		timestamp: Math.round(new Date().getTime() / 1000)
+		timestamp: Math.round(new Date().getTime() / 1000),
+		votes: 0
 	}, function(err, saved) {
 		if (err || !saved) console.log("Not saved: " + err);
 		else console.log("Saved");
 		response.send(200);
 	});
+});
 
+app.get('/vote/:id', function(request, response) {
+	console.log("POSTING a vote");
+
+	var query = {_id: ObjectId(request.params.id)};
+
+	db.statuses.find(query).forEach(function(status) {
+		status.votes = status.votes + 1;
+		db.statuses.save(status);
+	}
 });
 
 app.get('/status', function(request, response) {
