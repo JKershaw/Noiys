@@ -38,7 +38,7 @@ app.get('/vote/:id', function(request, response) {
 	db.statuses.find(query).forEach(function(status) {
 		status.votes = status.votes + 1;
 		db.statuses.save(status);
-	}
+	});
 });
 
 app.get('/status', function(request, response) {
