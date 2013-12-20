@@ -57,7 +57,7 @@ function get_random_status(statuses){
 	if (status.length > 4){
 		return status
 	} else {
-		var status = statuses[Math.floor(Math.random()*statuses.length)];
+		return statuses[Math.floor(Math.random()*statuses.length)];
 	}
 
 }
