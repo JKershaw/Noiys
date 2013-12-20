@@ -59,12 +59,12 @@
 								$("#statuses").prepend("<p>" + data.text + "</p>");
 								$("#statuses p:first-child").hide().fadeIn();
 
-								setTimeout(get_and_show_random_status, 10000);
+								setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
 							});
 						}
 
 						$(document).ready(function() {
-							setTimeout(get_and_show_random_status, 10000);
+							setTimeout(get_and_show_random_status, 1000);
 						});
 
 						$("#post_status").click(function() {

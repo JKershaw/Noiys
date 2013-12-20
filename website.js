@@ -31,19 +31,25 @@ app.post('/status', function(request, response) {
 });
 
 app.get('/status', function(request, response) {
-	// send the response
 	console.log("GETTING a status");
 
-	db.statuses.find({}, function(statuses) {
-		var status = statuses[Math.floor(Math.random()*statuses.length)];
+	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24*60*60)),
+		remove_query = {timestamp: {$lt: time_24h_ago}};
+
+	db.statuses.remove(remove_query, function() {
+		db.statuses.find({}, function(statuses) {
+			var status = statuses[Math.floor(Math.random()*statuses.length)];
+
+			message = {
+				"text": status.text
+			};
+
+			response.contentType('json');
+			response.send(message);
+
+		});
 	});
 
-	message = {
-		"text": status.text
-	};
-
-	response.contentType('json');
-	response.send(message);
 
 
 });
