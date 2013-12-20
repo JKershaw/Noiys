@@ -5,6 +5,7 @@ var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.
 
 var collections = ["statuses"]
 var db = require("mongojs").connect(connection_string, collections);
+var ObjectId = mongojs.ObjectId;
 
 
 app.use(express.logger());
