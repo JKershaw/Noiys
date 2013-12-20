@@ -37,16 +37,17 @@ app.get('/status', function(request, response) {
 		remove_query = {timestamp: {$lt: time_24h_ago}};
 
 	db.statuses.remove(remove_query, function() {
-		db.statuses.find({}, function(statuses) {
-			var status = statuses[Math.floor(Math.random()*statuses.length)];
+		db.statuses.find({}, function(err, cursor){
+			cursor.toArray(function(statuses){
+				var status = statuses[Math.floor(Math.random()*statuses.length)];
 
-			message = {
-				"text": status.text
-			};
+				message = {
+					"text": status.text
+				};
 
-			response.contentType('json');
-			response.send(message);
-
+				response.contentType('json');
+				response.send(message);
+			});
 		});
 	});
 
