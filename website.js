@@ -20,7 +20,7 @@ app.get('/', function(request, response) {
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
 	db.statuses.save({
-		text: request.body.text.replace(/[^.()'"£$%^*-\w\s]/gi, ''),
+		text: HTMLEncode(request.body.text),
 		timestamp: Math.round(new Date().getTime() / 1000)
 	}, function(err, saved) {
 		if (err || !saved) console.log("Not saved: " + err);
@@ -62,6 +62,20 @@ function get_random_status(statuses){
 
 }
 
+function HTMLEncode(str){
+  var i = str.length,
+      aRet = [];
+
+  while (i--) {
+    var iC = str[i].charCodeAt();
+    if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
+      aRet[i] = '&#'+iC+';';
+    } else {
+      aRet[i] = str[i];
+    }
+   }
+  return aRet.join('');    
+}
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
