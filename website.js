@@ -4,7 +4,8 @@ var express = require("express"),
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
 
 var collections = ["statuses"]
-var db = require("mongojs").connect(connection_string, collections);
+var mongojs = require('mongojs');
+var db = mongojs.connect(connection_string, collections);
 var ObjectId = mongojs.ObjectId;
 
 
