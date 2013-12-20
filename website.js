@@ -39,15 +39,14 @@ app.get('/status', function(request, response) {
 	db.statuses.remove(remove_query, function() {
 		db.statuses.find().toArray(function(err, statuses) {
 			console.log(statuses);
-				var status = statuses[Math.floor(Math.random()*statuses.length)];
+			var status = statuses[Math.floor(Math.random()*statuses.length)];
 
-				message = {
-					"text": status.text
-				};
+			message = {
+				"text": status.text
+			};
 
-				response.contentType('json');
-				response.send(message);
-			});
+			response.contentType('json');
+			response.send(message);
 		});
 	});
 
