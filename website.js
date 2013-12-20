@@ -32,8 +32,14 @@ app.post('/status', function(request, response) {
 
 app.get('/status', function(request, response) {
 	// send the response
+	console.log("GETTING a status");
+
+	db.statuses.find({}, function(statuses) {
+		var status = statuses[Math.floor(Math.random()*statuses.length)];
+	});
+
 	message = {
-		"text": "This is a sample status. Woo stuff!"
+		"text": status.text
 	};
 
 	response.contentType('json');
