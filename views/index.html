@@ -57,7 +57,7 @@
 
 							$.get("status", function(data) {
 								$("#statuses").prepend("<div class=\"panel panel-default\"><div class=\"panel-body\">" + data.text + "</div></div>");
-								$("#statuses p:first-child").hide().fadeIn();
+								$("#statuses div:first-child").hide().fadeIn();
 
 								setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
 							});
