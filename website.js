@@ -38,7 +38,8 @@ app.get('/status', function(request, response) {
 
 	db.statuses.remove(remove_query, function() {
 		db.statuses.find().toArray(function(err, statuses) {
-			var status = statuses[Math.floor(Math.random()*statuses.length)];
+			
+			var status = get_random_status(statuses);
 
 			message = {
 				"text": status.text
@@ -48,10 +49,18 @@ app.get('/status', function(request, response) {
 			response.send(message);
 		});
 	});
-
-
-
 });
+
+function get_random_status(statuses){
+	var status = statuses[Math.floor(Math.random()*statuses.length)];
+
+	if (status.length > 4){
+		return status
+	} else {
+		var status = statuses[Math.floor(Math.random()*statuses.length)];
+	}
+
+}
 
 
 var port = process.env.PORT || 5000;
