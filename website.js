@@ -38,7 +38,6 @@ app.get('/status', function(request, response) {
 
 	db.statuses.remove(remove_query, function() {
 		db.statuses.find().toArray(function(err, statuses) {
-			console.log(statuses);
 			var status = statuses[Math.floor(Math.random()*statuses.length)];
 
 			message = {
