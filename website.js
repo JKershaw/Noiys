@@ -38,8 +38,11 @@ app.get('/vote/:id', function(request, response) {
 	var query = {_id: ObjectId(request.params.id)};
 
 	db.statuses.find(query).forEach(function(status) {
-		status.votes = status.votes + 1;
-		db.statuses.save(status);
+		if (status !== undefined)
+		{
+			status.votes = status.votes + 1;
+			db.statuses.save(status);
+		}
 	});
 });
 
