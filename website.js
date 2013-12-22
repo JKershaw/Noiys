@@ -16,7 +16,12 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
 app.get('/', function(request, response) {
-	response.render('index.html');
+	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24*60*60)),
+		remove_query = {timestamp: {$lt: time_24h_ago}};
+
+	db.statuses.remove(remove_query, function() {
+		response.render('index.html');
+	});
 });
 
 app.post('/status', function(request, response) {
@@ -53,25 +58,20 @@ app.post('/vote', function(request, response) {
 });
 
 app.get('/status', function(request, response) {
+
 	console.log("GETTING a status");
+	db.statuses.find({}).sort({"timestamp":-1}).toArray(function(err, statuses) {
+		
+		var status = get_random_status(statuses);
 
-	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24*60*60)),
-		remove_query = {timestamp: {$lt: time_24h_ago}};
+		message = {
+			"text": status.text,
+			"id": status._id,
+			"votes": status.votes
+		};
 
-	db.statuses.remove(remove_query, function() {
-		db.statuses.find().toArray(function(err, statuses) {
-			
-			var status = get_random_status(statuses);
-
-			message = {
-				"text": status.text,
-				"id": status._id,
-				"votes": status.votes
-			};
-
-			response.contentType('json');
-			response.send(message);
-		});
+		response.contentType('json');
+		response.send(message);
 	});
 });
 
