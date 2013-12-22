@@ -47,20 +47,26 @@
 				<button type="button" class="btn btn-primary btn-lg" id="post_status">
 					Post Status
 				</button>
+				<button type="button" class="btn btn-default btn-xs" id="pause_feed">
+					Pause Feed
+				</button>
 			</p>
 			<div id="statuses">
 			</div>
 		</div>
 		<script type="text/javascript">
+
+						var paused = false;
+						
 						function get_and_show_random_status() {
-							console.log("get_and_show_random_status called");
+							if (paused === false){
+								$.get("status", function(data) {
+									$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small>(<span class=\"votes\">" + data.votes + "</span>)</small></div></div>");
+									$("#statuses div:first-child").hide().fadeIn();
 
-							$.get("status", function(data) {
-								$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small>(<span class=\"votes\">" + data.votes + "</span>)</small></div></div>");
-								$("#statuses div:first-child").hide().fadeIn();
-
-								setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
-							});
+									setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
+								});
+							}
 						}
 
 						$(document).ready(function() {
@@ -86,6 +92,16 @@
 
 								setTimeout(set_posted_button, 2000);
 							});
+						});
+
+						$("#pause_feed").click(function() {
+							if (paused === true){
+								paused = false;
+								$('#pause_feed').text("Pause Feed");
+							} else {
+								paused = true;
+								$('#pause_feed').text("Un-pause Feed");
+							}
 						});
 
 						function vote(id)
