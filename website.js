@@ -75,6 +75,27 @@ app.get('/status', function(request, response) {
 	});
 });
 
+app.get('/status/:id', function(request, response) {
+
+	console.log("GETTING a specific status");
+
+	var query = {"_id": ObjectId(request.params.id)};
+
+	db.statuses.find(query).toArray(function(err, statuses) {
+		
+		var status = statuses[0];
+
+		message = {
+			"text": status.text,
+			"id": status._id,
+			"votes": status.votes
+		};
+
+		response.contentType('json');
+		response.send(message);
+	});
+});
+
 function get_random_status(statuses){
 	var status = statuses[Math.floor(Math.random()*statuses.length)];
 

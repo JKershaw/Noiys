@@ -61,8 +61,14 @@
 						function get_and_show_random_status() {
 							if (paused === false){
 								$.get("status", function(data) {
-									$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small><span class=\"votes\">" + data.votes + "</span></small></div></div>");
-									$("#statuses div:first-child").hide().fadeIn();
+
+									// delete existing posts with this ID
+									$("#statuses #" + data.id).remove();
+
+									// show new one
+									$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small><span style=\"font-weight:bold;\" class=\"votes\">" + data.votes + "</span>  <a style=\"cursor:pointer; color: green;\" onclick=\"vote('" + data.id + "')\" >VERB GOES HERE</a></small></div></div>");
+
+									$("#statuses div").first().hide().fadeIn();
 								});
 							}
 
@@ -106,6 +112,8 @@
 
 						function vote(id)
 						{
+							$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text())+1);
+
 							$.ajax({
 								url: '/vote',
 								type: 'POST',
@@ -114,7 +122,7 @@
 									id: id
 								})
 							}).done(function(data) {
-								$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text())+1);
+								//something?
 							});
 						}
 
