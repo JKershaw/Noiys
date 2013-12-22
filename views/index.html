@@ -61,12 +61,12 @@
 						function get_and_show_random_status() {
 							if (paused === false){
 								$.get("status", function(data) {
-									$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small>(<span class=\"votes\">" + data.votes + "</span>)</small></div></div>");
+									$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small><span class=\"votes\">" + data.votes + "</span></small></div></div>");
 									$("#statuses div:first-child").hide().fadeIn();
-
-									setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
 								});
 							}
+
+							setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
 						}
 
 						$(document).ready(function() {

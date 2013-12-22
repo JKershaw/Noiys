@@ -78,7 +78,7 @@ app.get('/status', function(request, response) {
 function get_random_status(statuses){
 	var status = statuses[Math.floor(Math.random()*statuses.length)];
 
-	if (status.length > 4){
+	if (status.length > 5){
 		return status
 	} else {
 		return statuses[Math.floor(Math.random()*statuses.length)];
