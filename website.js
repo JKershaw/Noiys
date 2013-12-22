@@ -32,16 +32,22 @@ app.post('/status', function(request, response) {
 	});
 });
 
-app.get('/vote/:id', function(request, response) {
-	console.log("POSTING a vote");
+app.post('/vote', function(request, response) {
+	console.log("POSTING a vote", request.body.id);
 
-	var query = {_id: ObjectId(request.params.id)};
+	var query = {"_id": ObjectId(request.body.id)};
 
-	db.statuses.find(query).forEach(function(status) {
-		if (status !== undefined)
+	db.statuses.find(query).toArray(function(err, statuses) {
+		var status = statuses[0];
+		if (status)
 		{
 			status.votes = status.votes + 1;
 			db.statuses.save(status);
+			response.send(200);
+		}
+		else
+		{
+			response.send(404);
 		}
 	});
 });
@@ -58,7 +64,9 @@ app.get('/status', function(request, response) {
 			var status = get_random_status(statuses);
 
 			message = {
-				"text": status.text
+				"text": status.text,
+				"id": status._id,
+				"votes": status.votes
 			};
 
 			response.contentType('json');

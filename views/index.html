@@ -56,7 +56,7 @@
 							console.log("get_and_show_random_status called");
 
 							$.get("status", function(data) {
-								$("#statuses").prepend("<div class=\"panel panel-default\"><div class=\"panel-body\">" + data.text + "</div></div>");
+								$("#statuses").prepend("<div style=\"cursor:pointer\" onclick=\"vote('" + data.id + "')\" class=\"status_panel panel panel-default\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><small>(<span class=\"votes\">" + data.votes + "</span>)</small></div></div>");
 								$("#statuses div:first-child").hide().fadeIn();
 
 								setTimeout(get_and_show_random_status, Math.floor((Math.random()*10000)+1));
@@ -86,8 +86,21 @@
 
 								setTimeout(set_posted_button, 2000);
 							});
-
 						});
+
+						function vote(id)
+						{
+							$.ajax({
+								url: '/vote',
+								type: 'POST',
+								contentType: 'application/json',
+								data: JSON.stringify({
+									id: id
+								})
+							}).done(function(data) {
+								$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text())+1);
+							});
+						}
 
 						function set_posted_button()
 						{
