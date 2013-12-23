@@ -64,11 +64,11 @@ app.get('/status', function(request, response) {
 
 	console.log("GETTING a status");
 
-	var query = {
-		"_id": ObjectId("52b81115dec15fa71c000001")
-	};
+	// var query = {
+	// 	"_id": ObjectId("52b81115dec15fa71c000001")
+	// };
 
-	//query = {};
+	var query = {};
 	db.statuses.find(query).sort({
 		"timestamp": -1
 	}).toArray(function(err, statuses) {
