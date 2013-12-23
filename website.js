@@ -67,7 +67,8 @@ app.get('/status', function(request, response) {
 		message = {
 			"text": status.text,
 			"id": status._id,
-			"votes": status.votes
+			"votes": status.votes,
+			"age": Math.round(new Date().getTime() / 1000) - status.timestamp
 		};
 
 		response.contentType('json');
