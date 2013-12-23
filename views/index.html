@@ -4,6 +4,16 @@
 		<title>
 			NOIYS - Post, read, forget
 		</title>
+
+<script>
+var _rollbarParams = {"server.environment": "production"};
+_rollbarParams["notifier.snippet_version"] = "2"; var _rollbar=["2909848dae4c45afa0444a227b4163cb", _rollbarParams]; var _ratchet=_rollbar;
+(function(w,d){w.onerror=function(e,u,l,c,err){_rollbar.push({_t:'uncaught',e:e,u:u,l:l,c:c,err:err});};var i=function(){var s=d.createElement("script");var 
+f=d.getElementsByTagName("script")[0];s.src="//d37gvrvc0wt4s1.cloudfront.net/js/1/rollbar.min.js";s.async=!0;
+f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load",i,!1);}else{w.attachEvent("onload",i);}})(window,document);
+</script>
+
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- JavaScript plugins (requires jQuery) -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
@@ -327,6 +337,7 @@
 										complete: function(xhr, textStatus) {
 											if(xhr.status == 503){
 												$("#main_error").show();
+												_rollbar.push("503 error: " + "status?since=" + most_recent_status_timestamp);
 											} else {
 												$("#main_error").hide();
 											}
@@ -359,6 +370,7 @@
 								}),
 								complete: function(xhr, textStatus) {
 									if(xhr.status == 503){
+										_rollbar.push("503 error saving status");
 										$("#main_error").show();
 									} else {
 										$("#main_error").hide();
