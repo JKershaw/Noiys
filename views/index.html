@@ -278,6 +278,9 @@
 			</div>
 			
 			<br />
+
+			<div class="alert alert-warning" style="display:none;" id="main_error">Ah crap, the server returned an error. This is probably because it's been overloaded. It'll be back soon.</div>
+
 			
 			<div id="statuses">
 			</div>
@@ -297,7 +300,8 @@
 
 							if (paused === false) {
 								$.get("status", function(status) {
-									publish_status(status, "#statuses")
+									publish_status(status, "#statuses");
+									$("#main_error").hide();
 								});
 							}
 
@@ -316,10 +320,21 @@
 									});
 
 								} else {
-									$.get("status?since=" + most_recent_status_timestamp, function(status) {
+									$.ajax({
+										url: "status?since=" + most_recent_status_timestamp,
+										type: 'GET',
+										contentType: 'application/json',
+										complete: function(xhr, textStatus) {
+											if(xhr.status == 503){
+												$("#main_error").show();
+											} else {
+												$("#main_error").hide();
+											}
+										} 
+									}).done(function(status) {
 										most_recent_status_timestamp = status.timestamp;
 										publish_status(status, "#statuses");
-									}) .fail(function() {
+									}).fail(function() {
 										console.debug("No new statuses found");
 									}).always(function() {
 										chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
@@ -341,7 +356,14 @@
 								contentType: 'application/json',
 								data: JSON.stringify({
 									text: $('#statusText').val()
-								})
+								}),
+								complete: function(xhr, textStatus) {
+									if(xhr.status == 503){
+										$("#main_error").show();
+									} else {
+										$("#main_error").hide();
+									}
+								} 
 							}).done(function(data) {
 								$('#post_status').prop('disabled', false);
 								$('#post_status').text("Posted!");
