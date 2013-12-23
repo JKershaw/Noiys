@@ -319,12 +319,14 @@
 									$.get("status?since=" + most_recent_status_timestamp, function(status) {
 
 										most_recent_status_timestamp = status.timestamp;
-										publish_status(status, "#statuses")
+										publish_status(status, "#statuses");
+										chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
 									});
 								}
+							} else {
+								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
 							}
 
-							chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
 						}
 
 						$("#post_status").click(function() {
@@ -343,7 +345,7 @@
 								$('#post_status').text("Posted!");
 								$('#statusText').val("");
 
-								setTimeout(set_posted_button, 2000);
+								setTimeout(set_posted_button, 3000);
 							});
 						});
 
