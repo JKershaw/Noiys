@@ -1,12 +1,6 @@
 var express = require("express"),
 	app = express();
 
-var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
-var collections = ["statuses"];
-var mongojs = require('mongojs');
-var db = mongojs.connect(connection_string, collections);
-var ObjectId = mongojs.ObjectId;
-
 var NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase();
 
@@ -18,14 +12,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
 app.get('/', function(request, response) {
-	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24 * 60 * 60)),
-		remove_query = {
-			timestamp: {
-				$lt: time_24h_ago
-			}
-		};
-
-	db.statuses.remove(remove_query, function() {
+	noiysDatabase.removeOldStatuses(function(){
 		response.render('index.html');
 	});
 });
@@ -49,25 +36,23 @@ app.get('/timestamp/chronologicalstartpoint', function(request, response) {
 
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
-	db.statuses.save({
+
+	var status = {
 		text: HTMLEncode(request.body.text),
 		timestamp: Math.round(new Date().getTime() / 1000),
 		votes: 0
-	}, function(err, saved) {
-		if (err || !saved) {
-			console.log("Not saved: " + err);
-			response.send(500);
-		} else {
-			console.log("Saved", saved);
-			var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+	};
 
-			if (quotes) {
-				process_quotes(saved._id, quotes);
-			}
+	noiysDatabase.saveStatus(status, function(saved){
 
-			response.send(200);
+		var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+
+		if (quotes) {
+			console.log("there are quotes!");
+			process_quotes(saved._id, quotes);
 		}
 
+		response.send(200);
 
 	});
 });
@@ -78,7 +63,7 @@ app.post('/vote', function(request, response) {
 	noiysDatabase.findStatus(request.body.id, function(status){
 		if (status) {
 			status.votes = status.votes + 1;
-			db.statuses.save(status);
+			noiysDatabase.saveStatus(status, function(){});
 			response.send(200);
 		} else {
 			response.send(404);
@@ -165,23 +150,19 @@ function process_quotes(id, quotes) {
 }
 
 function add_response_to_status(status_id, response_id) {
+	console.log("Status:", status_id);
+	console.log("Response: ", response_id);
 
-	
 	noiysDatabase.findStatus(status_id, function(status){
 
-		status = statuses[0];
 		if (!status.responses) {
 			status.responses = [];
 		}
 
 		status.responses.push(response_id);
 
-		db.statuses.save(status, function(err, saved) {
-			if (err || !saved) {
-				console.log("Not saved: " + err);
-			} else {
-				console.log("Saved", saved);
-			}
+		noiysDatabase.saveStatus(status, function(){
+			console.log("Saved responses");
 		});
 	});
 }
@@ -258,7 +239,6 @@ function parse_status_text(status_text, callback) {
 function get_status_text(id, callback) {
 
 	noiysDatabase.findStatus(id, function(status){
-
 		var quoted_status_text = "<i>Status not found</i>";
 
 		if (status) {
