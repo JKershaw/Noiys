@@ -297,7 +297,7 @@
 
 							if (paused === false) {
 								$.get("status", function(status) {
-									publish_status(status)
+									publish_status(status, "#statuses")
 								});
 							}
 
@@ -319,7 +319,7 @@
 									$.get("status?since=" + most_recent_status_timestamp, function(status) {
 
 										most_recent_status_timestamp = status.timestamp;
-										publish_status(status)
+										publish_status(status, "#statuses")
 									});
 								}
 							}
@@ -371,11 +371,10 @@
 							}
 						});
 
-						function publish_status(status)
+						function publish_status(status, wrapper)
 						{
-
 							// delete existing posts with this ID
-							$("#statuses #" + status.id).remove();
+							$(wrapper + " #" + status.id).remove();
 
 							//are there any responses?
 							var response_string = "";
@@ -387,12 +386,16 @@
 									response_string = String(status.responses.length) + " replies";
 								}
 
+								responses_array_string = "'" + status.responses.join("', '") + "'";
+								
+								response_string = "<a style=\"cursor:pointer\" onclick=\"show_replies('" + status.id + "', [" + responses_array_string + "])\">" + response_string + "</a>";
+
 							}
 
 							// show new one
-							$("#statuses").prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-4\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small></div>");
+							$(wrapper).prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-4\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small></div></div><div class=\"responses\"></div></div>");
 
-							$("#statuses div").first().hide().fadeIn();
+							$(wrapper + " div").first().hide().fadeIn();
 
 
 							$("span.timeago").timeago();
@@ -423,6 +426,15 @@
 
 						function set_posted_button() {
 							$('#post_status').text("Post Status");
+						}
+
+						function show_replies(status_id, replies_ids ){
+							for(var i = 0; i < replies_ids.length; i++){
+								// get the status from the ID, append it to the status
+								$.get("status/"+replies_ids[i], function(status) {
+									publish_status(status, "#" + status_id + " .responses");
+								});
+							}
 						}
 
 						function timeSince(delta) {

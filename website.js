@@ -93,6 +93,33 @@ app.post('/vote', function(request, response) {
 	});
 });
 
+app.get('/status/:ID', function(request, response) {
+
+	console.log("GETTING a status");
+
+	var query = {
+		"_id": ObjectId(request.params.ID)
+	};
+	console.log("Getting a specific status:", query);
+	db.statuses.find(query).toArray(function(err, statuses) {
+		var status = statuses[0];
+		parse_status_text(status.text, function(status_text) {
+			message = {
+				"text": status_text,
+				"id": status._id,
+				"votes": status.votes,
+				"responses": status.responses,
+				"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
+				"timestamp": status.timestamp,
+				"ISO8601timestamp": toISO8601(status.timestamp)
+			};
+
+			response.contentType('json');
+			response.send(message);
+		});
+	});
+});
+
 app.get('/status', function(request, response) {
 
 	console.log("GETTING a status");
@@ -161,7 +188,7 @@ function add_response_to_status(status_id, response_id) {
 	};
 
 	db.statuses.find(query).toArray(function(err, statuses) {
-		
+
 		status = statuses[0];
 		if (!status.responses) {
 			status.responses = [];
