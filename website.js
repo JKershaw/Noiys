@@ -64,11 +64,11 @@ app.get('/status', function(request, response) {
 
 	console.log("GETTING a status");
 
-	// var query = {
-	// 	"_id": ObjectId("52b80dc4ebc9700200000001")
-	// };
+	var query = {
+		"_id": ObjectId("52b81115dec15fa71c000001")
+	};
 
-	query = {};
+	//query = {};
 	db.statuses.find(query).sort({
 		"timestamp": -1
 	}).toArray(function(err, statuses) {
@@ -128,6 +128,11 @@ function parse_status_text(status_text, callback) {
 
 	if (replies !== null) {
 		console.log("Found quote!");
+
+		if (replies.length > 1)
+		{
+			replies = replies[0];
+		}
 
 		quoted_status_id = String(replies).replace("@", "");
 
