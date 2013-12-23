@@ -310,8 +310,8 @@
 							if (paused === false) {
 								if (!most_recent_status_timestamp)
 								{
-									$.get("timestamp", function(current_timestamp) {
-										most_recent_status_timestamp = current_timestamp - 360;
+									$.get("timestamp/chronologicalstartpoint", function(current_timestamp) {
+										most_recent_status_timestamp = current_timestamp;
 										get_and_show_chronological_status();
 									});
 

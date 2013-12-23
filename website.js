@@ -32,6 +32,22 @@ app.get('/timestamp', function(request, response) {
 	response.send(String(Math.round(new Date().getTime() / 1000)));
 });
 
+app.get('/timestamp/chronologicalstartpoint', function(request, response) {
+
+	db.statuses.find({}).sort({"timestamp":-1}).toArray(function(err, statuses) {
+		
+		var timestamp = Math.round(new Date().getTime() / 1000);
+
+		if (statuses.length > 15)
+		{
+			timestamp = statuses[15].timestamp;
+		}
+
+		response.send(String(timestamp));
+
+	});
+});
+
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
 	db.statuses.save({
