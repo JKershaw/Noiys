@@ -55,7 +55,7 @@
 			</div>
 		</div>
 		<script type="text/javascript">
-								var paused = false;
+						var paused = false;
 
 						function get_and_show_random_status() {
 							if (paused === false) {
@@ -65,11 +65,10 @@
 									$("#statuses #" + data.id).remove();
 
 									// show new one
-									$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + data.id + "\"><div class=\"panel-body\">" + data.text + " <br /><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + data.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + data.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(data.age) + " ago</span></small></div>");
+									$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + data.id + "\"><div class=\"panel-body\"><p>" + data.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + data.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + data.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + data.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(data.age) + " ago</span></small></div>");
 
 									$("#statuses div").first().hide().fadeIn();
 
-									jQuery("abbr.age").timeago();
 								});
 							}
 
@@ -125,6 +124,11 @@
 							}).done(function(data) {
 								//something?
 							});
+						}
+
+						function reply(id){
+							var newText = "@" + id + "\n" + $('#statusText').val();
+							$('#statusText').val(newText);
 						}
 
 						function set_posted_button() {

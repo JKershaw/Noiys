@@ -16,8 +16,12 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
 app.get('/', function(request, response) {
-	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24*60*60)),
-		remove_query = {timestamp: {$lt: time_24h_ago}};
+	var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24 * 60 * 60)),
+		remove_query = {
+			timestamp: {
+				$lt: time_24h_ago
+			}
+		};
 
 	db.statuses.remove(remove_query, function() {
 		response.render('index.html');
@@ -40,18 +44,17 @@ app.post('/status', function(request, response) {
 app.post('/vote', function(request, response) {
 	console.log("POSTING a vote", request.body.id);
 
-	var query = {"_id": ObjectId(request.body.id)};
+	var query = {
+		"_id": ObjectId(request.body.id)
+	};
 
 	db.statuses.find(query).toArray(function(err, statuses) {
 		var status = statuses[0];
-		if (status)
-		{
+		if (status) {
 			status.votes = status.votes + 1;
 			db.statuses.save(status);
 			response.send(200);
-		}
-		else
-		{
+		} else {
 			response.send(404);
 		}
 	});
@@ -60,67 +63,113 @@ app.post('/vote', function(request, response) {
 app.get('/status', function(request, response) {
 
 	console.log("GETTING a status");
-	db.statuses.find({}).sort({"timestamp":-1}).toArray(function(err, statuses) {
-		
+
+	var query = {
+		"_id": ObjectId("52b8082b07e7ffdc19000001")
+	};
+
+	query = {};
+	db.statuses.find(query).sort({
+		"timestamp": -1
+	}).toArray(function(err, statuses) {
+
 		var status = get_random_status(statuses);
 
-		message = {
-			"text": status.text,
-			"id": status._id,
-			"votes": status.votes,
-			"age": Math.round(new Date().getTime() / 1000) - status.timestamp
-		};
+		parse_status_text(status.text, function(status_text) {
+			message = {
+				"text": status_text,
+				"id": status._id,
+				"votes": status.votes,
+				"age": Math.round(new Date().getTime() / 1000) - status.timestamp
+			};
 
-		response.contentType('json');
-		response.send(message);
+			response.contentType('json');
+			response.send(message);
+		});
+
+
 	});
 });
 
-app.get('/status/:id', function(request, response) {
 
-	console.log("GETTING a specific status");
+function get_random_status(statuses) {
+	var status = statuses[Math.floor(Math.random() * statuses.length)];
 
-	var query = {"_id": ObjectId(request.params.id)};
-
-	db.statuses.find(query).toArray(function(err, statuses) {
-		
-		var status = statuses[0];
-
-		message = {
-			"text": status.text,
-			"id": status._id,
-			"votes": status.votes
-		};
-
-		response.contentType('json');
-		response.send(message);
-	});
-});
-
-function get_random_status(statuses){
-	var status = statuses[Math.floor(Math.random()*statuses.length)];
-
-	if (status.length > 5){
+	if (status.length > 5) {
 		return status
 	} else {
-		return statuses[Math.floor(Math.random()*statuses.length)];
+		return statuses[Math.floor(Math.random() * statuses.length)];
 	}
 
 }
 
-function HTMLEncode(str){
-  var i = str.length,
-      aRet = [];
+function HTMLEncode(str) {
+	var i = str.length,
+		aRet = [];
 
-  while (i--) {
-    var iC = str[i].charCodeAt();
-    if (iC < 65 || iC > 127 || (iC>90 && iC<97)) {
-      aRet[i] = '&#'+iC+';';
-    } else {
-      aRet[i] = str[i];
-    }
-   }
-  return aRet.join('');    
+	while (i--) {
+		var iC = str[i].charCodeAt();
+		if ((iC < 65 || iC > 127 || (iC > 90 && iC < 97)) && ((iC < 47 && iC > 58))) {
+			aRet[i] = '&#' + iC + ';';
+		} else {
+			aRet[i] = str[i];
+		}
+	}
+	return aRet.join('');
+}
+
+function parse_status_text(status_text, callback) {
+
+	console.log("=====================");
+	console.log(status_text);
+	console.log("=====================");
+
+	var replies = status_text.match(/@[a-f0-9]{24,24}/g);
+
+	if (replies !== null) {
+		console.log("Found quote!");
+
+		quoted_status_id = String(replies).replace("@", "");
+
+		get_status_text(quoted_status_id, function(quoted_status_text){
+			//parse_status_text(quoted_status_text, function(quoted_status_text) {
+
+				var reg_ex = "@" + quoted_status_id;
+				var original_post = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + quoted_status_text + "</div></div>";
+
+				status_text = status_text.replace(reg_ex, original_post);
+
+				console.log("callbacking: ", status_text);
+
+				callback(status_text);
+
+			//});
+		});
+	} else {
+		console.log("No quotes found");
+		callback(status_text);
+	}
+}
+
+function get_status_text(id, callback) {
+
+	console.log("Fetching ", id);
+
+	var query = {
+		"_id": ObjectId(id)
+	};
+
+	db.statuses.find(query).toArray(function(err, statuses) {
+
+		var quoted_status_text = "<i>Status not found</i>";
+
+		if (statuses.length > 0) {
+			var quoted_status_text = statuses[0].text;
+		}
+
+		callback(quoted_status_text);
+	});
+
 }
 
 var port = process.env.PORT || 5000;
