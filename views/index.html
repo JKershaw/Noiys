@@ -317,9 +317,11 @@
 
 								} else {
 									$.get("status?since=" + most_recent_status_timestamp, function(status) {
-
 										most_recent_status_timestamp = status.timestamp;
 										publish_status(status, "#statuses");
+									}) .fail(function() {
+										console.debug("No new statuses found");
+									}).always(function() {
 										chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
 									});
 								}
