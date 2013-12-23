@@ -2,11 +2,13 @@ var express = require("express"),
 	app = express();
 
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
-
-var collections = ["statuses"]
+var collections = ["statuses"];
 var mongojs = require('mongojs');
 var db = mongojs.connect(connection_string, collections);
 var ObjectId = mongojs.ObjectId;
+
+var NoiysDatabase = require('./NoiysDatabase'),
+	noiysDatabase = new NoiysDatabase();
 
 
 app.use(express.logger());
@@ -34,10 +36,7 @@ app.get('/timestamp', function(request, response) {
 
 app.get('/timestamp/chronologicalstartpoint', function(request, response) {
 
-	db.statuses.find({}).sort({
-		"timestamp": -1
-	}).toArray(function(err, statuses) {
-
+	noiysDatabase.findStatuses(function(statuses) {
 		var timestamp = Math.round(new Date().getTime() / 1000);
 
 		if (statuses.length > 15) {
@@ -45,7 +44,6 @@ app.get('/timestamp/chronologicalstartpoint', function(request, response) {
 		}
 
 		response.send(String(timestamp));
-
 	});
 });
 
@@ -77,12 +75,7 @@ app.post('/status', function(request, response) {
 app.post('/vote', function(request, response) {
 	console.log("POSTING a vote");
 
-	var query = {
-		"_id": ObjectId(request.body.id)
-	};
-
-	db.statuses.find(query).toArray(function(err, statuses) {
-		var status = statuses[0];
+	noiysDatabase.findStatus(request.body.id, function(status){
 		if (status) {
 			status.votes = status.votes + 1;
 			db.statuses.save(status);
@@ -97,12 +90,7 @@ app.get('/status/:ID', function(request, response) {
 
 	console.log("GETTING a status");
 
-	var query = {
-		"_id": ObjectId(request.params.ID)
-	};
-	console.log("Getting a specific status:", query);
-	db.statuses.find(query).toArray(function(err, statuses) {
-		var status = statuses[0];
+	noiysDatabase.findStatus(request.params.ID, function(status){
 		parse_status_text(status.text, function(status_text) {
 			message = {
 				"text": status_text,
@@ -178,11 +166,8 @@ function process_quotes(id, quotes) {
 
 function add_response_to_status(status_id, response_id) {
 
-	var query = {
-		"_id": ObjectId(status_id)
-	};
-
-	db.statuses.find(query).toArray(function(err, statuses) {
+	
+	noiysDatabase.findStatus(status_id, function(status){
 
 		status = statuses[0];
 		if (!status.responses) {
@@ -208,7 +193,7 @@ function toISO8601(timestamp) {
 
 function get_random_status(callback) {
 
-	db.statuses.find({}).toArray(function(err, statuses) {
+	noiysDatabase.findStatuses(function(statuses) {
 		var status = statuses[Math.floor(Math.random() * statuses.length)];
 
 		if (status.length > 5) {
@@ -222,19 +207,9 @@ function get_random_status(callback) {
 
 
 function get_since_status(since, callback) {
-	console.log(since);
-
-	db.statuses.find({
-		"timestamp": {
-			"$gt": parseInt(since)
-		}
-	}).sort({
-		"timestamp": 1
-	}).toArray(function(err, statuses) {
-
+	noiysDatabase.findStatusesSince(since, function(statuses) {
 		var status = statuses[0];
 		callback(status);
-
 	});
 }
 
@@ -282,16 +257,12 @@ function parse_status_text(status_text, callback) {
 
 function get_status_text(id, callback) {
 
-	var query = {
-		"_id": ObjectId(id)
-	};
-
-	db.statuses.find(query).toArray(function(err, statuses) {
+	noiysDatabase.findStatus(id, function(status){
 
 		var quoted_status_text = "<i>Status not found</i>";
 
-		if (statuses.length > 0) {
-			var quoted_status_text = statuses[0].text;
+		if (status) {
+			var quoted_status_text = status.text;
 		}
 
 		callback(quoted_status_text);
