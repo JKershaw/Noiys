@@ -4,7 +4,6 @@ var express = require("express"),
 var NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase();
 
-
 app.use(express.logger());
 
 app.set('views', __dirname + '/views');
