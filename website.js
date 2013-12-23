@@ -64,9 +64,9 @@ app.get('/status', function(request, response) {
 
 	console.log("GETTING a status");
 
-	var query = {
-		"_id": ObjectId("52b8082b07e7ffdc19000001")
-	};
+	// var query = {
+	// 	"_id": ObjectId("52b80dc4ebc9700200000001")
+	// };
 
 	query = {};
 	db.statuses.find(query).sort({
@@ -131,19 +131,17 @@ function parse_status_text(status_text, callback) {
 
 		quoted_status_id = String(replies).replace("@", "");
 
-		get_status_text(quoted_status_id, function(quoted_status_text){
-			//parse_status_text(quoted_status_text, function(quoted_status_text) {
+		get_status_text(quoted_status_id, function(quoted_status_text) {
+			var reg_ex = "@" + quoted_status_id;
+			var original_post = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + quoted_status_text + "</div></div>";
 
-				var reg_ex = "@" + quoted_status_id;
-				var original_post = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + quoted_status_text + "</div></div>";
+			status_text = status_text.replace(reg_ex, original_post);
 
-				status_text = status_text.replace(reg_ex, original_post);
+			console.log("callbacking: ", status_text);
 
-				console.log("callbacking: ", status_text);
-
+			parse_status_text(status_text, function(status_text) {
 				callback(status_text);
-
-			//});
+			});
 		});
 	} else {
 		console.log("No quotes found");
