@@ -122,11 +122,6 @@ app.get('/status/:ID', function(request, response) {
 
 app.get('/status', function(request, response) {
 
-	console.log("GETTING a status");
-
-	// var query = {
-	// 	"_id": ObjectId("52b81115dec15fa71c000001")
-	// };
 	if (request.query['since'] && (request.query['since'] !== "undefined")) {
 		console.log("Getting a SINCE status");
 		get_since_status(request.query['since'], function(status) {
