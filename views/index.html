@@ -315,11 +315,12 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 								});
 							}
 
-							random_status_timeout = setTimeout(get_and_show_random_status, Math.floor((Math.random() * 10000) + 1));
+							random_status_timeout = setTimeout(get_and_show_random_status, 6000);
 
 						}
 
 						function get_and_show_chronological_status() {
+							var refresh_time = 3000;
 
 							if (paused === false) {
 								if (!most_recent_status_timestamp)
@@ -345,10 +346,12 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 									}).done(function(status) {
 										most_recent_status_timestamp = status.timestamp;
 										publish_status(status, "#statuses");
+										refresh_time = 3000;
 									}).fail(function() {
 										console.debug("No new statuses found");
+										refresh_time = 10000;
 									}).always(function() {
-										chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
+										chronological_status_timeout = setTimeout(get_and_show_chronological_status, refresh_time);
 									});
 								}
 							} else {
