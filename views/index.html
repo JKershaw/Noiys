@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- JavaScript plugins (requires jQuery) -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
-										        
+												        
 		</script>
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
@@ -15,16 +15,16 @@
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
 			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js">
-															            
+																		            
 			</script>
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js">
-															            
+																		            
 			</script>
 		<![endif]-->
 		<!-- Include all compiled plugins (below), or include individual files as needed
 		-->
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js">
-										        
+												        
 		</script>
 	</head>
 	<body>
@@ -36,53 +36,91 @@
 				Post a status anonymously. It's viewed by many, then deleted. Try not to be a dick.
 			</p>
 			<p>
-				<textarea class="form-control" rows="3" id="statusText"></textarea>
+				<textarea class="form-control" rows="3" id="statusText">
+				</textarea>
 			</p>
 			<p>
 				<small>
 					Your status will be automatically deleted after 24 hours
 				</small>
 			</p>
-			<p>
-				<button type="button" class="btn btn-primary btn-lg" id="post_status">
-					Post Status
-				</button>
-				<button type="button" class="btn btn-default btn-xs" id="pause_feed">
-					Pause Feed
-				</button>
-			</p>
+
+			<div class="row">
+				<div class="col-md-6">
+					<button type="button" class="btn btn-primary btn-lg" id="post_status">
+						Post Status
+					</button>
+					<button type="button" class="btn btn-default btn-xs" id="pause_feed">
+						Pause Feed
+					</button>
+				</div>
+				<div class="col-md-6">
+					<div class="btn-group" data-toggle="buttons" style="float:right">
+						<label class="btn btn-default btn-xs active">
+							<input type="radio" name="feed_type" id="feed_random" value="feed_random">
+							Random
+						</label>
+						<label class="btn btn-default btn-xs">
+							<input type="radio" name="feed_type" id="feed_chronological" value="feed_chronological" >
+							Chronological
+						</label>
+					</div>
+					
+				</div>
+			</div>
+			
+			<br />
+			
 			<div id="statuses">
 			</div>
+
 		</div>
 		<script type="text/javascript">
 						var paused = false;
+						var feed_type = "random";
+						var random_status_timeout, chronological_status_timeout;
+						var most_recent_status_timestamp;
+
+						$(document).ready(function() {
+							random_status_timeout = setTimeout(get_and_show_random_status, 1000);
+						});
 
 						function get_and_show_random_status() {
+
 							if (paused === false) {
-								$.get("status", function(data) {
-
-									// delete existing posts with this ID
-									$("#statuses #" + data.id).remove();
-
-									// show new one
-									$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + data.id + "\"><div class=\"panel-body\"><p>" + data.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + data.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + data.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + data.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(data.age) + " ago</span></small></div>");
-
-									$("#statuses div").first().hide().fadeIn();
-
+								$.get("status", function(status) {
+									publish_status(status)
 								});
 							}
 
-							setTimeout(get_and_show_random_status, Math.floor((Math.random() * 10000) + 1));
+							random_status_timeout = setTimeout(get_and_show_random_status, Math.floor((Math.random() * 10000) + 1));
 						}
 
-						$(document).ready(function() {
-							setTimeout(get_and_show_random_status, 1000);
-						});
+						function get_and_show_chronological_status() {
+
+							if (paused === false) {
+								if (!most_recent_status_timestamp)
+								{
+									$.get("timestamp", function(current_timestamp) {
+										most_recent_status_timestamp = current_timestamp - 3600;
+										get_and_show_chronological_status();
+									});
+
+								} else {
+									$.get("status?since=" + most_recent_status_timestamp, function(status) {
+
+										most_recent_status_timestamp = status.timestamp;
+										publish_status(status)
+									});
+								}
+							}
+
+							chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
+						}
 
 						$("#post_status").click(function() {
 							$('#post_status').prop('disabled', true);
 							$('#post_status').text("Posting ...");
-
 
 							$.ajax({
 								url: '/status',
@@ -110,6 +148,33 @@
 							}
 						});
 
+						$("input:radio[name=feed_type]").change(function () {
+							var val = $('input:radio[name=feed_type]:checked').val();
+
+							if (val == "feed_random") {
+								feed_type = "random";
+								clearTimeout(chronological_status_timeout);
+								random_status_timeout = setTimeout(get_and_show_random_status, 1000);
+							} else if (val == "feed_chronological") {
+								feed_type = "chronological";
+								clearTimeout(random_status_timeout);
+								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 1000);
+							}
+						});
+
+						function publish_status(status)
+						{
+
+							// delete existing posts with this ID
+							$("#statuses #" + status.id).remove();
+
+							// show new one
+							$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(status.age) + " ago</span></small></div>");
+
+							$("#statuses div").first().hide().fadeIn();
+
+						}
+
 						function vote(id) {
 							$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
 							$("#" + id + " .glyphicon-heart").css("color", "green");
@@ -126,7 +191,7 @@
 							});
 						}
 
-						function reply(id){
+						function reply(id) {
 							var newText = "@" + id + "\n" + $('#statusText').val();
 							$('#statusText').val(newText);
 						}

@@ -28,6 +28,10 @@ app.get('/', function(request, response) {
 	});
 });
 
+app.get('/timestamp', function(request, response) {
+	response.send(String(Math.round(new Date().getTime() / 1000)));
+});
+
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
 	db.statuses.save({
@@ -68,39 +72,78 @@ app.get('/status', function(request, response) {
 	// 	"_id": ObjectId("52b81115dec15fa71c000001")
 	// };
 
-	var query = {};
-	db.statuses.find(query).sort({
-		"timestamp": -1
-	}).toArray(function(err, statuses) {
+	console.log(request.query['since']);
 
-		var status = get_random_status(statuses);
+	if (request.query['since'] && (request.query['since'] !== "undefined"))
+	{
+		console.log("Getting a SINCE status");
+		get_since_status(request.query['since'], function(status){
 
-		parse_status_text(status.text, function(status_text) {
-			message = {
-				"text": status_text,
-				"id": status._id,
-				"votes": status.votes,
-				"age": Math.round(new Date().getTime() / 1000) - status.timestamp
-			};
+			if (status)
+			{
+				parse_status_text(status.text, function(status_text) {
+					message = {
+						"text": status_text,
+						"id": status._id,
+						"votes": status.votes,
+						"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
+						"timestamp": status.timestamp
+					};
 
-			response.contentType('json');
-			response.send(message);
+					response.contentType('json');
+					response.send(message);
+				});
+			}
+			else {
+				response.send(404);
+
+			}
 		});
+	} else {
+		console.log("Getting a RANDOM status");
+		get_random_status(function(status){
 
+			parse_status_text(status.text, function(status_text) {
+				message = {
+					"text": status_text,
+					"id": status._id,
+					"votes": status.votes,
+					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
+					"timestamp": status.timestamp
+				};
 
-	});
+				response.contentType('json');
+				response.send(message);
+			});
+		});
+	}
 });
 
 
-function get_random_status(statuses) {
-	var status = statuses[Math.floor(Math.random() * statuses.length)];
+function get_random_status(callback) {
 
-	if (status.length > 5) {
-		return status
-	} else {
-		return statuses[Math.floor(Math.random() * statuses.length)];
-	}
+	db.statuses.find({}).toArray(function(err, statuses) {
+		var status = statuses[Math.floor(Math.random() * statuses.length)];
 
+		if (status.length > 5) {
+			callback(status);
+		} else {
+			callback(statuses[Math.floor(Math.random() * statuses.length)]);
+		}
+
+	});
+}
+
+
+function get_since_status(since, callback) {
+	console.log(since);
+
+	db.statuses.find({"timestamp": {"$gt": parseInt(since)}}).sort({"timestamp":1}).toArray(function(err, statuses) {
+		
+		var status = statuses[0];
+		callback(status);
+
+	});
 }
 
 function HTMLEncode(str) {
@@ -120,14 +163,9 @@ function HTMLEncode(str) {
 
 function parse_status_text(status_text, callback) {
 
-	console.log("=====================");
-	console.log(status_text);
-	console.log("=====================");
-
 	var replies = status_text.match(/@[a-f0-9]{24,24}/g);
 
 	if (replies !== null) {
-		console.log("Found quote!");
 
 		if (replies.length > 1)
 		{
@@ -142,21 +180,16 @@ function parse_status_text(status_text, callback) {
 
 			status_text = status_text.replace(reg_ex, original_post);
 
-			console.log("callbacking: ", status_text);
-
 			parse_status_text(status_text, function(status_text) {
 				callback(status_text);
 			});
 		});
 	} else {
-		console.log("No quotes found");
 		callback(status_text);
 	}
 }
 
 function get_status_text(id, callback) {
-
-	console.log("Fetching ", id);
 
 	var query = {
 		"_id": ObjectId(id)
