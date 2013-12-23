@@ -101,7 +101,7 @@
 								if (!most_recent_status_timestamp)
 								{
 									$.get("timestamp", function(current_timestamp) {
-										most_recent_status_timestamp = current_timestamp - 3600;
+										most_recent_status_timestamp = current_timestamp - 360;
 										get_and_show_chronological_status();
 									});
 
