@@ -46,7 +46,7 @@ app.post('/status', function(request, response) {
 });
 
 app.post('/vote', function(request, response) {
-	console.log("POSTING a vote", request.body.id);
+	console.log("POSTING a vote");
 
 	var query = {
 		"_id": ObjectId(request.body.id)
@@ -72,8 +72,6 @@ app.get('/status', function(request, response) {
 	// 	"_id": ObjectId("52b81115dec15fa71c000001")
 	// };
 
-	console.log(request.query['since']);
-
 	if (request.query['since'] && (request.query['since'] !== "undefined"))
 	{
 		console.log("Getting a SINCE status");
@@ -87,7 +85,8 @@ app.get('/status', function(request, response) {
 						"id": status._id,
 						"votes": status.votes,
 						"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-						"timestamp": status.timestamp
+						"timestamp": status.timestamp,
+						"ISO8601timestamp": toISO8601(status.timestamp)
 					};
 
 					response.contentType('json');
@@ -109,7 +108,8 @@ app.get('/status', function(request, response) {
 					"id": status._id,
 					"votes": status.votes,
 					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-					"timestamp": status.timestamp
+					"timestamp": status.timestamp,
+					"ISO8601timestamp": toISO8601(status.timestamp)
 				};
 
 				response.contentType('json');
@@ -119,6 +119,12 @@ app.get('/status', function(request, response) {
 	}
 });
 
+
+function toISO8601(timestamp)
+{
+	var date = new Date(timestamp * 1000);
+	return date.toISOString();
+}
 
 function get_random_status(callback) {
 
