@@ -169,7 +169,7 @@
 							$("#statuses #" + status.id).remove();
 
 							// show new one
-							$("#statuses").prepend("<div class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(status.age) + " ago</span></small></div>");
+							$("#statuses").prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted " + timeSince(status.age) + " ago</span></small></div>");
 
 							$("#statuses div").first().hide().fadeIn();
 
