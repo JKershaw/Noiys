@@ -377,8 +377,20 @@
 							// delete existing posts with this ID
 							$("#statuses #" + status.id).remove();
 
+							//are there any responses?
+							var response_string = "";
+							if (status.responses){
+								if (status.responses.length == 1)
+								{
+									response_string = "1 reply";
+								} else {
+									response_string = String(status.responses.length) + " replies";
+								}
+
+							}
+
 							// show new one
-							$("#statuses").prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-8\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small></div>");
+							$("#statuses").prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-4\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>  <a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" ><span class=\"glyphicon glyphicon-heart\"></span></a> <a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\">reply</a></small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small></div>");
 
 							$("#statuses div").first().hide().fadeIn();
 
@@ -405,7 +417,8 @@
 
 						function reply(id) {
 							var newText = "@" + id + "\n" + $('#statusText').val();
-							$('#statusText').val(newText);
+							$('#statusText').val(newText).focus();
+							$('html, body').animate({ scrollTop: 0 }, 'fast');
 						}
 
 						function set_posted_button() {
