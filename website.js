@@ -34,12 +34,13 @@ app.get('/timestamp', function(request, response) {
 
 app.get('/timestamp/chronologicalstartpoint', function(request, response) {
 
-	db.statuses.find({}).sort({"timestamp":-1}).toArray(function(err, statuses) {
-		
+	db.statuses.find({}).sort({
+		"timestamp": -1
+	}).toArray(function(err, statuses) {
+
 		var timestamp = Math.round(new Date().getTime() / 1000);
 
-		if (statuses.length > 15)
-		{
+		if (statuses.length > 15) {
 			timestamp = statuses[15].timestamp;
 		}
 
@@ -55,9 +56,21 @@ app.post('/status', function(request, response) {
 		timestamp: Math.round(new Date().getTime() / 1000),
 		votes: 0
 	}, function(err, saved) {
-		if (err || !saved) console.log("Not saved: " + err);
-		else console.log("Saved");
-		response.send(200);
+		if (err || !saved) {
+			console.log("Not saved: " + err);
+			response.send(500);
+		} else {
+			console.log("Saved", saved);
+			var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+
+			if (quotes) {
+				process_quotes(saved._id, quotes);
+			}
+
+			response.send(200);
+		}
+
+
 	});
 });
 
@@ -87,14 +100,11 @@ app.get('/status', function(request, response) {
 	// var query = {
 	// 	"_id": ObjectId("52b81115dec15fa71c000001")
 	// };
-
-	if (request.query['since'] && (request.query['since'] !== "undefined"))
-	{
+	if (request.query['since'] && (request.query['since'] !== "undefined")) {
 		console.log("Getting a SINCE status");
-		get_since_status(request.query['since'], function(status){
+		get_since_status(request.query['since'], function(status) {
 
-			if (status)
-			{
+			if (status) {
 				parse_status_text(status.text, function(status_text) {
 					message = {
 						"text": status_text,
@@ -108,15 +118,14 @@ app.get('/status', function(request, response) {
 					response.contentType('json');
 					response.send(message);
 				});
-			}
-			else {
+			} else {
 				response.send(404);
 
 			}
 		});
 	} else {
 		console.log("Getting a RANDOM status");
-		get_random_status(function(status){
+		get_random_status(function(status) {
 
 			parse_status_text(status.text, function(status_text) {
 				message = {
@@ -135,9 +144,40 @@ app.get('/status', function(request, response) {
 	}
 });
 
+function process_quotes(id, quotes) {
+	id = String(id).replace("@", "");
+	for (var i = 0; i < quotes.length; i++) {
+		quotes[i] = quotes[i].replace("@", "");
+		add_response_to_status(quotes[i], id);
+	}
+}
 
-function toISO8601(timestamp)
-{
+function add_response_to_status(status_id, response_id) {
+
+	var query = {
+		"_id": ObjectId(status_id)
+	};
+
+	db.statuses.find(query).toArray(function(err, statuses) {
+		
+		status = statuses[0];
+		if (!status.responses) {
+			status.responses = [];
+		}
+
+		status.responses.push(response_id);
+
+		db.statuses.save(status, function(err, saved) {
+			if (err || !saved) {
+				console.log("Not saved: " + err);
+			} else {
+				console.log("Saved", saved);
+			}
+		});
+	});
+}
+
+function toISO8601(timestamp) {
 	var date = new Date(timestamp * 1000);
 	return date.toISOString();
 }
@@ -160,8 +200,14 @@ function get_random_status(callback) {
 function get_since_status(since, callback) {
 	console.log(since);
 
-	db.statuses.find({"timestamp": {"$gt": parseInt(since)}}).sort({"timestamp":1}).toArray(function(err, statuses) {
-		
+	db.statuses.find({
+		"timestamp": {
+			"$gt": parseInt(since)
+		}
+	}).sort({
+		"timestamp": 1
+	}).toArray(function(err, statuses) {
+
 		var status = statuses[0];
 		callback(status);
 
@@ -189,8 +235,7 @@ function parse_status_text(status_text, callback) {
 
 	if (replies !== null) {
 
-		if (replies.length > 1)
-		{
+		if (replies.length > 1) {
 			replies = replies[0];
 		}
 
