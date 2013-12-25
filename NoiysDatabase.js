@@ -14,7 +14,7 @@ var NoiysDatabase = function(connection_string) {
 			db.statuses.find(query).toArray(function(err, statuses) {
 				if (statuses[0]) {
 					status = statuses[0];
-					status.id = status._id;
+					status.id = String(status._id);
 				} else {
 					status = false;
 				}
@@ -31,7 +31,7 @@ var NoiysDatabase = function(connection_string) {
 					console.log("Saved status to database");
 				}
 
-				saved.id = saved._id;
+				saved.id = String(saved._id);
 
 				callback(saved);
 			});
@@ -52,6 +52,24 @@ var NoiysDatabase = function(connection_string) {
 
 		function getStatuses(callback) {
 			db.statuses.find({}).toArray(function(err, statuses) {
+				for(var i=0;i<statuses.length;i++){
+					statuses[i].id = String(statuses[i]._id);
+				}
+				callback(statuses);
+			});
+		}
+
+		function findStatusesSince(timestamp, callback) {
+			db.statuses.find({
+				"timestamp": {
+					"$gt": parseInt(timestamp)
+				}
+			}).sort({
+				"timestamp": 1
+			}).toArray(function(err, statuses) {
+				for(var i=0;i<statuses.length;i++){
+					statuses[i].id = String(statuses[i]._id);
+				}
 				callback(statuses);
 			});
 		}
@@ -60,7 +78,8 @@ var NoiysDatabase = function(connection_string) {
 			findStatus: findStatus,
 			saveStatus: saveStatus,
 			removeOldStatuses: removeOldStatuses,
-			getStatuses: getStatuses
+			getStatuses: getStatuses,
+			findStatusesSince: findStatusesSince
 		}
 	}
 

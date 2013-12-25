@@ -67,7 +67,8 @@ var NoiysDatabase = function() {
 			getStatuses: getStatuses,
 			findStatusesSince: findStatusesSince,
 			saveStatus: saveStatus,
-			removeOldStatuses: removeOldStatuses
+			removeOldStatuses: removeOldStatuses,
+			findStatusesSince: findStatusesSince
 		}
 	}
 

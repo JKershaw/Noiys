@@ -1,8 +1,9 @@
 var express = require("express"),
 	app = express();
 
-var NoiysDatabase = require('./OldNoiysDatabase'),
-	noiysDatabase = new NoiysDatabase();
+var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
+	NoiysDatabase = require('./NoiysDatabase'),
+	noiysDatabase = new NoiysDatabase(connection_string);
 
 app.use(express.logger());
 
@@ -11,7 +12,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
 app.get('/', function(request, response) {
-	noiysDatabase.removeOldStatuses(function(){
+	noiysDatabase.removeOldStatuses(function() {
 		response.render('index.html');
 	});
 });
@@ -34,7 +35,7 @@ app.post('/status', function(request, response) {
 		votes: 0
 	};
 
-	noiysDatabase.saveStatus(status, function(saved){
+	noiysDatabase.saveStatus(status, function(saved) {
 
 		var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
 
@@ -51,10 +52,10 @@ app.post('/status', function(request, response) {
 app.post('/vote', function(request, response) {
 	console.log("POSTING a vote");
 
-	noiysDatabase.findStatus(request.body.id, function(status){
+	noiysDatabase.findStatus(request.body.id, function(status) {
 		if (status) {
 			status.votes = status.votes + 1;
-			noiysDatabase.saveStatus(status, function(){});
+			noiysDatabase.saveStatus(status, function() {});
 			response.send(200);
 		} else {
 			response.send(404);
@@ -66,7 +67,7 @@ app.get('/status/:ID', function(request, response) {
 
 	console.log("GETTING a status");
 
-	noiysDatabase.findStatus(request.params.ID, function(status){
+	noiysDatabase.findStatus(request.params.ID, function(status) {
 		parse_status_text(status.text, function(status_text) {
 			message = {
 				"text": status_text,
@@ -144,7 +145,7 @@ function add_response_to_status(status_id, response_id) {
 	console.log("Status:", status_id);
 	console.log("Response: ", response_id);
 
-	noiysDatabase.findStatus(status_id, function(status){
+	noiysDatabase.findStatus(status_id, function(status) {
 
 		if (!status.responses) {
 			status.responses = [];
@@ -152,7 +153,7 @@ function add_response_to_status(status_id, response_id) {
 
 		status.responses.push(response_id);
 
-		noiysDatabase.saveStatus(status, function(){
+		noiysDatabase.saveStatus(status, function() {
 			console.log("Saved responses");
 		});
 	});
@@ -229,7 +230,7 @@ function parse_status_text(status_text, callback) {
 
 function get_status_text(id, callback) {
 
-	noiysDatabase.findStatus(id, function(status){
+	noiysDatabase.findStatus(id, function(status) {
 		var quoted_status_text = "<i>Status not found</i>";
 
 		if (status) {

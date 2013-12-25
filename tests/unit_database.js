@@ -72,7 +72,7 @@ test("I can get all statuses back", function(done) {
 		votes: 0
 	};
 	noiysDatabase.saveStatus(status1, function(result) {
-		var status1ID = result.ID,
+		var status1ID = result.id,
 			status2 = {
 				text: "This is another status",
 				timestamp: Math.round(new Date().getTime() / 1000) - (3600 * 25),
@@ -80,9 +80,52 @@ test("I can get all statuses back", function(done) {
 			};
 
 		noiysDatabase.saveStatus(status2, function(result) {
-			var status2ID = result.ID;
+			var status2ID = result.id;
 
 			noiysDatabase.getStatuses(function(statuses) {
+
+				var foundStatus1 = false,
+					foundStatus2 = false;
+
+				for (var i = 0; i < statuses.length; i++) {
+
+					if (statuses[i].id == status1ID) {
+						foundStatus1 = true;
+					}
+					if (statuses[i].id == status2ID) {
+						foundStatus2 = true;
+					}
+
+				}
+
+				assert.equal(foundStatus1, true);
+				assert.equal(foundStatus2, true);
+
+				done();
+			});
+		});
+	});
+});
+
+test("I can get all statuses back after a specific timestamp", function(done) {
+	var status1 = {
+		text: "This is a status that is too old",
+		timestamp: Math.round(new Date().getTime() / 1000) - 7200,
+		votes: 0
+	};
+	noiysDatabase.saveStatus(status1, function(result) {
+		var status1ID = result.id,
+			status2 = {
+				text: "This is a new status",
+				timestamp: Math.round(new Date().getTime() / 1000),
+				votes: 0
+			};
+
+		noiysDatabase.saveStatus(status2, function(result) {
+			var status2ID = result.id,
+				cutoffTimestamp = Math.round(new Date().getTime() / 1000) - 3600;
+
+			noiysDatabase.findStatusesSince(cutoffTimestamp, function(statuses) {
 
 				var foundStatus1 = false,
 					foundStatus2 = false;
@@ -97,7 +140,7 @@ test("I can get all statuses back", function(done) {
 
 				}
 
-				assert.equal(foundStatus1, true);
+				assert.equal(foundStatus1, false);
 				assert.equal(foundStatus2, true);
 
 				done();
