@@ -1,31 +1,17 @@
 var express = require("express"),
-	_ = require("underscore")._;
-app = express();
+	_ = require("underscore")._,
+	app = express();
+
+app.use(express.logger());
+app.set('views', __dirname + '/views');
+app.engine('html', require('ejs').renderFile);
+app.use(express.bodyParser());
 
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
 	NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(connection_string);
 
-app.use(express.logger());
-
-app.set('views', __dirname + '/views');
-app.engine('html', require('ejs').renderFile);
-app.use(express.bodyParser());
-
-app.get('/', function(request, response) {
-	noiysDatabase.removeOldStatuses(function() {
-		response.render('index.html');
-	});
-});
-
-app.get('/timestamp', function(request, response) {
-	response.send(String(Math.round(new Date().getTime() / 1000)));
-});
-
-app.get('/timestamp/chronologicalstartpoint', function(request, response) {
-	var timestamp = Math.round(new Date().getTime() / 1000) - 7200;
-	response.send(String(timestamp));
-});
+require("./routes/home")(app);
 
 app.post('/status', function(request, response) {
 	console.log("POSTING a status");
@@ -50,20 +36,6 @@ app.post('/status', function(request, response) {
 	});
 });
 
-app.post('/vote', function(request, response) {
-	console.log("POSTING a vote");
-
-	noiysDatabase.findStatus(request.body.id, function(status) {
-		if (status) {
-			status.votes = status.votes + 1;
-			noiysDatabase.saveStatus(status, function() {});
-			response.send(200);
-		} else {
-			response.send(404);
-		}
-	});
-});
-
 app.get('/status/:ID', function(request, response) {
 
 	console.log("GETTING a status");
@@ -82,45 +54,6 @@ app.get('/status/:ID', function(request, response) {
 
 			response.contentType('json');
 			response.send(message);
-		});
-	});
-});
-
-app.get('/statuses', function(request, response) {
-
-	console.log("GETTING recent statuses");
-
-	noiysDatabase.findRecentStatuses(20, function(statuses) {
-
-		var messages = new Array();
-
-		var finished = _.after(statuses.length, function() {
-
-
-			messages.sort(function compare(a, b) {
-				if (a.timestamp < b.timestamp) return -1;
-				if (a.timestamp > b.timestamp) return 1;
-				return 0;
-			});
-
-			response.contentType('json');
-			response.send(messages);
-		});
-
-		_.each(statuses, function(status) {
-			parse_status_text(status.text, function(status_text) {
-				messages.push({
-					"text": status_text,
-					"id": status.id,
-					"votes": status.votes,
-					"responses": status.responses,
-					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-					"timestamp": status.timestamp,
-					"ISO8601timestamp": toISO8601(status.timestamp)
-				});
-
-				finished();
-			});
 		});
 	});
 });
@@ -172,6 +105,60 @@ app.get('/status', function(request, response) {
 		});
 	}
 });
+
+app.get('/statuses', function(request, response) {
+
+	console.log("GETTING recent statuses");
+
+	noiysDatabase.findRecentStatuses(20, function(statuses) {
+
+		var messages = new Array();
+
+		var finished = _.after(statuses.length, function() {
+
+
+			messages.sort(function compare(a, b) {
+				if (a.timestamp < b.timestamp) return -1;
+				if (a.timestamp > b.timestamp) return 1;
+				return 0;
+			});
+
+			response.contentType('json');
+			response.send(messages);
+		});
+
+		_.each(statuses, function(status) {
+			parse_status_text(status.text, function(status_text) {
+				messages.push({
+					"text": status_text,
+					"id": status.id,
+					"votes": status.votes,
+					"responses": status.responses,
+					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
+					"timestamp": status.timestamp,
+					"ISO8601timestamp": toISO8601(status.timestamp)
+				});
+
+				finished();
+			});
+		});
+	});
+});
+
+app.post('/vote', function(request, response) {
+	console.log("POSTING a vote");
+
+	noiysDatabase.findStatus(request.body.id, function(status) {
+		if (status) {
+			status.votes = status.votes + 1;
+			noiysDatabase.saveStatus(status, function() {});
+			response.send(200);
+		} else {
+			response.send(404);
+		}
+	});
+});
+
 
 function process_quotes(id, quotes) {
 	id = String(id).replace("@", "");
