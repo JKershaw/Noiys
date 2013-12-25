@@ -1,5 +1,5 @@
 var express = require("express"),
-	_ = require('underscore')._;
+	_ = require("underscore")._;
 app = express();
 
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
