@@ -1,50 +1,37 @@
-var NoiysDatabase = function() {
-		var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
-			collections = ["statuses"],
+var NoiysDatabase = function(connection_string) {
+
+		var collections = ["statuses"],
 			mongojs = require('mongojs'),
-			db = mongojs.connect(connection_string, collections),
-			ObjectId = mongojs.ObjectId;
+			db = mongojs.connect(connection_string, collections);
 
-		function findStatus(id, callback) {
 
-			var query = {
-				"_id": ObjectId(id)
-			};
+		function findStatus(statusID, callback) {
+			var ObjectId = mongojs.ObjectId,
+				query = {
+					"_id": ObjectId(String(statusID))
+				};
 
 			db.statuses.find(query).toArray(function(err, statuses) {
-				callback(statuses[0]);
-			});
-		}
-
-		function findStatuses(callback) {
-			db.statuses.find({}).sort({
-				"timestamp": -1
-			}).toArray(function(err, statuses) {
-				callback(statuses);
-			});
-
-		}
-
-		function findStatusesSince(timestamp, callback) {
-			db.statuses.find({
-				"timestamp": {
-					"$gt": parseInt(timestamp)
+				if (statuses[0]) {
+					status = statuses[0];
+					status.id = status._id;
+				} else {
+					status = false;
 				}
-			}).sort({
-				"timestamp": 1
-			}).toArray(function(err, statuses) {
-				callback(statuses);
+				callback(status);
 			});
-
 		}
 
 		function saveStatus(status, callback) {
+
 			db.statuses.save(status, function(err, saved) {
 				if (err || !saved) {
 					console.log("Not saved: " + err);
 				} else {
-					console.log("Saved", saved);
+					console.log("Saved status to database");
 				}
+
+				saved.id = saved._id;
 
 				callback(saved);
 			});
@@ -63,12 +50,17 @@ var NoiysDatabase = function() {
 			});
 		}
 
+		function getStatuses(callback) {
+			db.statuses.find({}).toArray(function(err, statuses) {
+				callback(statuses);
+			});
+		}
+
 		return {
 			findStatus: findStatus,
-			findStatuses: findStatuses,
-			findStatusesSince: findStatusesSince,
 			saveStatus: saveStatus,
-			removeOldStatuses: removeOldStatuses
+			removeOldStatuses: removeOldStatuses,
+			getStatuses: getStatuses
 		}
 	}
 

@@ -1,7 +1,7 @@
 var express = require("express"),
 	app = express();
 
-var NoiysDatabase = require('./NoiysDatabase'),
+var NoiysDatabase = require('./OldNoiysDatabase'),
 	noiysDatabase = new NoiysDatabase();
 
 app.use(express.logger());
@@ -21,16 +21,8 @@ app.get('/timestamp', function(request, response) {
 });
 
 app.get('/timestamp/chronologicalstartpoint', function(request, response) {
-
-	noiysDatabase.findStatuses(function(statuses) {
-		var timestamp = Math.round(new Date().getTime() / 1000);
-
-		if (statuses.length > 15) {
-			timestamp = statuses[15].timestamp;
-		}
-
-		response.send(String(timestamp));
-	});
+	var timestamp = Math.round(new Date().getTime() / 1000) - 7200;
+	response.send(String(timestamp));
 });
 
 app.post('/status', function(request, response) {
@@ -173,7 +165,7 @@ function toISO8601(timestamp) {
 
 function get_random_status(callback) {
 
-	noiysDatabase.findStatuses(function(statuses) {
+	noiysDatabase.getStatuses(function(statuses) {
 		var status = statuses[Math.floor(Math.random() * statuses.length)];
 
 		if (status.length > 5) {
