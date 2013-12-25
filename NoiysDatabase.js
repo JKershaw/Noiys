@@ -38,7 +38,7 @@ var NoiysDatabase = function(connection_string) {
 			});
 		}
 
-		function removeOldStatuses(callback){
+		function removeOldStatuses(callback) {
 			var time_24h_ago = (Math.round(new Date().getTime() / 1000) - (24 * 60 * 60)),
 				remove_query = {
 					timestamp: {
@@ -53,7 +53,7 @@ var NoiysDatabase = function(connection_string) {
 
 		function getStatuses(callback) {
 			db.statuses.find({}).toArray(function(err, statuses) {
-				for(var i=0;i<statuses.length;i++){
+				for (var i = 0; i < statuses.length; i++) {
 					statuses[i].id = String(statuses[i]._id);
 				}
 				callback(statuses);
@@ -68,7 +68,18 @@ var NoiysDatabase = function(connection_string) {
 			}).sort({
 				"timestamp": 1
 			}).toArray(function(err, statuses) {
-				for(var i=0;i<statuses.length;i++){
+				for (var i = 0; i < statuses.length; i++) {
+					statuses[i].id = String(statuses[i]._id);
+				}
+				callback(statuses);
+			});
+		}
+
+		function findRecentStatuses(num, callback) {
+			db.statuses.find({}).sort({
+				"timestamp": -1
+			}).limit(num).toArray(function(err, statuses) {
+				for (var i = 0; i < statuses.length; i++) {
 					statuses[i].id = String(statuses[i]._id);
 				}
 				callback(statuses);
@@ -80,7 +91,8 @@ var NoiysDatabase = function(connection_string) {
 			saveStatus: saveStatus,
 			removeOldStatuses: removeOldStatuses,
 			getStatuses: getStatuses,
-			findStatusesSince: findStatusesSince
+			findStatusesSince: findStatusesSince,
+			findRecentStatuses: findRecentStatuses
 		}
 	}
 

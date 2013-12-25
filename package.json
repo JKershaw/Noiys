@@ -12,7 +12,8 @@
     "chai": "*",
     "jshint": "*",
     "request" : "*",
-    "get": "*"
+    "get": "*",
+    "underscore":"*"
   },
   "engines": {
     "node": "0.10.x",

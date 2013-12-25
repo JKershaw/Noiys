@@ -1,7 +1,9 @@
 var express = require("express"),
-	app = express();
+	_ = require('underscore')._;
+app = express();
 
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
+	//connection_string = "mongodb://localhost",
 	NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(connection_string);
 
@@ -81,6 +83,37 @@ app.get('/status/:ID', function(request, response) {
 
 			response.contentType('json');
 			response.send(message);
+		});
+	});
+});
+
+app.get('/statuses', function(request, response) {
+
+	console.log("GETTING recent statuses");
+
+	noiysDatabase.findRecentStatuses(5, function(statuses) {
+
+		var messages = new Array();
+
+		var finished = _.after(statuses.length, function() {
+			response.contentType('json');
+			response.send(messages);
+		});
+
+		_.each(statuses, function(status) {
+			parse_status_text(status.text, function(status_text) {
+				messages.push({
+					"text": status_text,
+					"id": status.id,
+					"votes": status.votes,
+					"responses": status.responses,
+					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
+					"timestamp": status.timestamp,
+					"ISO8601timestamp": toISO8601(status.timestamp)
+				});
+
+				finished();
+			});
 		});
 	});
 });
@@ -202,28 +235,33 @@ function HTMLEncode(str) {
 }
 
 function parse_status_text(status_text, callback) {
+	var startTimestamp = new Date().getTime();
+	
+	var quotes = status_text.match(/@[a-f0-9]{24,24}/g);
 
-	var replies = status_text.match(/@[a-f0-9]{24,24}/g);
+	if (quotes !== null) {
 
-	if (replies !== null) {
+		_.each(quotes, function(quote){
+			
+			quoted_status_id = String(quote).replace("@", "");
+			
+			get_status_text(quoted_status_id, function(found_quoted_status_text, original_id) {
+				
+				var reg_ex = "@" + original_id;
+				var embedded_quote = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + found_quoted_status_text + "</div></div>";
 
-		if (replies.length > 1) {
-			replies = replies[0];
-		}
+				status_text = status_text.replace(reg_ex, embedded_quote);
 
-		quoted_status_id = String(replies).replace("@", "");
-
-		get_status_text(quoted_status_id, function(quoted_status_text) {
-			var reg_ex = "@" + quoted_status_id;
-			var original_post = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + quoted_status_text + "</div></div>";
-
-			status_text = status_text.replace(reg_ex, original_post);
-
-			parse_status_text(status_text, function(status_text) {
-				callback(status_text);
+				parse_status_text(status_text, function(status_text) {
+				 	callback(status_text);
+				});
 			});
+
 		});
+
+		
 	} else {
+		console.log("parsed in ", new Date().getTime() - startTimestamp, "ms");
 		callback(status_text);
 	}
 }
@@ -237,7 +275,7 @@ function get_status_text(id, callback) {
 			var quoted_status_text = status.text;
 		}
 
-		callback(quoted_status_text);
+		callback(quoted_status_text, id);
 	});
 
 }

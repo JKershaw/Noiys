@@ -1,8 +1,10 @@
 var assert = require('assert'),
 	NoiysDatabase = require('../NoiysDatabase'),
 	connection_string = "mongodb://noiys:41b66c5e0f20416fe935ebf30e9d6c04@linus.mongohq.com:10015/noiys-test",
+	connection_string = "mongodb://localhost",
 	noiysDatabase = new NoiysDatabase(connection_string);
 
+console.log("testing Mongo");
 test("When I save status, I get the saved status back including ID", function(done) {
 	var status = {
 		text: "same status",
@@ -153,6 +155,63 @@ test("I can get all statuses back after a specific timestamp", function(done) {
 				assert.equal(foundStatus2, true);
 
 				done();
+			});
+		});
+	});
+});
+
+test("I can get the most recent statuses back", function(done) {
+
+	var status1 = {
+		text: "This is a status that is too old",
+		timestamp: Math.round(new Date().getTime() / 1000) - 7200,
+		votes: 0
+	},
+		status2 = {
+			text: "This is a new status to test most recent statuses back",
+			timestamp: Math.round(new Date().getTime() / 1000) - 1,
+			votes: 0
+		},
+		latestTimestamp = Math.round(new Date().getTime() / 1000),
+		status3 = {
+			text: "This is a newer status to test most recent statuses back",
+			timestamp: latestTimestamp,
+			votes: 0
+		},
+		expectedNumberOfResponses = 2;
+
+	noiysDatabase.saveStatus(status1, function(result) {
+		var status1ID = result.id;
+		noiysDatabase.saveStatus(status2, function(result) {
+			var status2ID = result.id;
+			noiysDatabase.saveStatus(status3, function(result) {
+				var status3ID = result.id;
+
+				noiysDatabase.findRecentStatuses(expectedNumberOfResponses, function(statuses) {
+
+					var foundStatus1 = false,
+						foundStatus2 = false,
+						foundStatus3 = false;
+
+					assert.equal(statuses.length, expectedNumberOfResponses);
+					
+					for (var i = 0; i < statuses.length; i++) {
+						if (statuses[i].id == status1ID) {
+							foundStatus1 = true;
+						}
+						if (statuses[i].id == status2ID) {
+							foundStatus2 = true;
+						}
+						if (statuses[i].id == status3ID) {
+							foundStatus3 = true;
+						}
+					}
+
+					assert.equal(foundStatus3, false);
+					assert.equal(statuses[0].timestamp >= latestTimestamp, true);
+					done();
+
+				});
 			});
 		});
 	});

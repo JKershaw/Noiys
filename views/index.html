@@ -268,21 +268,8 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 					<button type="button" class="btn btn-primary btn-lg" id="post_status">
 						Post Status
 					</button>
-					<button type="button" class="btn btn-default btn-xs" id="pause_feed">
-						Pause Feed
-					</button>
 				</div>
 				<div class="col-md-6">
-					<div class="btn-group" data-toggle="buttons" style="float:right">
-						<label class="btn btn-default btn-xs active">
-							<input type="radio" name="feed_type" id="feed_random" value="feed_random">
-							Random
-						</label>
-						<label class="btn btn-default btn-xs">
-							<input type="radio" name="feed_type" id="feed_chronological" value="feed_chronological" >
-							Chronological
-						</label>
-					</div>
 					
 				</div>
 			</div>
@@ -292,7 +279,20 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 			<div class="alert alert-warning" style="display:none;" id="main_error">Ah crap, the server returned an error. This is probably because it's been overloaded. It'll be back soon.</div>
 
 			
-			<div id="statuses">
+			<ul class="nav nav-tabs">
+				<li class="active" id="tab-random"><a onclick="change_feed_type('feed_random')" href="#">Random</a></li>
+				<li id="tab-chronological"><a onclick="change_feed_type('feed_chronological')"href="#">Chronological</a></li>
+			</ul>
+			<br />
+			<p>
+					<button type="button" class="btn btn-default btn-xs" id="pause_feed">
+						Pause Feed
+					</button></p>
+
+			<div id="random_statuses">
+			</div>
+
+			<div id="chronological_statuses">
 			</div>
 
 		</div>
@@ -310,7 +310,7 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 
 							if (paused === false) {
 								$.get("status", function(status) {
-									publish_status(status, "#statuses");
+									publish_status(status, "#random_statuses");
 									$("#main_error").hide();
 								});
 							}
@@ -345,7 +345,7 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 										} 
 									}).done(function(status) {
 										most_recent_status_timestamp = status.timestamp;
-										publish_status(status, "#statuses");
+										publish_status(status, "#chronological_statuses");
 										refresh_time = 3000;
 									}).fail(function() {
 										console.debug("No new statuses found");
@@ -358,6 +358,11 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
 							}
 
+						}
+
+						function intitialise_chronological()
+						{
+							// load the most recent 20 statuses and set most_recent_status_timestamp accordingly.
 						}
 
 						$("#post_status").click(function() {
@@ -399,18 +404,31 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 						});
 
 						$("input:radio[name=feed_type]").change(function () {
-							var val = $('input:radio[name=feed_type]:checked').val();
+							change_feed_type($('input:radio[name=feed_type]:checked').val());
+						});
 
-							if (val == "feed_random") {
+						function change_feed_type(feed_type)
+						{
+							if (feed_type == "feed_random") {
+								$('#tab-random').addClass("active");
+								$('#tab-chronological').removeClass("active");
+								$('#random_statuses').show();
+								$('#chronological_statuses').hide();
+								
 								feed_type = "random";
 								clearTimeout(chronological_status_timeout);
 								random_status_timeout = setTimeout(get_and_show_random_status, 1000);
-							} else if (val == "feed_chronological") {
+							} else if (feed_type == "feed_chronological") {
+								$('#tab-random').removeClass("active");
+								$('#tab-chronological').addClass("active");
+								$('#random_statuses').hide();
+								$('#chronological_statuses').show();
 								feed_type = "chronological";
 								clearTimeout(random_status_timeout);
 								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 1000);
 							}
-						});
+
+						}
 
 						function publish_status(status, wrapper)
 						{
