@@ -3,7 +3,6 @@ var express = require("express"),
 app = express();
 
 var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
-	//connection_string = "mongodb://localhost",
 	NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(connection_string);
 
@@ -91,11 +90,19 @@ app.get('/statuses', function(request, response) {
 
 	console.log("GETTING recent statuses");
 
-	noiysDatabase.findRecentStatuses(5, function(statuses) {
+	noiysDatabase.findRecentStatuses(20, function(statuses) {
 
 		var messages = new Array();
 
 		var finished = _.after(statuses.length, function() {
+
+
+			messages.sort(function compare(a, b) {
+				if (a.timestamp < b.timestamp) return -1;
+				if (a.timestamp > b.timestamp) return 1;
+				return 0;
+			});
+
 			response.contentType('json');
 			response.send(messages);
 		});
@@ -236,30 +243,30 @@ function HTMLEncode(str) {
 
 function parse_status_text(status_text, callback) {
 	var startTimestamp = new Date().getTime();
-	
+
 	var quotes = status_text.match(/@[a-f0-9]{24,24}/g);
 
 	if (quotes !== null) {
 
-		_.each(quotes, function(quote){
-			
+		_.each(quotes, function(quote) {
+
 			quoted_status_id = String(quote).replace("@", "");
-			
+
 			get_status_text(quoted_status_id, function(found_quoted_status_text, original_id) {
-				
+
 				var reg_ex = "@" + original_id;
 				var embedded_quote = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + found_quoted_status_text + "</div></div>";
 
 				status_text = status_text.replace(reg_ex, embedded_quote);
 
 				parse_status_text(status_text, function(status_text) {
-				 	callback(status_text);
+					callback(status_text);
 				});
 			});
 
 		});
 
-		
+
 	} else {
 		console.log("parsed in ", new Date().getTime() - startTimestamp, "ms");
 		callback(status_text);
