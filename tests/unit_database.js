@@ -10,11 +10,13 @@ test("When I save status, I get the saved status back including ID", function(do
 		votes: 0
 	};
 
+	var startTimestamp = new Date().getTime();
 	noiysDatabase.saveStatus(status, function(result) {
+		console.log("Time to save a status: \t", (new Date().getTime() - startTimestamp) / 1000);
 		assert.equal(result.text, status.text);
 		assert.equal(result.timestamp, status.timestamp);
 		assert.equal(result.votes, status.votes);
-		assert(result._id);
+		assert(result.id);
 		done();
 	});
 });
@@ -27,8 +29,13 @@ test("I can save, then retreive a status", function(done) {
 		votes: 0
 	};
 
+	var startTimestamp = new Date().getTime();
 	noiysDatabase.saveStatus(status, function(result) {
+		console.log("Time to save a status: \t", (new Date().getTime() - startTimestamp) / 1000);
+
+		startTimestamp = new Date().getTime();
 		noiysDatabase.findStatus(result.id, function(foundStatus) {
+			console.log("Time to find a status: \t", (new Date().getTime() - startTimestamp) / 1000);
 			assert.equal(foundStatus.text, status.text);
 			assert.equal(foundStatus.timestamp, status.timestamp);
 			assert.equal(foundStatus.votes, status.votes);
@@ -39,7 +46,9 @@ test("I can save, then retreive a status", function(done) {
 });
 
 test("If I try to get a status which does not exist, false is returned", function(done) {
+	startTimestamp = new Date().getTime();
 	noiysDatabase.findStatus("000000000000", function(foundStatus) {
+		console.log("Time to find a status: \t", (new Date().getTime() - startTimestamp) / 1000);
 		assert.equal(foundStatus, false);
 		done();
 	});

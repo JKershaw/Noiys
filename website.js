@@ -41,7 +41,7 @@ app.post('/status', function(request, response) {
 
 		if (quotes) {
 			console.log("there are quotes!");
-			process_quotes(saved._id, quotes);
+			process_quotes(saved.id, quotes);
 		}
 
 		response.send(200);
@@ -71,7 +71,7 @@ app.get('/status/:ID', function(request, response) {
 		parse_status_text(status.text, function(status_text) {
 			message = {
 				"text": status_text,
-				"id": status._id,
+				"id": status.id,
 				"votes": status.votes,
 				"responses": status.responses,
 				"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
@@ -95,7 +95,7 @@ app.get('/status', function(request, response) {
 				parse_status_text(status.text, function(status_text) {
 					message = {
 						"text": status_text,
-						"id": status._id,
+						"id": status.id,
 						"votes": status.votes,
 						"responses": status.responses,
 						"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
@@ -118,7 +118,7 @@ app.get('/status', function(request, response) {
 			parse_status_text(status.text, function(status_text) {
 				message = {
 					"text": status_text,
-					"id": status._id,
+					"id": status.id,
 					"votes": status.votes,
 					"responses": status.responses,
 					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,

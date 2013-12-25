@@ -6,6 +6,7 @@ var NoiysDatabase = function(connection_string) {
 
 
 		function findStatus(statusID, callback) {
+
 			var ObjectId = mongojs.ObjectId,
 				query = {
 					"_id": ObjectId(String(statusID))
