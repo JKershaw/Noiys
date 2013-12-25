@@ -326,7 +326,8 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 						function get_and_show_chronological_status() {
 							console.debug("get_and_show_chronological_status called");
 							
-							if ((paused === false) && (most_recent_status_timestamp > 0)) {
+							if ((paused === false) && (most_recent_status_timestamp > 0) &&
+								(feed_type == 'chronological')) {
 
 								$.ajax({
 									url: "status?since=" + most_recent_status_timestamp,
@@ -428,9 +429,9 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 							change_feed_type($('input:radio[name=feed_type]:checked').val());
 						});
 
-						function change_feed_type(feed_type)
+						function change_feed_type(selected_feed_type)
 						{
-							if (feed_type == "feed_random") {
+							if (selected_feed_type == "feed_random") {
 								$('#tab-random').addClass("active");
 								$('#tab-chronological').removeClass("active");
 								$('#random_statuses').show();
@@ -439,7 +440,7 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 								feed_type = "random";
 								clearTimeout(chronological_status_timeout);
 								random_status_timeout = setTimeout(get_and_show_random_status, 1000);
-							} else if (feed_type == "feed_chronological") {
+							} else if (selected_feed_type == "feed_chronological") {
 								$('#tab-random').removeClass("active");
 								$('#tab-chronological').addClass("active");
 								$('#random_statuses').hide();
