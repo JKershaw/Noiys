@@ -324,62 +324,66 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 						}
 
 						function get_and_show_chronological_status() {
-							var refresh_time = 3000;
+							console.debug("get_and_show_chronological_status called");
+							
+							if ((paused === false) && (most_recent_status_timestamp > 0)) {
 
-							if (paused === false) {
-								if (!most_recent_status_timestamp)
-								{
-									intitialise_chronological();
-								} else {
-									$.ajax({
-										url: "status?since=" + most_recent_status_timestamp,
-										type: 'GET',
-										contentType: 'application/json',
-										complete: function(xhr, textStatus) {
-											if(xhr.status == 503){
-												$("#main_error").show();
-												_rollbar.push("503 error: " + "status?since=" + most_recent_status_timestamp);
-											} else {
-												$("#main_error").hide();
-											}
-										} 
-									}).done(function(status) {
-										most_recent_status_timestamp = status.timestamp;
-										publish_status(status, "#chronological_statuses");
-										refresh_time = 3000;
-									}).fail(function() {
-										console.debug("No new statuses found");
-										refresh_time = 10000;
-									}).always(function() {
-										chronological_status_timeout = setTimeout(get_and_show_chronological_status, refresh_time);
-									});
-								}
+								$.ajax({
+									url: "status?since=" + most_recent_status_timestamp,
+									type: 'GET',
+									contentType: 'application/json',
+									complete: function(xhr, textStatus) {
+										if(xhr.status == 503){
+											$("#main_error").show();
+											_rollbar.push("503 error: " + "status?since=" + most_recent_status_timestamp);
+										} else {
+											$("#main_error").hide();
+										}
+									} 
+								}).done(function(status) {
+									most_recent_status_timestamp = status.timestamp;
+									console.debug("Finished!");
+									publish_status(status, "#chronological_statuses");
+
+									chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
+								}).fail(function() {
+									console.debug("No new statuses found");
+									chronological_status_timeout = setTimeout(get_and_show_chronological_status, 10000);
+								}).always(function() {
+									
+									console.log("Always");
+								});
+								
 							} else {
-								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
+								chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
 							}
-
 						}
+
+						var init_chronological = false
 
 						function intitialise_chronological()
 						{
-							$('#main_info').show().html("Just loading the latest statuses now.");
-							$.get("statuses", function(statuses) {
-								for (var i=0;i<statuses.length;i++){
+							if (!init_chronological)
+							{
+								init_chronological = true;
+								console.debug("intitialise_chronological");
+								$('#main_info').show().html("Just loading the latest statuses now.");
+								$.get("statuses", function(statuses) {
+									for (var i=0;i<statuses.length;i++){
 
-									if (statuses[i].timestamp > most_recent_status_timestamp) {
-										most_recent_status_timestamp = statuses[i].timestamp;
+										if (statuses[i].timestamp > most_recent_status_timestamp) {
+											most_recent_status_timestamp = statuses[i].timestamp;
+										}
+
+										publish_status(statuses[i], "#chronological_statuses");
 									}
 
 									$('#main_info').hide();
-
-									publish_status(statuses[i], "#chronological_statuses");
 									$("#main_error").hide();
 									
-									chronological_status_timeout = setTimeout(get_and_show_chronological_status, 3000);
-								
-
-								}
-							});
+									get_and_show_chronological_status();
+								});
+							}
 						}
 
 						$("#post_status").click(function() {
@@ -441,6 +445,7 @@ f.parentNode.insertBefore(s,f);};if(w.addEventListener){w.addEventListener("load
 								$('#random_statuses').hide();
 								$('#chronological_statuses').show();
 								feed_type = "chronological";
+								intitialise_chronological();
 								clearTimeout(random_status_timeout);
 								get_and_show_chronological_status();
 							}
