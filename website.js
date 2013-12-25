@@ -245,4 +245,5 @@ function get_status_text(id, callback) {
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
 	console.log("Listening on " + port);
+	console.log("Environment: ", app.settings.env);
 });
