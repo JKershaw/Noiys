@@ -26,7 +26,7 @@ module.exports = function(app) {
 				process_quotes(saved.id, quotes);
 			}
 
-			response.send(200);
+			response.send(String(saved.id));
 
 		});
 	});
