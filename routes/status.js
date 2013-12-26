@@ -1,6 +1,5 @@
-var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
-	NoiysDatabase = require('../NoiysDatabase'),
-	noiysDatabase = new NoiysDatabase(connection_string),
+var NoiysDatabase = require('../NoiysDatabase'),
+	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	_ = require("underscore")._,
 	statusParser = require('../lib/StatusParser'),
 	StatusMessageFactory = require('../lib/StatusMessageFactory');
