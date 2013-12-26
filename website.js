@@ -1,117 +1,24 @@
 var express = require("express"),
 	_ = require("underscore")._,
-	app = express();
+	app = express(),
+	statusParser = require('./lib/StatusParser');
 
 app.use(express.logger());
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
-var connection_string = "mongodb://localhost";
-
-if (process.env.environment == "live")
-{
-	connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
-}
+var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
 var NoiysDatabase = require('./NoiysDatabase'),
-	noiysDatabase = new NoiysDatabase(connection_string);
+	noiysDatabase = new NoiysDatabase(connection_string),
+	StatusMessageFactory = require('./lib/StatusMessageFactory');
 
 require("./routes/home")(app);
-
-app.post('/status', function(request, response) {
-	console.log("POSTING a status");
-
-	var status = {
-		text: HTMLEncode(request.body.text),
-		timestamp: Math.round(new Date().getTime() / 1000),
-		votes: 0
-	};
-
-	noiysDatabase.saveStatus(status, function(saved) {
-
-		var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
-
-		if (quotes) {
-			console.log("there are quotes!");
-			process_quotes(saved.id, quotes);
-		}
-
-		response.send(200);
-
-	});
-});
-
-app.get('/status/:ID', function(request, response) {
-
-	console.log("GETTING a status");
-
-	noiysDatabase.findStatus(request.params.ID, function(status) {
-		parse_status_text(status.text, function(status_text) {
-			message = {
-				"text": status_text,
-				"id": status.id,
-				"votes": status.votes,
-				"responses": status.responses,
-				"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-				"timestamp": status.timestamp,
-				"ISO8601timestamp": toISO8601(status.timestamp)
-			};
-
-			response.contentType('json');
-			response.send(message);
-		});
-	});
-});
-
-app.get('/status', function(request, response) {
-
-	if (request.query['since'] && (request.query['since'] !== "undefined")) {
-		console.log("Getting a SINCE status");
-		get_since_status(request.query['since'], function(status) {
-
-			if (status) {
-				parse_status_text(status.text, function(status_text) {
-					message = {
-						"text": status_text,
-						"id": status.id,
-						"votes": status.votes,
-						"responses": status.responses,
-						"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-						"timestamp": status.timestamp,
-						"ISO8601timestamp": toISO8601(status.timestamp)
-					};
-
-					response.contentType('json');
-					response.send(message);
-				});
-			} else {
-				response.send(404);
-
-			}
-		});
-	} else {
-		console.log("Getting a RANDOM status");
-		get_random_status(function(status) {
-
-			parse_status_text(status.text, function(status_text) {
-				message = {
-					"text": status_text,
-					"id": status.id,
-					"votes": status.votes,
-					"responses": status.responses,
-					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-					"timestamp": status.timestamp,
-					"ISO8601timestamp": toISO8601(status.timestamp)
-				};
-
-				response.contentType('json');
-				response.send(message);
-			});
-		});
-	}
-});
+require("./routes/status")(app);
 
 app.get('/statuses', function(request, response) {
+
+	var statusMessageFactory = new StatusMessageFactory();
 
 	console.log("GETTING recent statuses");
 
@@ -120,7 +27,6 @@ app.get('/statuses', function(request, response) {
 		var messages = new Array();
 
 		var finished = _.after(statuses.length, function() {
-
 
 			messages.sort(function compare(a, b) {
 				if (a.timestamp < b.timestamp) return -1;
@@ -133,17 +39,8 @@ app.get('/statuses', function(request, response) {
 		});
 
 		_.each(statuses, function(status) {
-			parse_status_text(status.text, function(status_text) {
-				messages.push({
-					"text": status_text,
-					"id": status.id,
-					"votes": status.votes,
-					"responses": status.responses,
-					"age": Math.round(new Date().getTime() / 1000) - status.timestamp,
-					"timestamp": status.timestamp,
-					"ISO8601timestamp": toISO8601(status.timestamp)
-				});
-
+			statusMessageFactory.create(status, function(message){
+				messages.push(message);
 				finished();
 			});
 		});
@@ -163,121 +60,6 @@ app.post('/vote', function(request, response) {
 		}
 	});
 });
-
-
-function process_quotes(id, quotes) {
-	id = String(id).replace("@", "");
-	for (var i = 0; i < quotes.length; i++) {
-		quotes[i] = quotes[i].replace("@", "");
-		add_response_to_status(quotes[i], id);
-	}
-}
-
-function add_response_to_status(status_id, response_id) {
-	console.log("Status:", status_id);
-	console.log("Response: ", response_id);
-
-	noiysDatabase.findStatus(status_id, function(status) {
-
-		if (!status.responses) {
-			status.responses = [];
-		}
-
-		status.responses.push(response_id);
-
-		noiysDatabase.saveStatus(status, function() {
-			console.log("Saved responses");
-		});
-	});
-}
-
-function toISO8601(timestamp) {
-	var date = new Date(timestamp * 1000);
-	return date.toISOString();
-}
-
-function get_random_status(callback) {
-
-	noiysDatabase.getStatuses(function(statuses) {
-		var status = statuses[Math.floor(Math.random() * statuses.length)];
-
-		if (status.length > 5) {
-			callback(status);
-		} else {
-			callback(statuses[Math.floor(Math.random() * statuses.length)]);
-		}
-
-	});
-}
-
-
-function get_since_status(since, callback) {
-	noiysDatabase.findStatusesSince(since, function(statuses) {
-		var status = statuses[0];
-		callback(status);
-	});
-}
-
-function HTMLEncode(str) {
-	var i = str.length,
-		aRet = [];
-
-	while (i--) {
-		var iC = str[i].charCodeAt();
-		if ((iC < 65 || iC > 127 || (iC > 90 && iC < 97)) && ((iC < 47 && iC > 58))) {
-			aRet[i] = '&#' + iC + ';';
-		} else {
-			aRet[i] = str[i];
-		}
-	}
-	return aRet.join('');
-}
-
-function parse_status_text(status_text, callback) {
-	var startTimestamp = new Date().getTime();
-
-	var quotes = status_text.match(/@[a-f0-9]{24,24}/g);
-
-	if (quotes !== null) {
-
-		_.each(quotes, function(quote) {
-
-			quoted_status_id = String(quote).replace("@", "");
-
-			get_status_text(quoted_status_id, function(found_quoted_status_text, original_id) {
-
-				var reg_ex = "@" + original_id;
-				var embedded_quote = "<div class=\"panel panel-default\"><div class=\"panel-body\">" + found_quoted_status_text + "</div></div>";
-
-				status_text = status_text.replace(reg_ex, embedded_quote);
-
-				parse_status_text(status_text, function(status_text) {
-					callback(status_text);
-				});
-			});
-
-		});
-
-
-	} else {
-		console.log("parsed in ", new Date().getTime() - startTimestamp, "ms");
-		callback(status_text);
-	}
-}
-
-function get_status_text(id, callback) {
-
-	noiysDatabase.findStatus(id, function(status) {
-		var quoted_status_text = "<i>Status not found</i>";
-
-		if (status) {
-			var quoted_status_text = status.text;
-		}
-
-		callback(quoted_status_text, id);
-	});
-
-}
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
