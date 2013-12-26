@@ -8,9 +8,9 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
-var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
+//var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
 var NoiysDatabase = require('./NoiysDatabase'),
-	noiysDatabase = new NoiysDatabase(connection_string),
+	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	StatusMessageFactory = require('./lib/StatusMessageFactory');
 
 require("./routes/home")(app);
@@ -65,4 +65,5 @@ var port = process.env.PORT || 5000;
 app.listen(port, function() {
 	console.log("Listening on " + port);
 	console.log("Environment: ", process.env.environment);
+	console.log("Mongo: ", process.env.MONGO_CONNECTION_STRING);
 });
