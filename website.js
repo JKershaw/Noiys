@@ -7,8 +7,13 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
-var connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys",
-	NoiysDatabase = require('./NoiysDatabase'),
+var connection_string = "mongodb://localhost";
+
+if (process.env.environment == "live")
+{
+	connection_string = "mongodb://noiys:e4bfe4e70b7c76b0299eac37639555fd@paulo.mongohq.com:10035/noiys";
+}
+var NoiysDatabase = require('./NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(connection_string);
 
 require("./routes/home")(app);
