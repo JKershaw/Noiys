@@ -14,51 +14,8 @@ var NoiysDatabase = require('./NoiysDatabase'),
 
 require("./routes/home")(app);
 require("./routes/status")(app);
-
-app.get('/statuses', function(request, response) {
-
-	var statusMessageFactory = new StatusMessageFactory();
-
-	console.log("GETTING recent statuses");
-
-	noiysDatabase.findRecentStatuses(20, function(statuses) {
-
-		var messages = new Array();
-
-		var finished = _.after(statuses.length, function() {
-
-			messages.sort(function compare(a, b) {
-				if (a.timestamp < b.timestamp) return -1;
-				if (a.timestamp > b.timestamp) return 1;
-				return 0;
-			});
-
-			response.contentType('json');
-			response.send(messages);
-		});
-
-		_.each(statuses, function(status) {
-			statusMessageFactory.create(status, function(message){
-				messages.push(message);
-				finished();
-			});
-		});
-	});
-});
-
-app.post('/vote', function(request, response) {
-	console.log("POSTING a vote");
-
-	noiysDatabase.findStatus(request.body.id, function(status) {
-		if (status) {
-			status.votes = status.votes + 1;
-			noiysDatabase.saveStatus(status, function() {});
-			response.send(200);
-		} else {
-			response.send(404);
-		}
-	});
-});
+require("./routes/statuses")(app);
+require("./routes/vote")(app);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
