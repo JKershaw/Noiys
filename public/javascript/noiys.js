@@ -159,7 +159,6 @@ function publish_status(status, wrapper) {
 	// delete existing posts with this ID
 	$(wrapper + " #" + status.id).remove();
 
-
 	// show new one
 	$(wrapper).prepend(generate_status_html(status, wrapper));
 
@@ -196,7 +195,7 @@ function generate_status_html(status, wrapper) {
 
 	var trash_string = "";
 
-	if (wrapper == "#me_statuses"){
+	if (wrapper == "#me_statuses") {
 		trash_string = "<a style=\"cursor:pointer; float:right;\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
 	}
 
@@ -210,7 +209,7 @@ function generate_status_html(status, wrapper) {
 	var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
 
 
-	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
+	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
 }
 
 function vote(id) {
@@ -318,8 +317,14 @@ function refresh_my_statuses() {
 			}
 		}).done(function(status) {
 			console.log("Status found");
+
 			publish_status(status, "#me_statuses");
 			$("#main_error").hide();
+
+			// sort the page
+			$('#me_statuses>div').sort(function(a, b) {
+				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+			}).appendTo("#me_statuses");
 		});
 	}
 }
