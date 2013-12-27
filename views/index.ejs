@@ -47,6 +47,10 @@
 				<li id="tab-me">
 					<a onclick="change_feed_type('me')" style="cursor:pointer">Me</a>
 				</li>
+				<li id="tab-stars">
+					<a onclick="change_feed_type('stars')" style="cursor:pointer"><span class="glyphicon glyphicon-star"></span>
+</a>
+				</li>
 			</ul>
 			<br />
 			<p>
@@ -54,7 +58,7 @@
 					Pause Feed
 				</button>
 			</p>
-			
+
 			<div class="alert alert-warning" style="display:none;" id="main_error">
 				Ah crap, the server returned an error. This is probably because it's been overloaded.
 				It'll be back soon.
@@ -65,9 +69,11 @@
 
 			<div class="statuses_wrap" id="random_statuses">
 			</div>
-			<div class="statuses_wrap" id="chronological_statuses">
+			<div class="statuses_wrap" id="chronological_statuses" style="display:none;">
 			</div>
-			<div class="statuses_wrap" id="me_statuses">
+			<div class="statuses_wrap" id="me_statuses" style="display:none;">
+			</div>
+			<div class="statuses_wrap" id="stars_statuses" style="display:none;">
 			</div>
 		</div>
 

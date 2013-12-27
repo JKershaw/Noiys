@@ -4,9 +4,11 @@ var random_status_timeout, chronological_status_timeout;
 var most_recent_status_timestamp = 0;
 var init_chronological = false;
 var my_statuses = Array();
+var my_stars = Array();
 
 $(document).ready(function() {
 	random_status_timeout = setTimeout(get_and_show_random_status, 10);
+	inititalise_my_stars();
 	inititalise_my_statuses();
 });
 
@@ -93,7 +95,7 @@ $("#post_status").click(function() {
 		data: JSON.stringify({
 			text: $('#statusText').val()
 		}),
-		success: function(savedStatusID){
+		success: function(savedStatusID) {
 			save_my_status(savedStatusID);
 		},
 		complete: function(xhr, textStatus) {
@@ -146,13 +148,28 @@ function change_feed_type(selected_feed_type) {
 	} else if (feed_type == "me") {
 		$('#tab-me').addClass("active");
 		$('#me_statuses').show();
-		get_and_show_chronological_status();
+
+	} else if (feed_type == "stars") {
+		$('#tab-stars').addClass("active");
+		$('#stars_statuses').show();
 	}
 }
 
 function publish_status(status, wrapper) {
 	// delete existing posts with this ID
 	$(wrapper + " #" + status.id).remove();
+
+
+	// show new one
+	$(wrapper).prepend(generate_status_html(status));
+
+	$(wrapper + " div").first().hide().fadeIn();
+
+	$("span.timeago").timeago();
+
+}
+
+function generate_status_html(status) {
 
 	//are there any responses?
 	var response_string = "";
@@ -169,13 +186,28 @@ function publish_status(status, wrapper) {
 
 	}
 
-	// show new one
-	$(wrapper).prepend("<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\"><p>" + status.text + " </p><div class=\"row\"><div class=\"col-md-4\"><small><span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>&nbsp;&nbsp;&nbsp;<a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" >VERB</a>&nbsp;&nbsp;&nbsp;<a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\"><span class=\"glyphicon glyphicon-retweet\"></a>&nbsp;&nbsp;&nbsp;<a style=\"cursor:pointer\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-trash\"></span></a></small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\"><small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small></div></div><div class=\"responses\"></div></div>");
+	var text_string = "<p>" + status.text + " </p>";
 
-	$(wrapper + " div").first().hide().fadeIn();
+	var votes_string = "<span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>";
 
-	$("span.timeago").timeago();
+	var verb_string = "<a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" >VERB</a>";
 
+	var reply_string = "<a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\"><span class=\"glyphicon glyphicon-retweet\"></a>";
+
+	var trash_string = "<!--<a style=\"cursor:pointer\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-trash\"></span></a>-->";
+
+
+	if (is_starred(status.id)) {
+		var star_string = "<a style=\"cursor:pointer\" onclick=\"star('" + status.id + "');\"><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star\"></a>";
+	} else {
+		var star_string = "<a style=\"cursor:pointer\" onclick=\"star('" + status.id + "');\"><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star-empty\"></a>";
+	}
+
+
+	var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
+
+
+	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\">" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + trash_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
 }
 
 function vote(id) {
@@ -208,7 +240,6 @@ function set_posted_button() {
 
 function show_replies(status_id, replies_ids) {
 	for (var i = 0; i < replies_ids.length; i++) {
-		// get the status from the ID, append it to the status
 		$.get("status/" + replies_ids[i], function(status) {
 			publish_status(status, "#" + status_id + " .responses");
 		});
@@ -222,22 +253,22 @@ function save_my_status(statusID) {
 	refresh_my_statuses();
 }
 
-function perma_save_my_statuses(){
+function perma_save_my_statuses() {
 	console.debug("perma save");
 	localStorage.my_statuses = JSON.stringify(my_statuses);
 	console.debug(my_statuses);
 }
 
-function perma_load_my_statuses(){
+function perma_load_my_statuses() {
 	console.debug("perma load");
 	my_statuses = JSON.parse(localStorage.my_statuses);
 	console.debug(my_statuses);
 }
 
-function remove_my_status(statusID){
+function remove_my_status(statusID) {
 	console.debug("removeing status", statusID);
 
-	$("#" + statusID).fadeOut("fast", function(){
+	$("#" + statusID).fadeOut("fast", function() {
 		$("#" + statusID).remove();
 	});
 
@@ -250,7 +281,7 @@ function remove_my_status(statusID){
 
 function refresh_my_statuses() {
 	console.debug("refresh");
-	for(var i=0;i<my_statuses.length;i++){
+	for (var i = 0; i < my_statuses.length; i++) {
 
 		var statusID = my_statuses[i];
 
@@ -262,7 +293,8 @@ function refresh_my_statuses() {
 				if (xhr.status == 503) {
 					$("#main_error").show();
 					_rollbar.push("503 error: " + "status" + statusID);
-				} if (xhr.status == 404) {
+				}
+				if (xhr.status == 404) {
 					console.debug("Status not found: ", statusID);
 					remove_my_status(statusID);
 				} else {
@@ -278,9 +310,100 @@ function refresh_my_statuses() {
 	}
 }
 
-function inititalise_my_statuses(){
+function inititalise_my_statuses() {
 	perma_load_my_statuses();
 	refresh_my_statuses();
+}
+
+function inititalise_my_stars() {
+	perma_load_my_stars();
+	refresh_my_stars();
+}
+
+
+function star(statusID) {
+	console.debug("toggling Star");
+
+	if (is_starred(statusID)) {
+		$("#star-" + statusID).removeClass("glyphicon-star");
+		$("#star-" + statusID).addClass("glyphicon-star-empty");
+		remove_my_star(statusID)
+	} else {
+		$("#star-" + statusID).addClass("glyphicon-star");
+		$("#star-" + statusID).removeClass("glyphicon-star-empty");
+		my_stars.push(statusID);
+		perma_save_my_stars();
+	}
+
+	refresh_my_stars();
+}
+
+function is_starred(statusID) {
+	var index = my_stars.indexOf(statusID);
+	if (index > -1) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function perma_save_my_stars() {
+	console.debug("perma save stars");
+	localStorage.my_stars = JSON.stringify(my_stars);
+	console.debug(my_stars);
+}
+
+function perma_load_my_stars() {
+	console.debug("perma load stars");
+	my_stars = JSON.parse(localStorage.my_stars);
+	console.debug(my_stars);
+}
+
+function remove_my_star(statusID) {
+	console.debug("removeing star ", statusID);
+
+	var index = my_stars.indexOf(statusID);
+	if (index > -1) {
+		my_stars.splice(index, 1);
+	}
+	perma_save_my_stars();
+}
+
+function refresh_my_stars() {
+	console.debug("refresh");
+	$("#stars_statuses").html("");
+	for (var i = 0; i < my_stars.length; i++) {
+
+		var statusID = my_stars[i];
+
+		$.ajax({
+			url: "status/" + statusID,
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 503) {
+					$("#main_error").show();
+					_rollbar.push("503 error: " + "status" + statusID);
+				}
+				if (xhr.status == 404) {
+					console.debug("Status not found: ", statusID);
+					remove_my_star(statusID);
+				} else {
+					console.log("Err, something");
+					$("#main_error").hide();
+				}
+			}
+		}).done(function(status) {
+			console.log("Status found");
+			publish_status(status, "#stars_statuses");
+			$("#main_error").hide();
+		});
+	}
+}
+
+function inititalise_my_stars() {
+	perma_load_my_stars();
+	refresh_my_stars();
 }
 
 function timeSince(delta) {
