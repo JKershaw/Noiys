@@ -1,8 +1,8 @@
 var NoiysDatabase = require('../NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	_ = require("underscore")._,
-	statusParser = require('../lib/StatusParser'),
-	StatusMessageFactory = require('../lib/StatusMessageFactory');
+	StatusMessageFactory = require('../lib/StatusMessageFactory'),
+	HTMLEncoder = require('../lib/HTMLEncoder');
 
 module.exports = function(app) {
 
@@ -11,23 +11,26 @@ module.exports = function(app) {
 	app.post('/status', function(request, response) {
 		console.log("POSTING a status");
 
-		var status = {
-			text: HTMLEncode(request.body.text),
-			timestamp: Math.round(new Date().getTime() / 1000),
-			votes: 0
-		};
+		HTMLEncoder().encode(request.body.text, function(encodedText) {
 
-		noiysDatabase.saveStatus(status, function(saved) {
+			var status = {
+				text: encodedText,
+				timestamp: Math.round(new Date().getTime() / 1000),
+				votes: 0
+			};
 
-			var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+			noiysDatabase.saveStatus(status, function(saved) {
 
-			if (quotes) {
-				console.log("there are quotes!");
-				process_quotes(saved.id, quotes);
-			}
+				var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
 
-			response.send(String(saved.id));
+				if (quotes) {
+					console.log("there are quotes!");
+					process_quotes(saved.id, quotes);
+				}
 
+				response.send(String(saved.id));
+
+			});
 		});
 	});
 
@@ -36,7 +39,7 @@ module.exports = function(app) {
 		console.log("GETTING a status");
 
 		noiysDatabase.findStatus(request.params.ID, function(status) {
-			statusMessageFactory.create(status, function(message){
+			statusMessageFactory.create(status, function(message) {
 				response.contentType('json');
 				response.send(message);
 			});
@@ -50,7 +53,7 @@ module.exports = function(app) {
 			get_since_status(request.query['since'], function(status) {
 
 				if (status) {
-					statusMessageFactory.create(status, function(message){
+					statusMessageFactory.create(status, function(message) {
 						response.contentType('json');
 						response.send(message);
 					});
@@ -61,7 +64,7 @@ module.exports = function(app) {
 		} else {
 			console.log("Getting a RANDOM status");
 			get_random_status(function(status) {
-				statusMessageFactory.create(status, function(message){
+				statusMessageFactory.create(status, function(message) {
 					response.contentType('json');
 					response.send(message);
 				});
@@ -115,19 +118,4 @@ function add_response_to_status(status_id, response_id) {
 			console.log("Saved responses");
 		});
 	});
-}
-
-function HTMLEncode(str) {
-	var i = str.length,
-		aRet = [];
-
-	while (i--) {
-		var iC = str[i].charCodeAt();
-		if ((iC < 65 || iC > 127 || (iC > 90 && iC < 97)) && ((iC < 47 && iC > 58))) {
-			aRet[i] = '&#' + iC + ';';
-		} else {
-			aRet[i] = str[i];
-		}
-	}
-	return aRet.join('');
 }

@@ -22,19 +22,19 @@ describe('Given I visit the root URL', function(done) {
 		});
 	});
 
-	describe("and I want to post a status", function() {
+	describe("and I want to post a status", function(done) {
 
 		var expectedStatusMessage = "This is a fake status message, me old matey";
 		
 		before(function(done) {
 			browser.fill('#statusText', expectedStatusMessage);
 			browser.pressButton("#post_status");
+			done();
 		});
 
-		// it('the button says Posted', function(done) {
-		// 	console.log(browser.text("#post_status"));
-		// 	browser.text("#post_status").should.contain("Posted!");
-		// });
+		it('the button says Posted', function() {
+			browser.statusCode.should.equal(200);
+		});
 	});
 
 });
