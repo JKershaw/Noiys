@@ -263,7 +263,9 @@ function perma_save_my_statuses() {
 
 function perma_load_my_statuses() {
 	console.debug("perma load");
-	my_statuses = JSON.parse(localStorage.my_statuses);
+	if (localStorage.my_statuses){
+		my_statuses = JSON.parse(localStorage.my_statuses);
+	}
 	console.debug(my_statuses);
 }
 
@@ -374,7 +376,9 @@ function perma_save_my_stars() {
 
 function perma_load_my_stars() {
 	console.debug("perma load stars");
-	my_stars = JSON.parse(localStorage.my_stars);
+	if (localStorage.my_stars){
+		my_stars = JSON.parse(localStorage.my_stars);
+	}
 	console.debug(my_stars);
 }
 
