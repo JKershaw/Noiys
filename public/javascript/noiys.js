@@ -161,7 +161,7 @@ function publish_status(status, wrapper) {
 
 
 	// show new one
-	$(wrapper).prepend(generate_status_html(status));
+	$(wrapper).prepend(generate_status_html(status, wrapper));
 
 	$(wrapper + " div").first().hide().fadeIn();
 
@@ -169,7 +169,7 @@ function publish_status(status, wrapper) {
 
 }
 
-function generate_status_html(status) {
+function generate_status_html(status, wrapper) {
 
 	//are there any responses?
 	var response_string = "";
@@ -194,8 +194,11 @@ function generate_status_html(status) {
 
 	var reply_string = "<a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\"><span class=\"glyphicon glyphicon-retweet\"></a>";
 
-	var trash_string = "<!--<a style=\"cursor:pointer\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-trash\"></span></a>-->";
+	var trash_string = "";
 
+	if (wrapper == "#me_statuses"){
+		trash_string = "<a style=\"cursor:pointer; float:right;\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
+	}
 
 	if (is_starred(status.id)) {
 		var star_string = "<a style=\"cursor:pointer\" onclick=\"star('" + status.id + "');\"><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star\"></a>";
@@ -207,7 +210,7 @@ function generate_status_html(status) {
 	var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
 
 
-	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\">" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + trash_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
+	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
 }
 
 function vote(id) {
@@ -268,8 +271,8 @@ function perma_load_my_statuses() {
 function remove_my_status(statusID) {
 	console.debug("removeing status", statusID);
 
-	$("#" + statusID).fadeOut("fast", function() {
-		$("#" + statusID).remove();
+	$("#me_statuses #" + statusID).fadeOut("fast", function() {
+		$("#me_statuses #" + statusID).remove();
 	});
 
 	var index = my_statuses.indexOf(statusID);
@@ -278,6 +281,17 @@ function remove_my_status(statusID) {
 	}
 	perma_save_my_statuses();
 }
+
+
+function is_my_status(statusID) {
+	var index = my_statuses.indexOf(statusID);
+	if (index > -1) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 
 function refresh_my_statuses() {
 	console.debug("refresh");
