@@ -8,10 +8,6 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser());
 
-var NoiysDatabase = require('./NoiysDatabase'),
-	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
-	StatusMessageFactory = require('./lib/StatusMessageFactory');
-
 require("./routes/home")(app);
 require("./routes/status")(app);
 require("./routes/statuses")(app);
