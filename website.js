@@ -1,7 +1,5 @@
 var express = require("express"),
-	_ = require("underscore")._,
-	app = express(),
-	statusParser = require('./lib/StatusParser');
+	app = express();
 
 app.use(express.logger());
 app.set('views', __dirname + '/views');
