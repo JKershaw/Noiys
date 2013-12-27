@@ -4,7 +4,7 @@ var NoiysDatabase = require('../NoiysDatabase'),
 module.exports = function(app) {
 	app.get('/', function(request, response) {
 		noiysDatabase.removeOldStatuses(function() {
-			response.render('index.html');
+			response.render('index.ejs');
 		});
 	});
 };

@@ -4,7 +4,6 @@ var NoiysDatabase = function(connection_string) {
 			mongojs = require('mongojs'),
 			db = mongojs.connect(connection_string, collections);
 
-
 		function findStatus(statusID, callback) {
 
 			var ObjectId = mongojs.ObjectId,

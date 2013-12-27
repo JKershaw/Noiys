@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			NOIYS - Post, read, forget
+		</title>
+
+		<% include headRollbar %>
+		<% include headBootstrap %>
+		<% include headGoogleAnalytics %>
+		<% include headTimeago %>
+		
+	</head>
+	<body>
+		<div class="container">
+			<h1>
+				NOIYS
+			</h1>
+			<p>
+				Post a status anonymously. It's viewed by many, then deleted. Try not to be a dick.
+			</p>
+			<p>
+				<textarea class="form-control" rows="3" id="statusText" /></textarea>
+			</p>
+			<p>
+				<small>
+					Your status will be automatically deleted after 24 hours
+				</small>
+			</p>
+			<div class="row">
+				<div class="col-md-6">
+					<button type="button" class="btn btn-primary btn-lg" id="post_status">
+						Post Status
+					</button>
+				</div>
+				<div class="col-md-6">
+				</div>
+			</div>
+			<br />
+			<ul class="nav nav-tabs">
+				<li class="active" id="tab-random">
+					<a onclick="change_feed_type('feed_random')" style="cursor:pointer">Random</a>
+				</li>
+				<li id="tab-chronological">
+					<a onclick="change_feed_type('feed_chronological')" style="cursor:pointer">Chronological</a>
+				</li>
+			</ul>
+			<br />
+			<p>
+				<button type="button" class="btn btn-default btn-xs" id="pause_feed">
+					Pause Feed
+				</button>
+			</p>
+			<div class="alert alert-warning" style="display:none;" id="main_error">
+				Ah crap, the server returned an error. This is probably because it's been overloaded.
+				It'll be back soon.
+			</div>
+			<div class="alert alert-info" style="display:none;" id="main_info">
+			</div>
+			<div class="statuses_wrap" id="random_statuses">
+			</div>
+			<div class="statuses_wrap" id="chronological_statuses">
+			</div>
+		</div>
+
+		<script src="/javascript/noiys.js"></script>
+	</body>
+
+</html>
