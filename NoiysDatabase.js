@@ -5,21 +5,24 @@ var NoiysDatabase = function(connection_string) {
 			db = mongojs.connect(connection_string, collections);
 
 		function findStatus(statusID, callback) {
+			try {
+				var ObjectId = mongojs.ObjectId,
+					query = {
+						"_id": ObjectId(String(statusID))
+					};
 
-			var ObjectId = mongojs.ObjectId,
-				query = {
-					"_id": ObjectId(String(statusID))
-				};
-
-			db.statuses.find(query).toArray(function(err, statuses) {
-				if (statuses[0]) {
-					status = statuses[0];
-					status.id = String(status._id);
-				} else {
-					status = false;
-				}
-				callback(status);
-			});
+				db.statuses.find(query).toArray(function(err, statuses) {
+					if (statuses[0]) {
+						status = statuses[0];
+						status.id = String(status._id);
+					} else {
+						status = false;
+					}
+					callback(status);
+				});
+			} catch (e) {
+				callback(undefined);
+			}
 		}
 
 		function saveStatus(status, callback) {

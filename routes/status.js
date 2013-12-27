@@ -39,10 +39,16 @@ module.exports = function(app) {
 		console.log("GETTING a status");
 
 		noiysDatabase.findStatus(request.params.ID, function(status) {
-			statusMessageFactory.create(status, function(message) {
-				response.contentType('json');
-				response.send(message);
-			});
+			
+			if (status)
+			{
+				statusMessageFactory.create(status, function(message) {
+					response.contentType('json');
+					response.send(message);
+				});
+			} else {
+				response.send(404);
+			}
 		});
 	});
 
