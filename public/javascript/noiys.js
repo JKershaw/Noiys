@@ -5,12 +5,20 @@ var most_recent_status_timestamp = 0;
 var init_chronological = false;
 var my_statuses = Array();
 var my_stars = Array();
+var current_tab = "random";
 
 $(document).ready(function() {
 	random_status_timeout = setTimeout(get_and_show_random_status, 10);
 	inititalise_my_stars();
 	inititalise_my_statuses();
+	select_initial_tab();
 });
+
+function select_initial_tab(){
+	if (localStorage.current_tab) {
+		change_feed_type(localStorage.current_tab)
+	}
+}
 
 function get_and_show_random_status() {
 
@@ -133,6 +141,7 @@ function change_feed_type(selected_feed_type) {
 	clearTimeout(chronological_status_timeout);
 
 	feed_type = selected_feed_type;
+	localStorage.current_tab = feed_type;
 
 	if (feed_type == "random") {
 		$('#tab-random').addClass("active");
