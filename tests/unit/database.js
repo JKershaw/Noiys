@@ -22,6 +22,24 @@ test("When I save status, I get the saved status back including ID", function(do
 	});
 });
 
+
+test("When I save a vote, I get the saved vote back including ID", function(done) {
+	var vote = {
+		user_id: "5678",
+		status_id: "12345678",
+		timestamp: Math.round(new Date().getTime() / 1000)
+	};
+
+	noiysDatabase.saveVote(vote, function(result) {
+		console.log("Saved vote to database");
+		assert.equal(result.user_id, vote.user_id);
+		assert.equal(result.timestamp, vote.timestamp);
+		assert.equal(result.status_id, vote.status_id);
+		assert(result.id);
+		done();
+	});
+});
+
 test("I can save, then retreive a status", function(done) {
 
 	var status = {

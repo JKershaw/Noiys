@@ -1,6 +1,6 @@
 var NoiysDatabase = function(connection_string) {
 
-		var collections = ["statuses"],
+		var collections = ["statuses", "votes"],
 			mongojs = require('mongojs'),
 			db = mongojs.connect(connection_string, collections);
 
@@ -88,13 +88,30 @@ var NoiysDatabase = function(connection_string) {
 			});
 		}
 
+
+		function saveVote(vote, callback) {
+
+			db.votes.save(vote, function(err, saved) {
+				if (err || !saved) {
+					console.log("Not saved: " + err);
+				} else {
+					console.log("Saved vote to database");
+				}
+
+				saved.id = String(saved._id);
+
+				callback(saved);
+			});
+		}
+
 		return {
 			findStatus: findStatus,
 			saveStatus: saveStatus,
 			removeOldStatuses: removeOldStatuses,
 			getStatuses: getStatuses,
 			findStatusesSince: findStatusesSince,
-			findRecentStatuses: findRecentStatuses
+			findRecentStatuses: findRecentStatuses,
+			saveVote: saveVote
 		}
 	}
 
