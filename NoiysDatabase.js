@@ -112,7 +112,6 @@ var NoiysDatabase = function(connection_string) {
 			}).sort({
 				"timestamp": -1
 			}).limit(num).toArray(function(err, statuses) {
-				console.log(statuses);
 				for (var i = 0; i < statuses.length; i++) {
 					statuses[i].id = String(statuses[i]._id);
 				}
