@@ -226,9 +226,22 @@ function publish_status(status, wrapper, prepend) {
 		$(wrapper + " .final").before(generate_status_html(status, wrapper));
 		$(wrapper + " div").show();
 	}
+
+	var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
+
+	if (quote_to_hide_selector) {
+		quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" onclick=\"show_hidden_quote('" + status.id + "', '"+ wrapper + "')\">Show quote</a></div></div>");
+		quote_to_hide_selector.hide();
+	}
 	
 	$("span.timeago").timeago();
 
+}
+
+function show_hidden_quote(statusID, wrapper){
+	$(wrapper + " #" + statusID + " * .show_quote_link").remove();
+	var quote_to_hide_selector = $(wrapper + " #" + statusID + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
+	quote_to_hide_selector.fadeIn();	
 }
 
 function generate_status_html(status, wrapper) {
