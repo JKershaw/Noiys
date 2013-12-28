@@ -67,7 +67,7 @@ function get_and_show_chronological_status() {
 	}
 }
 
-function get_and_show_older_chronological_status() {
+function get_and_show_older_chronological_status(callback) {
 	console.debug("get_and_show_older_chronological_status called");
 
 	if ((oldest_status_timestamp < Number.MAX_VALUE) && (feed_type == 'chronological')) {
@@ -85,6 +85,7 @@ function get_and_show_older_chronological_status() {
 				}
 			}
 		}).done(function(statuses) {
+			console.debug(statuses);
 			for (var i = 0; i < statuses.length; i++) {
 
 				if (statuses[i].timestamp < oldest_status_timestamp) {
@@ -96,6 +97,8 @@ function get_and_show_older_chronological_status() {
 
 			$('#main_info').hide();
 			$("#main_error").hide();
+
+			callback();
 
 		}).fail(function() {
 			console.debug("No older statuses found");
@@ -171,6 +174,15 @@ $("#pause_feed").click(function() {
 	}
 });
 
+$("#load_older_statuses").click(function() {
+	$("#load_older_statuses").text("Loading...");
+	$('#load_older_statuses').prop('disabled', true);
+	get_and_show_older_chronological_status(function(){
+		$("#load_older_statuses").text("Load older statuses");
+		$('#load_older_statuses').prop('disabled', false);
+	});
+});
+
 function change_feed_type(selected_feed_type) {
 	$('.nav-tabs li').removeClass("active");
 	$('.statuses_wrap').hide();
@@ -208,13 +220,13 @@ function publish_status(status, wrapper, prepend) {
 
 	if (prepend){
 		$(wrapper).prepend(generate_status_html(status, wrapper));
+		$(wrapper + " div").first().hide().fadeIn();
 	} else {
-		$(wrapper).append(generate_status_html(status, wrapper));
-
+		console.debug("appending", status.id);
+		$(wrapper + " .final").before(generate_status_html(status, wrapper));
+		$(wrapper + " div").show();
 	}
 	
-	$(wrapper + " div").first().hide().fadeIn();
-
 	$("span.timeago").timeago();
 
 }

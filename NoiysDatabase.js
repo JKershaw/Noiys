@@ -110,7 +110,7 @@ var NoiysDatabase = function(connection_string) {
 					"$lt": parseInt(timestamp)
 				}
 			}).sort({
-				"timestamp": 1
+				"timestamp": -1
 			}).limit(num).toArray(function(err, statuses) {
 				console.log(statuses);
 				for (var i = 0; i < statuses.length; i++) {

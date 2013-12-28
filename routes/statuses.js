@@ -6,6 +6,7 @@ var NoiysDatabase = require('../NoiysDatabase'),
 module.exports = function(app) {
 
 	var statusMessageFactory = new StatusMessageFactory();
+	var number_of_statuses = 5;
 
 	app.get('/statuses', function(request, response) {
 
@@ -16,7 +17,7 @@ module.exports = function(app) {
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 
-			noiysDatabase.findStatusesBefore(request.query['before'], 20, function(statuses) {
+			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
 
 				var messages = new Array();
 
@@ -40,7 +41,7 @@ module.exports = function(app) {
 				});
 			});
 		} else {
-			noiysDatabase.findRecentStatuses(20, function(statuses) {
+			noiysDatabase.findRecentStatuses(number_of_statuses, function(statuses) {
 
 				var messages = new Array();
 
