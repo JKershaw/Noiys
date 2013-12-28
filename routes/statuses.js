@@ -6,7 +6,7 @@ var NoiysDatabase = require('../NoiysDatabase'),
 module.exports = function(app) {
 
 	var statusMessageFactory = new StatusMessageFactory();
-	var number_of_statuses = 5;
+	var number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
 
