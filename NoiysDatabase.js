@@ -104,6 +104,22 @@ var NoiysDatabase = function(connection_string) {
 			});
 		}
 
+		function findStatusesBefore(timestamp, num, callback) {
+			db.statuses.find({
+				"timestamp": {
+					"$lt": parseInt(timestamp)
+				}
+			}).sort({
+				"timestamp": 1
+			}).limit(num).toArray(function(err, statuses) {
+				console.log(statuses);
+				for (var i = 0; i < statuses.length; i++) {
+					statuses[i].id = String(statuses[i]._id);
+				}
+				callback(statuses);
+			});
+		}
+
 		return {
 			findStatus: findStatus,
 			saveStatus: saveStatus,
@@ -111,7 +127,8 @@ var NoiysDatabase = function(connection_string) {
 			getStatuses: getStatuses,
 			findStatusesSince: findStatusesSince,
 			findRecentStatuses: findRecentStatuses,
-			saveVote: saveVote
+			saveVote: saveVote,
+			findStatusesBefore: findStatusesBefore
 		}
 	}
 

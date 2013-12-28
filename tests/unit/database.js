@@ -211,7 +211,7 @@ test("I can get the most recent statuses back", function(done) {
 						foundStatus3 = false;
 
 					assert.equal(statuses.length, expectedNumberOfResponses);
-					
+
 					for (var i = 0; i < statuses.length; i++) {
 						if (statuses[i].id == status1ID) {
 							foundStatus1 = true;
@@ -228,6 +228,74 @@ test("I can get the most recent statuses back", function(done) {
 					assert.equal(statuses[0].timestamp >= latestTimestamp, true);
 					done();
 
+				});
+			});
+		});
+	});
+});
+
+
+test("I can get the most recent statuses back", function(done) {
+
+	var status1 = {
+		text: "I want this status back",
+		timestamp: Math.round(new Date().getTime() / 1000) - 7200
+	},
+		status2 = {
+			text: "I want this status back also",
+			timestamp: Math.round(new Date().getTime() / 1000) - 7230
+		},
+		status3 = {
+			text: "I don't want this one back",
+			timestamp: Math.round(new Date().getTime() / 1000) - 1
+		},
+		latestTimestamp = Math.round(new Date().getTime() / 1000),
+		status4 = {
+			text: "Or this one",
+			timestamp: latestTimestamp
+		},
+		expectedNumberOfResponses = 2;
+
+	noiysDatabase.saveStatus(status1, function(result) {
+		var status1ID = result.id;
+		noiysDatabase.saveStatus(status2, function(result) {
+			var status2ID = result.id;
+			noiysDatabase.saveStatus(status3, function(result) {
+				var status3ID = result.id;
+				noiysDatabase.saveStatus(status4, function(result) {
+					var status4ID = result.id;
+
+					var cutoffTimestamp = Math.round(new Date().getTime() / 1000) - 3600;
+					noiysDatabase.findStatusesBefore(cutoffTimestamp, expectedNumberOfResponses, function(statuses) {
+
+						var foundStatus1 = false,
+							foundStatus2 = false,
+							foundStatus3 = false,
+							foundStatus4 = false;
+
+						assert.equal(statuses.length, expectedNumberOfResponses);
+
+						for (var i = 0; i < statuses.length; i++) {
+							if (statuses[i].id == status1ID) {
+								foundStatus1 = true;
+							}
+							if (statuses[i].id == status2ID) {
+								foundStatus2 = true;
+							}
+							if (statuses[i].id == status3ID) {
+								foundStatus3 = true;
+							}
+							if (statuses[i].id == status4ID) {
+								foundStatus4 = true;
+							}
+						}
+						assert.equal(foundStatus3, false);
+						assert.equal(foundStatus4, false);
+						assert.equal(statuses[0].timestamp <= cutoffTimestamp, true);
+						assert.equal(statuses[1].timestamp <= statuses[0].timestamp, true);
+						done();
+
+					});
 				});
 			});
 		});

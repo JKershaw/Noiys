@@ -1,7 +1,8 @@
 var paused = false;
 var feed_type = "random";
 var random_status_timeout, chronological_status_timeout;
-var most_recent_status_timestamp = 0;
+var newest_status_timestamp = 0;
+var oldest_status_timestamp = Number.MAX_VALUE;
 var init_chronological = false;
 var my_statuses = Array();
 var my_stars = Array();
@@ -24,7 +25,7 @@ function get_and_show_random_status() {
 
 	if (paused === false) {
 		$.get("status", function(status) {
-			publish_status(status, "#random_statuses");
+			publish_status(status, "#random_statuses", true);
 			$("#main_error").hide();
 		});
 	}
@@ -36,36 +37,70 @@ function get_and_show_random_status() {
 function get_and_show_chronological_status() {
 	console.debug("get_and_show_chronological_status called");
 
-	if ((paused === false) && (most_recent_status_timestamp > 0) && (feed_type == 'chronological')) {
+	if ((paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
 
 		$.ajax({
-			url: "status?since=" + most_recent_status_timestamp,
+			url: "status?since=" + newest_status_timestamp,
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				if (xhr.status == 503) {
 					$("#main_error").show();
-					_rollbar.push("503 error: " + "status?since=" + most_recent_status_timestamp);
+					_rollbar.push("503 error: " + "status?since=" + newest_status_timestamp);
 				} else {
 					$("#main_error").hide();
 				}
 			}
 		}).done(function(status) {
-			most_recent_status_timestamp = status.timestamp;
+			newest_status_timestamp = status.timestamp;
 			console.debug("Finished!");
-			publish_status(status, "#chronological_statuses");
+			publish_status(status, "#chronological_statuses", true);
 
 			chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
 		}).fail(function() {
 			console.debug("No new statuses found");
 			chronological_status_timeout = setTimeout(get_and_show_chronological_status, 10000);
-		}).always(function() {
-
-			console.log("Always");
 		});
 
 	} else {
 		chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
+	}
+}
+
+function get_and_show_older_chronological_status() {
+	console.debug("get_and_show_older_chronological_status called");
+
+	if ((oldest_status_timestamp < Number.MAX_VALUE) && (feed_type == 'chronological')) {
+
+		$.ajax({
+			url: "statuses?before=" + oldest_status_timestamp,
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 503) {
+					$("#main_error").show();
+					_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
+				} else {
+					$("#main_error").hide();
+				}
+			}
+		}).done(function(statuses) {
+			for (var i = 0; i < statuses.length; i++) {
+
+				if (statuses[i].timestamp < oldest_status_timestamp) {
+					oldest_status_timestamp = statuses[i].timestamp;
+				}
+
+				publish_status(statuses[i], "#chronological_statuses", false);
+			}
+
+			$('#main_info').hide();
+			$("#main_error").hide();
+
+		}).fail(function() {
+			console.debug("No older statuses found");
+		});
+
 	}
 }
 
@@ -77,11 +112,14 @@ function intitialise_chronological() {
 		$.get("statuses", function(statuses) {
 			for (var i = 0; i < statuses.length; i++) {
 
-				if (statuses[i].timestamp > most_recent_status_timestamp) {
-					most_recent_status_timestamp = statuses[i].timestamp;
+				if (statuses[i].timestamp > newest_status_timestamp) {
+					newest_status_timestamp = statuses[i].timestamp;
+				}
+				if (statuses[i].timestamp < oldest_status_timestamp) {
+					oldest_status_timestamp = statuses[i].timestamp;
 				}
 
-				publish_status(statuses[i], "#chronological_statuses");
+				publish_status(statuses[i], "#chronological_statuses", true);
 			}
 
 			$('#main_info').hide();
@@ -164,13 +202,17 @@ function change_feed_type(selected_feed_type) {
 	}
 }
 
-function publish_status(status, wrapper) {
+function publish_status(status, wrapper, prepend) {
 	// delete existing posts with this ID
 	$(wrapper + " #" + status.id).remove();
 
-	// show new one
-	$(wrapper).prepend(generate_status_html(status, wrapper));
+	if (prepend){
+		$(wrapper).prepend(generate_status_html(status, wrapper));
+	} else {
+		$(wrapper).append(generate_status_html(status, wrapper));
 
+	}
+	
 	$(wrapper + " div").first().hide().fadeIn();
 
 	$("span.timeago").timeago();
@@ -252,7 +294,7 @@ function set_posted_button() {
 function show_replies(status_id, replies_ids) {
 	for (var i = 0; i < replies_ids.length; i++) {
 		$.get("status/" + replies_ids[i], function(status) {
-			publish_status(status, "#" + status_id + " .responses");
+			publish_status(status, "#" + status_id + " .responses", true);
 		});
 	}
 }
@@ -329,7 +371,7 @@ function refresh_my_statuses() {
 		}).done(function(status) {
 			console.log("Status found");
 
-			publish_status(status, "#me_statuses");
+			publish_status(status, "#me_statuses", true);
 			$("#main_error").hide();
 
 			// sort the page
@@ -427,7 +469,7 @@ function refresh_my_stars() {
 			}
 		}).done(function(status) {
 			console.log("Status found");
-			publish_status(status, "#stars_statuses");
+			publish_status(status, "#stars_statuses", true);
 			$("#main_error").hide();
 		});
 	}
