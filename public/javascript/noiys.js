@@ -70,38 +70,38 @@ function get_and_show_chronological_status() {
 function get_and_show_search_statuses(search_term, callback) {
 	console.debug("get_and_show_search_statuses called");
 
-		$.ajax({
-			url: "search/" + encodeURIComponent(search_term),
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					$("#main_error").show();
-					_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
-				} else {
-					$("#main_error").hide();
-				}
+	$.ajax({
+		url: "search/" + encodeURIComponent(search_term),
+		type: 'GET',
+		contentType: 'application/json',
+		complete: function(xhr, textStatus) {
+			if (xhr.status == 503) {
+				$("#main_error").show();
+				_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
+			} else {
+				$("#main_error").hide();
 			}
-		}).done(function(statuses) {
-			console.debug(statuses);
-			$('#search_statuses_result').html('');
-			
-			for (var i = 0; i < statuses.length; i++) {
-				publish_status(statuses[i], "#search_statuses_result", true);
-			}
+		}
+	}).done(function(statuses) {
+		console.debug(statuses);
+		$('#search_statuses_result').html('');
 
-			$('#search_statuses_result>div').sort(function(a, b) {
-				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-			}).appendTo("#search_statuses_result");
+		for (var i = 0; i < statuses.length; i++) {
+			publish_status(statuses[i], "#search_statuses_result", true);
+		}
 
-			$('#main_info').hide();
-			$("#main_error").hide();
+		$('#search_statuses_result>div').sort(function(a, b) {
+			return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+		}).appendTo("#search_statuses_result");
 
-			callback();
-		}).fail(function() {
-			$('#search_statuses_result').html('No statuses found.');
-			callback();
-		});
+		$('#main_info').hide();
+		$("#main_error").hide();
+
+		callback();
+	}).fail(function() {
+		$('#search_statuses_result').html('No statuses found.');
+		callback();
+	});
 
 }
 
@@ -228,6 +228,17 @@ $("#search_statuses_button").click(function() {
 		$("#search_statuses_button").text("Search");
 		$('#search_statuses_button').prop('disabled', false);
 	});
+});
+
+$("#search_statuses_text").keyup(function(event) {
+	if (event.keyCode == 13) {
+		$("#search_statuses_button").text("Searching...");
+		$('#search_statuses_button').prop('disabled', true);
+		get_and_show_search_statuses($('#search_statuses_text').val(), function() {
+			$("#search_statuses_button").text("Search");
+			$('#search_statuses_button').prop('disabled', false);
+		});
+	}
 });
 
 function change_feed_type(selected_feed_type) {
