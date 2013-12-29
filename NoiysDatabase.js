@@ -119,15 +119,31 @@ var NoiysDatabase = function(connection_string) {
 			});
 		}
 
+		function findStatusesBySearch(keyword, callback) {
+			var regular_expression = new RegExp(".*" + keyword + ".*", "i");
+
+			db.statuses.find({
+				"text": regular_expression
+			}).sort({
+				"timestamp": -1
+			}).limit(50).toArray(function(err, statuses) {
+				for (var i = 0; i < statuses.length; i++) {
+					statuses[i].id = String(statuses[i]._id);
+				}
+				callback(statuses);
+			});
+		}
+
 		return {
-			findStatus: findStatus,
 			saveStatus: saveStatus,
+			saveVote: saveVote,
 			removeOldStatuses: removeOldStatuses,
 			getStatuses: getStatuses,
+			findStatus: findStatus,
 			findStatusesSince: findStatusesSince,
 			findRecentStatuses: findRecentStatuses,
-			saveVote: saveVote,
-			findStatusesBefore: findStatusesBefore
+			findStatusesBefore: findStatusesBefore,
+			findStatusesBySearch: findStatusesBySearch
 		}
 	}
 

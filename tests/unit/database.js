@@ -301,3 +301,33 @@ test("I can get the most recent statuses back", function(done) {
 		});
 	});
 });
+
+
+test("I can search for statuses by keyword", function(done) {
+	var status1 = {
+		text: "Zebra alphabet!",
+		timestamp: Math.round(new Date().getTime() / 1000) - (3600 * 25)
+	};
+	noiysDatabase.saveStatus(status1, function(result) {
+		var status1ID = result.id;
+
+		noiysDatabase.findStatusesBySearch("zebra", function(statuses) {
+
+			console.log(statuses);
+
+			var foundStatus1 = false;
+
+			for (var i = 0; i < statuses.length; i++) {
+
+				if (statuses[i].id == status1ID) {
+					foundStatus1 = true;
+				}
+
+			}
+
+			assert.equal(foundStatus1, true);
+
+			done();
+		});
+	});
+});
