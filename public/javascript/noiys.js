@@ -15,9 +15,40 @@ $(document).ready(function() {
 	select_initial_tab();
 });
 
+
+
+function change_feed_type(selected_feed_type) {
+	$('.nav-tabs li').removeClass("active");
+	$('.statuses_wrap').hide();
+
+	clearTimeout(random_status_timeout);
+	clearTimeout(chronological_status_timeout);
+
+	feed_type = selected_feed_type;
+	localStorage.current_tab = feed_type;
+
+	$('.nav li #extended').hide();
+	$('#tab-' + feed_type + " #extended").show();
+	$('#tab-' + feed_type).addClass("active");
+	$('#' + feed_type + '_statuses').show();
+	$('#pause_feed').hide();
+
+	if (feed_type == "random") {
+		$('#pause_feed').show();
+		random_status_timeout = setTimeout(get_and_show_random_status, 1000);
+	} else if (feed_type == "chronological") {
+		$('#pause_feed').show();
+		intitialise_chronological();
+		get_and_show_chronological_status();
+	}
+}
+
+
 function select_initial_tab() {
 	if (localStorage.current_tab) {
 		change_feed_type(localStorage.current_tab)
+	} else {
+		change_feed_type("random");
 	}
 }
 
@@ -239,30 +270,6 @@ function run_search() {
 		$("#search_statuses_button").text("Search");
 		$('#search_statuses_button').prop('disabled', false);
 	});
-}
-
-function change_feed_type(selected_feed_type) {
-	$('.nav-tabs li').removeClass("active");
-	$('.statuses_wrap').hide();
-
-	clearTimeout(random_status_timeout);
-	clearTimeout(chronological_status_timeout);
-
-	feed_type = selected_feed_type;
-	localStorage.current_tab = feed_type;
-
-	$('#tab-' + feed_type).addClass("active");
-	$('#' + feed_type + '_statuses').show();
-	$('#pause_feed').hide();
-
-	if (feed_type == "random") {
-		$('#pause_feed').show();
-		random_status_timeout = setTimeout(get_and_show_random_status, 1000);
-	} else if (feed_type == "chronological") {
-		$('#pause_feed').show();
-		intitialise_chronological();
-		get_and_show_chronological_status();
-	}
 }
 
 function publish_status(status, wrapper, prepend) {
