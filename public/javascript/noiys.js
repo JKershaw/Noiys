@@ -411,6 +411,8 @@ function perma_load_my_statuses() {
 	if (localStorage.my_statuses) {
 		my_statuses = JSON.parse(localStorage.my_statuses);
 	}
+
+	my_statuses = [1, 2, 3, 4];
 	console.debug(my_statuses);
 }
 
@@ -443,38 +445,41 @@ function is_my_status(statusID) {
 function refresh_my_statuses() {
 	console.debug("Refreshing my statuses");
 	var tmp_my_statuses = my_statuses;
+
 	for (var i = 0; i < tmp_my_statuses.length; i++) {
-
-		var statusID = tmp_my_statuses[i];
-
-		$.ajax({
-			url: "status/" + statusID,
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					$("#main_error").show();
-					_rollbar.push("503 error: " + "status" + statusID);
+		(function(i) {
+			var statusID = tmp_my_statuses[i];
+			
+			$.ajax({
+				url: "status/" + statusID,
+				type: 'GET',
+				contentType: 'application/json',
+				complete: function(xhr, textStatus) {
+					if (xhr.status == 503) {
+						$("#main_error").show();
+						_rollbar.push("503 error: " + "status" + statusID);
+					}
+					if (xhr.status == 404) {
+						console.debug("Status not found: ", statusID);
+						remove_my_status(statusID);
+					} else {
+						$("#main_error").hide();
+					}
 				}
-				if (xhr.status == 404) {
-					console.debug("Status not found: ", statusID);
-					remove_my_status(statusID);
-				} else {
-					console.log("Err, something");
-					$("#main_error").hide();
-				}
-			}
-		}).done(function(status) {
-			console.log("Status found");
+			}).done(function(status) {
+				console.log("Status found");
 
-			publish_status(status, "#me_statuses", true);
-			$("#main_error").hide();
+				publish_status(status, "#me_statuses", true);
+				$("#main_error").hide();
 
-			// sort the page
-			$('#me_statuses>div').sort(function(a, b) {
-				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-			}).appendTo("#me_statuses");
-		});
+				// sort the page
+				$('#me_statuses>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#me_statuses");
+			});
+		})(i);
+
+
 	}
 }
 
@@ -558,7 +563,6 @@ function refresh_my_stars() {
 					console.debug("Status not found: ", statusID);
 					remove_my_star(statusID);
 				} else {
-					console.log("Err, something");
 					$("#main_error").hide();
 				}
 			}
