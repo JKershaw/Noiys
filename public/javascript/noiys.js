@@ -67,8 +67,46 @@ function get_and_show_chronological_status() {
 	}
 }
 
-function get_and_show_older_chronological_status(callback) {
-	console.debug("get_and_show_older_chronological_status called");
+function get_and_show_search_statuses(search_term, callback) {
+	console.debug("get_and_show_search_statuses called");
+
+		$.ajax({
+			url: "search/" + search_term,
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 503) {
+					$("#main_error").show();
+					_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
+				} else {
+					$("#main_error").hide();
+				}
+			}
+		}).done(function(statuses) {
+			console.debug(statuses);
+			$('#search_statuses_result').html('');
+			
+			for (var i = 0; i < statuses.length; i++) {
+				publish_status(statuses[i], "#search_statuses_result", true);
+			}
+
+			$('#search_statuses_result>div').sort(function(a, b) {
+				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+			}).appendTo("#search_statuses_result");
+
+			$('#main_info').hide();
+			$("#main_error").hide();
+
+			callback();
+		}).fail(function() {
+			$('#search_statuses_result').html('No statuses found.');
+			callback();
+		});
+
+}
+
+function get_and_show_older_chronological_statuses(callback) {
+	console.debug("get_and_show_older_chronological_statuses called");
 
 	if ((oldest_status_timestamp < Number.MAX_VALUE) && (feed_type == 'chronological')) {
 
@@ -177,9 +215,18 @@ $("#pause_feed").click(function() {
 $("#load_older_statuses").click(function() {
 	$("#load_older_statuses").text("Loading...");
 	$('#load_older_statuses').prop('disabled', true);
-	get_and_show_older_chronological_status(function() {
+	get_and_show_older_chronological_statuses(function() {
 		$("#load_older_statuses").text("Load older statuses");
 		$('#load_older_statuses').prop('disabled', false);
+	});
+});
+
+$("#search_statuses_button").click(function() {
+	$("#search_statuses_button").text("Searching...");
+	$('#search_statuses_button').prop('disabled', true);
+	get_and_show_search_statuses($('#search_statuses_text').val(), function() {
+		$("#search_statuses_button").text("Search");
+		$('#search_statuses_button').prop('disabled', false);
 	});
 });
 

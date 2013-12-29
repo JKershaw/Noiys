@@ -4,14 +4,11 @@
 		<title>
 			NOIYS - Post, read, forget
 		</title>
-
-		<link rel="icon" href="/favicon.ico"/>
-		
+		<link rel="icon" href="/favicon.ico" />
 		<% include headRollbar %>
-		<% include headBootstrap %>
-		<% include headGoogleAnalytics %>
-		<% include headTimeago %>
-
+			<% include headBootstrap %>
+				<% include headGoogleAnalytics %>
+					<% include headTimeago %>
 	</head>
 	<body>
 		<div class="container">
@@ -52,6 +49,9 @@
 				<li id="tab-stars">
 					<a onclick="change_feed_type('stars')" style="cursor:pointer"><span class="glyphicon glyphicon-star"></span></a>
 				</li>
+				<li id="tab-search">
+					<a onclick="change_feed_type('search')" style="cursor:pointer"><span class="glyphicon glyphicon-search"></span></a>
+				</li>
 			</ul>
 			<br />
 			<p>
@@ -59,50 +59,58 @@
 					Pause Feed
 				</button>
 			</p>
-
 			<div class="alert alert-warning" style="display:none;" id="main_error">
 				Ah crap, the server returned an error. This is probably because it's been overloaded.
 				It'll be back soon.
 			</div>
-
 			<div class="alert alert-info" style="display:none;" id="main_info">
 			</div>
-
 			<div class="statuses_wrap" id="random_statuses">
 			</div>
-
 			<div class="statuses_wrap" id="chronological_statuses" style="display:none;">
-
-
-			<p style="text:align: centre" class="final">
-				<button type="button" class="btn btn-default btn-xs" id="load_older_statuses">
-					Load older statuses
-				</button>
-			</p>
-
+				<p style="text:align: centre" class="final">
+					<button type="button" class="btn btn-default btn-xs" id="load_older_statuses">
+						Load older statuses
+					</button>
+				</p>
 			</div>
 			<div class="statuses_wrap" id="me_statuses" style="display:none;">
 			</div>
 			<div class="statuses_wrap" id="stars_statuses" style="display:none;">
 			</div>
-			<div class="statuses_search" id="search_statuses" style="display:none;">
+			<div class="statuses_wrap" style="display:none;" id="search_statuses">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="input-group">
+							<input type="text" class="form-control" id="search_statuses_text">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" id="search_statuses_button">
+									Search
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+				<br />
+				<div id="search_statuses_result"></div>
 			</div>
-
-		<br /><br /><hr>
-
-		<div class="row">
+			<br />
+			<br />
+			<hr>
+			<div class="row">
 				<div class="col-md-6">
-					<small><span style="color:#BBB">NOIYS built by John Kershaw, written in node.js and hosted on Heroku.</span></small>
+					<small>
+						<span style="color:#BBB">
+							NOIYS built by John Kershaw, written in node.js and hosted on Heroku.
+						</span>
+					</small>
 				</div>
 				<div class="col-md-6">
 				</div>
 			</div>
-
-
 		</div>
-
-
-		<script src="/javascript/noiys.js"></script>
+		<script src="/javascript/noiys.js">
+		</script>
 	</body>
 
 </html>
