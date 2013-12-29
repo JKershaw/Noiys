@@ -15,7 +15,7 @@ $(document).ready(function() {
 	select_initial_tab();
 });
 
-function select_initial_tab(){
+function select_initial_tab() {
 	if (localStorage.current_tab) {
 		change_feed_type(localStorage.current_tab)
 	}
@@ -177,7 +177,7 @@ $("#pause_feed").click(function() {
 $("#load_older_statuses").click(function() {
 	$("#load_older_statuses").text("Loading...");
 	$('#load_older_statuses').prop('disabled', true);
-	get_and_show_older_chronological_status(function(){
+	get_and_show_older_chronological_status(function() {
 		$("#load_older_statuses").text("Load older statuses");
 		$('#load_older_statuses').prop('disabled', false);
 	});
@@ -193,24 +193,17 @@ function change_feed_type(selected_feed_type) {
 	feed_type = selected_feed_type;
 	localStorage.current_tab = feed_type;
 
-	if (feed_type == "random") {
-		$('#tab-random').addClass("active");
-		$('#random_statuses').show();
-		random_status_timeout = setTimeout(get_and_show_random_status, 1000);
+	$('#tab-' + feed_type).addClass("active");
+	$('#' + feed_type + '_statuses').show();
+	$('#pause_feed').hide();
 
+	if (feed_type == "random") {
+		$('#pause_feed').show();
+		random_status_timeout = setTimeout(get_and_show_random_status, 1000);
 	} else if (feed_type == "chronological") {
-		$('#tab-chronological').addClass("active");
-		$('#chronological_statuses').show();
+		$('#pause_feed').show();
 		intitialise_chronological();
 		get_and_show_chronological_status();
-
-	} else if (feed_type == "me") {
-		$('#tab-me').addClass("active");
-		$('#me_statuses').show();
-
-	} else if (feed_type == "stars") {
-		$('#tab-stars').addClass("active");
-		$('#stars_statuses').show();
 	}
 }
 
@@ -218,7 +211,7 @@ function publish_status(status, wrapper, prepend) {
 	// delete existing posts with this ID
 	$(wrapper + " #" + status.id).remove();
 
-	if (prepend){
+	if (prepend) {
 		$(wrapper).prepend(generate_status_html(status, wrapper));
 		$(wrapper + " div").first().hide().fadeIn();
 	} else {
@@ -230,18 +223,18 @@ function publish_status(status, wrapper, prepend) {
 	var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 	if (quote_to_hide_selector) {
-		quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" onclick=\"show_hidden_quote('" + status.id + "', '"+ wrapper + "')\">Show quote</a></div></div>");
+		quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" onclick=\"show_hidden_quote('" + status.id + "', '" + wrapper + "')\">Show quote</a></div></div>");
 		quote_to_hide_selector.hide();
 	}
-	
+
 	$("span.timeago").timeago();
 
 }
 
-function show_hidden_quote(statusID, wrapper){
+function show_hidden_quote(statusID, wrapper) {
 	$(wrapper + " #" + statusID + " * .show_quote_link").remove();
 	var quote_to_hide_selector = $(wrapper + " #" + statusID + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
-	quote_to_hide_selector.fadeIn();	
+	quote_to_hide_selector.fadeIn();
 }
 
 function generate_status_html(status, wrapper) {
@@ -339,7 +332,7 @@ function perma_save_my_statuses() {
 
 function perma_load_my_statuses() {
 	console.debug("perma load");
-	if (localStorage.my_statuses){
+	if (localStorage.my_statuses) {
 		my_statuses = JSON.parse(localStorage.my_statuses);
 	}
 	console.debug(my_statuses);
@@ -452,7 +445,7 @@ function perma_save_my_stars() {
 
 function perma_load_my_stars() {
 	console.debug("perma load stars");
-	if (localStorage.my_stars){
+	if (localStorage.my_stars) {
 		my_stars = JSON.parse(localStorage.my_stars);
 	}
 	console.debug(my_stars);
