@@ -15,6 +15,7 @@ require("./routes/home")(app);
 require("./routes/status")(app);
 require("./routes/statuses")(app);
 require("./routes/vote")(app);
+require("./routes/search")(app);
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
