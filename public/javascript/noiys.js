@@ -38,7 +38,7 @@ function change_feed_type(selected_feed_type) {
 	} else if (feed_type == "chronological") {
 		$('#pause_feed').show();
 		intitialise_chronological();
-		get_and_show_chronological_status();
+		get_and_show_chronological_status(6);
 	}
 }
 
@@ -64,8 +64,8 @@ function get_and_show_random_status() {
 
 }
 
-function get_and_show_chronological_status() {
-	console.debug("get_and_show_chronological_status called");
+function get_and_show_chronological_status(calling_point) {
+	console.debug("get_and_show_chronological_status called from ", calling_point);
 
 	if ((paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
 
@@ -86,14 +86,14 @@ function get_and_show_chronological_status() {
 			console.debug("Finished!");
 			publish_status(status, "#chronological_statuses", true);
 
-			chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
+			chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(1)}, 5000);
 		}).fail(function() {
 			console.debug("No new statuses found");
-			chronological_status_timeout = setTimeout(get_and_show_chronological_status, 10000);
+			chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(2)}, 10000);
 		});
 
 	} else {
-		chronological_status_timeout = setTimeout(get_and_show_chronological_status, 5000);
+		chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(3)}, 5000);
 	}
 }
 
@@ -196,7 +196,7 @@ function intitialise_chronological() {
 			$('#main_info').hide();
 			$("#main_error").hide();
 
-			get_and_show_chronological_status();
+			get_and_show_chronological_status(4);
 		});
 	}
 }
@@ -227,7 +227,7 @@ $("#post_status").click(function() {
 		$('#post_status').prop('disabled', false);
 		$('#post_status').text("Posted!");
 		$('#statusText').val("");
-		get_and_show_chronological_status();
+		get_and_show_chronological_status(5);
 
 		setTimeout(set_posted_button, 3000);
 	});
