@@ -447,7 +447,7 @@ function refresh_my_statuses() {
 	for (var i = 0; i < tmp_my_statuses.length; i++) {
 		(function(i) {
 			var statusID = tmp_my_statuses[i];
-			
+
 			$.ajax({
 				url: "status/" + statusID,
 				type: 'GET',
@@ -476,8 +476,6 @@ function refresh_my_statuses() {
 				}).appendTo("#me_statuses");
 			});
 		})(i);
-
-
 	}
 }
 
@@ -545,34 +543,35 @@ function refresh_my_stars() {
 	console.debug("refresh");
 	$("#stars_statuses").html("");
 	for (var i = 0; i < my_stars.length; i++) {
+		(function(i) {
+			var statusID = my_stars[i];
 
-		var statusID = my_stars[i];
-
-		$.ajax({
-			url: "status/" + statusID,
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					$("#main_error").show();
-					_rollbar.push("503 error: " + "status" + statusID);
+			$.ajax({
+				url: "status/" + statusID,
+				type: 'GET',
+				contentType: 'application/json',
+				complete: function(xhr, textStatus) {
+					if (xhr.status == 503) {
+						$("#main_error").show();
+						_rollbar.push("503 error: " + "status" + statusID);
+					}
+					if (xhr.status == 404) {
+						console.debug("Status not found: ", statusID);
+						remove_my_star(statusID);
+					} else {
+						$("#main_error").hide();
+					}
 				}
-				if (xhr.status == 404) {
-					console.debug("Status not found: ", statusID);
-					remove_my_star(statusID);
-				} else {
-					$("#main_error").hide();
-				}
-			}
-		}).done(function(status) {
-			console.log("Status found");
-			publish_status(status, "#stars_statuses", true);
-			$("#main_error").hide();
+			}).done(function(status) {
+				console.log("Status found");
+				publish_status(status, "#stars_statuses", true);
+				$("#main_error").hide();
 
-			$('#stars_statuses>div').sort(function(a, b) {
-				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-			}).appendTo("#stars_statuses");
-		});
+				$('#stars_statuses>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#stars_statuses");
+			});
+		})(i);
 	}
 }
 
