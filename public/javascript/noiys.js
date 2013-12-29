@@ -411,8 +411,6 @@ function perma_load_my_statuses() {
 	if (localStorage.my_statuses) {
 		my_statuses = JSON.parse(localStorage.my_statuses);
 	}
-
-	my_statuses = [1, 2, 3, 4];
 	console.debug(my_statuses);
 }
 
