@@ -223,24 +223,23 @@ $("#load_older_statuses").click(function() {
 });
 
 $("#search_statuses_button").click(function() {
+	run_search();
+});
+
+$("#search_statuses_text").keyup(function(event) {
+	if (event.keyCode == 13) {
+		run_search();
+	}
+});
+
+function run_search() {
 	$("#search_statuses_button").text("Searching...");
 	$('#search_statuses_button').prop('disabled', true);
 	get_and_show_search_statuses($('#search_statuses_text').val(), function() {
 		$("#search_statuses_button").text("Search");
 		$('#search_statuses_button').prop('disabled', false);
 	});
-});
-
-$("#search_statuses_text").keyup(function(event) {
-	if (event.keyCode == 13) {
-		$("#search_statuses_button").text("Searching...");
-		$('#search_statuses_button').prop('disabled', true);
-		get_and_show_search_statuses($('#search_statuses_text').val(), function() {
-			$("#search_statuses_button").text("Search");
-			$('#search_statuses_button').prop('disabled', false);
-		});
-	}
-});
+}
 
 function change_feed_type(selected_feed_type) {
 	$('.nav-tabs li').removeClass("active");
@@ -313,6 +312,12 @@ function generate_status_html(status, wrapper) {
 
 	}
 
+	var hashtag_regex = /&#35;\w*/g
+
+	status.text = status.text.replace(hashtag_regex, function(match) {
+		return "<a style=\"cursor:pointer;\" onclick=\"goto_search('" + match + "')\" >" + match + "</a>";
+	});
+
 	var text_string = "<p>" + status.text + " </p>";
 
 	var votes_string = "<span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>";
@@ -338,6 +343,12 @@ function generate_status_html(status, wrapper) {
 
 
 	return "<div style=\"display:none\" class=\"panel panel-default status_panel\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
+}
+
+function goto_search(search_term) {
+	change_feed_type("search");
+	$('#search_statuses_text').val(search_term);
+	run_search();
 }
 
 function vote(id) {
