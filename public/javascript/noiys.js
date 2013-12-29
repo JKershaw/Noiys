@@ -197,6 +197,7 @@ $("#post_status").click(function() {
 		$('#post_status').prop('disabled', false);
 		$('#post_status').text("Posted!");
 		$('#statusText').val("");
+		get_and_show_chronological_status();
 
 		setTimeout(set_posted_button, 3000);
 	});
