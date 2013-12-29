@@ -36,7 +36,7 @@ module.exports = function(app) {
 
 	app.get('/status/:ID', function(request, response) {
 
-		console.log("GETTING a status");
+		console.log("GETTING a specific status: ", request.params.ID);
 
 		noiysDatabase.findStatus(request.params.ID, function(status) {
 			
