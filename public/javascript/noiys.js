@@ -71,7 +71,7 @@ function get_and_show_search_statuses(search_term, callback) {
 	console.debug("get_and_show_search_statuses called");
 
 		$.ajax({
-			url: "search/" + search_term,
+			url: "search/" + encodeURIComponent(search_term),
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {

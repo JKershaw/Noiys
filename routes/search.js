@@ -1,7 +1,8 @@
 var NoiysDatabase = require('../NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	_ = require("underscore")._,
-	StatusMessageFactory = require('../lib/StatusMessageFactory');
+	StatusMessageFactory = require('../lib/StatusMessageFactory'),
+	HTMLEncoder = require('../lib/HTMLEncoder');
 
 module.exports = function(app) {
 
@@ -11,37 +12,38 @@ module.exports = function(app) {
 
 		var statusMessageFactory = new StatusMessageFactory();
 
-		console.log("SEARCHING statuses for: ", request.params.search_term);
+		HTMLEncoder().encode(request.params.search_term, function(search_term) {
 
-		noiysDatabase.findStatusesBySearch(request.params.search_term, function(statuses) {
+			console.log("SEARCHING statuses for: ", search_term);
 
-			if (statuses.length > 0) {
-				console.log("found! ", statuses.length);
-				var messages = new Array();
+			noiysDatabase.findStatusesBySearch(search_term, function(statuses) {
 
-				var finished = _.after(statuses.length, function() {
+				if (statuses.length > 0) {
+					console.log("found! ", statuses.length);
+					var messages = new Array();
 
-					messages.sort(function compare(a, b) {
-						if (a.timestamp > b.timestamp) return -1;
-						if (a.timestamp < b.timestamp) return 1;
-						return 0;
+					var finished = _.after(statuses.length, function() {
+
+						messages.sort(function compare(a, b) {
+							if (a.timestamp > b.timestamp) return -1;
+							if (a.timestamp < b.timestamp) return 1;
+							return 0;
+						});
+
+						response.contentType('json');
+						response.send(messages);
 					});
 
-					response.contentType('json');
-					response.send(messages);
-				});
-
-				_.each(statuses, function(status) {
-					statusMessageFactory.create(status, function(message) {
-						messages.push(message);
-						finished();
+					_.each(statuses, function(status) {
+						statusMessageFactory.create(status, function(message) {
+							messages.push(message);
+							finished();
+						});
 					});
-				});
-			} else {
-				response.send(404);
-			}
-
+				} else {
+					response.send(404);
+				}
+			});
 		});
-
 	});
 };
