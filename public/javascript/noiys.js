@@ -494,7 +494,6 @@ function star(statusID) {
 		my_stars.push(statusID);
 		perma_save_my_stars();
 	}
-
 	refresh_my_stars();
 }
 
@@ -559,6 +558,10 @@ function refresh_my_stars() {
 			console.log("Status found");
 			publish_status(status, "#stars_statuses", true);
 			$("#main_error").hide();
+
+			$('#stars_statuses>div').sort(function(a, b) {
+				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+			}).appendTo("#stars_statuses");
 		});
 	}
 }
