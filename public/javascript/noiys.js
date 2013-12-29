@@ -16,7 +16,6 @@ $(document).ready(function() {
 });
 
 
-
 function change_feed_type(selected_feed_type) {
 	$('.nav-tabs li').removeClass("active");
 	$('.statuses_wrap').hide();
@@ -408,7 +407,7 @@ function perma_save_my_statuses() {
 }
 
 function perma_load_my_statuses() {
-	console.debug("perma load");
+	console.debug("perma load my statuses");
 	if (localStorage.my_statuses) {
 		my_statuses = JSON.parse(localStorage.my_statuses);
 	}
@@ -416,17 +415,18 @@ function perma_load_my_statuses() {
 }
 
 function remove_my_status(statusID) {
-	console.debug("removeing status", statusID);
-
-	$("#me_statuses #" + statusID).fadeOut("fast", function() {
-		$("#me_statuses #" + statusID).remove();
-	});
+	console.debug("Removing status ", statusID);
 
 	var index = my_statuses.indexOf(statusID);
 	if (index > -1) {
 		my_statuses.splice(index, 1);
 	}
+
 	perma_save_my_statuses();
+
+	$("#me_statuses #" + statusID).fadeOut("fast", function() {
+		$("#me_statuses #" + statusID).remove();
+	});
 }
 
 
@@ -441,10 +441,11 @@ function is_my_status(statusID) {
 
 
 function refresh_my_statuses() {
-	console.debug("refresh");
-	for (var i = 0; i < my_statuses.length; i++) {
+	console.debug("Refreshing my statuses");
+	var tmp_my_statuses = my_statuses;
+	for (var i = 0; i < tmp_my_statuses.length; i++) {
 
-		var statusID = my_statuses[i];
+		var statusID = tmp_my_statuses[i];
 
 		$.ajax({
 			url: "status/" + statusID,
