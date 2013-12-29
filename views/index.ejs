@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html debug = "true">
 	<head>
+		<% if (firebug) { %>
+			<% include firebug %>
+		<%} %>
+
 		<title>
 			NOIYS - Post, read, forget
 		</title>
 		<link rel="icon" href="/favicon.ico" />
 		<% include headRollbar %>
-			<% include headBootstrap %>
-				<% include headGoogleAnalytics %>
-					<% include headTimeago %>
+		<% include headBootstrap %>
+		<% include headGoogleAnalytics %>
+		<% include headTimeago %>
 	</head>
 	<body>
 		<div class="container">
