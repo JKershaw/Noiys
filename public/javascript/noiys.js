@@ -45,6 +45,11 @@ function post_status() {
 			if (xhr.status == 503) {
 				_rollbar.push("503 error saving status");
 				$("#main_error").show();
+			} else if (xhr.status == 400) {
+				$("#main_error").hide();
+				$('#post_status').prop('disabled', false);
+				$('#post_status').text("Not Posted ...");
+				setTimeout(set_posted_button, 3000);
 			} else {
 				$("#main_error").hide();
 			}

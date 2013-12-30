@@ -19,18 +19,24 @@ module.exports = function(app) {
 				votes: 0
 			};
 
-			noiysDatabase.saveStatus(status, function(saved) {
+			if (encodedText != "")
+			{
 
-				var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+				noiysDatabase.saveStatus(status, function(saved) {
 
-				if (quotes) {
-					console.log("there are quotes!");
-					process_quotes(saved.id, quotes);
-				}
+					var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
 
-				response.send(String(saved.id));
+					if (quotes) {
+						console.log("there are quotes!");
+						process_quotes(saved.id, quotes);
+					}
 
-			});
+					response.send(String(saved.id));
+
+				});
+			} else {
+				response.send(400);
+			}
 		});
 	});
 

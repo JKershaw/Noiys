@@ -42,6 +42,21 @@ describe('Posting to /status', function(done) {
 
 	var statusID, statusText = "This is a test status";
 
+	it("with an invalid status gives a 400", function(done) {
+
+		var post_details = {
+			url: 'http://localhost:3000/status',
+			form: {
+				text: ""
+			}
+		}
+
+		request.post(post_details, function(error, response, body) {
+			assert.equal(400, response.statusCode);
+			done();
+		});
+	});
+
 	it("with a valid status gives a 200", function(done) {
 
 		var post_details = {
