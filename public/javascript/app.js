@@ -1,6 +1,5 @@
 define(['jquery', 'timeago', 'bootstrap'], function($) {
 
-
 	var paused = false;
 	var feed_type = "random";
 	var random_status_timeout, chronological_status_timeout;
@@ -9,7 +8,6 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 	var init_chronological = false;
 	var my_statuses = Array();
 	var my_stars = Array();
-	var current_tab = "random";
 
 	$(document).ready(function() {
 		$("#post_status").click(function() {
@@ -59,7 +57,7 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 		});
 
 		$('body').on('click', 'a.button-show-replies', function() {
-			show_replies($(this).attr('data-id'), $(this).attr('data-responses-array').split(","));
+			show_replies($(this).attr('data-id'), $(this).attr('data-wrapper'), $(this).attr('data-responses-array').split(","));
 		});
 
 		$('body').on('click', 'a.button-search', function() {
@@ -372,7 +370,7 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 
 			responses_array_string = status.responses.join(",");
 
-			response_string = "<a style=\"cursor:pointer\" class=\"button-show-replies\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
+			response_string = "<a style=\"cursor:pointer\" class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
 
 		}
 
@@ -443,10 +441,10 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 		$('#post_status').text("Post Status");
 	}
 
-	function show_replies(status_id, replies_ids) {
+	function show_replies(status_id, wrapper, replies_ids) {
 		for (var i = 0; i < replies_ids.length; i++) {
 			$.get("status/" + replies_ids[i], function(status) {
-				publish_status(status, "#" + status_id + " .responses", true);
+				publish_status(status, wrapper + " #" + status_id + " .responses", true);
 			});
 		}
 	}
@@ -502,7 +500,7 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 
 	function refresh_my_statuses() {
 		console.debug("Refreshing my statuses");
-		
+
 		for (var i = 0; i < my_statuses.length; i++) {
 			(function(i) {
 				var statusID = my_statuses[i];
