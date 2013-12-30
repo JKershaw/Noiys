@@ -8,75 +8,56 @@ var my_statuses = Array();
 var my_stars = Array();
 var current_tab = "random";
 
-$(document).ready(function() {
+function load_older_chronological_statuses_clicked() {
+	$("#load_older_statuses").text("Loading...");
+	$('#load_older_statuses').prop('disabled', true);
+	get_and_show_older_chronological_statuses(function() {
+		$("#load_older_statuses").text("Load older statuses");
+		$('#load_older_statuses').prop('disabled', false);
+	});
+}
 
-	$("#post_status").click(function() {
-		$('#post_status').prop('disabled', true);
-		$('#post_status').text("Posting ...");
+function toggle_pause() {
+	if (paused === true) {
+		paused = false;
+		$('#pause_feed').text("Pause Feed");
+	} else {
+		paused = true;
+		$('#pause_feed').text("Un-pause Feed");
+	}
+}
 
-		$.ajax({
-			url: '/status',
-			type: 'POST',
-			contentType: 'application/json',
-			data: JSON.stringify({
-				text: $('#statusText').val()
-			}),
-			success: function(savedStatusID) {
-				save_my_status(savedStatusID);
-			},
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					_rollbar.push("503 error saving status");
-					$("#main_error").show();
-				} else {
-					$("#main_error").hide();
-				}
+function post_status() {
+	$('#post_status').prop('disabled', true);
+	$('#post_status').text("Posting ...");
+
+	$.ajax({
+		url: '/status',
+		type: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify({
+			text: $('#statusText').val()
+		}),
+		success: function(savedStatusID) {
+			save_my_status(savedStatusID);
+		},
+		complete: function(xhr, textStatus) {
+			if (xhr.status == 503) {
+				_rollbar.push("503 error saving status");
+				$("#main_error").show();
+			} else {
+				$("#main_error").hide();
 			}
-		}).done(function(data) {
-			$('#post_status').prop('disabled', false);
-			$('#post_status').text("Posted!");
-			$('#statusText').val("");
-			get_and_show_chronological_status(5);
-
-			setTimeout(set_posted_button, 3000);
-		});
-	});
-
-	$("#pause_feed").click(function() {
-		if (paused === true) {
-			paused = false;
-			$('#pause_feed').text("Pause Feed");
-		} else {
-			paused = true;
-			$('#pause_feed').text("Un-pause Feed");
 		}
+	}).done(function(data) {
+		$('#post_status').prop('disabled', false);
+		$('#post_status').text("Posted!");
+		$('#statusText').val("");
+		get_and_show_chronological_status(5);
+
+		setTimeout(set_posted_button, 3000);
 	});
-
-	$("#load_older_statuses").click(function() {
-		$("#load_older_statuses").text("Loading...");
-		$('#load_older_statuses').prop('disabled', true);
-		get_and_show_older_chronological_statuses(function() {
-			$("#load_older_statuses").text("Load older statuses");
-			$('#load_older_statuses').prop('disabled', false);
-		});
-	});
-
-	$("#search_statuses_button").click(function() {
-		run_search();
-	});
-
-	$("#search_statuses_text").keyup(function(event) {
-		if (event.keyCode == 13) {
-			run_search();
-		}
-	});
-
-	random_status_timeout = setTimeout(get_and_show_random_status, 10);
-	inititalise_my_stars();
-	inititalise_my_statuses();
-	select_initial_tab();
-});
-
+}
 
 function change_feed_type(selected_feed_type) {
 	$('.nav-tabs li').removeClass("active");
