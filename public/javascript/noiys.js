@@ -9,6 +9,68 @@ var my_stars = Array();
 var current_tab = "random";
 
 $(document).ready(function() {
+
+	$("#post_status").click(function() {
+		$('#post_status').prop('disabled', true);
+		$('#post_status').text("Posting ...");
+
+		$.ajax({
+			url: '/status',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({
+				text: $('#statusText').val()
+			}),
+			success: function(savedStatusID) {
+				save_my_status(savedStatusID);
+			},
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 503) {
+					_rollbar.push("503 error saving status");
+					$("#main_error").show();
+				} else {
+					$("#main_error").hide();
+				}
+			}
+		}).done(function(data) {
+			$('#post_status').prop('disabled', false);
+			$('#post_status').text("Posted!");
+			$('#statusText').val("");
+			get_and_show_chronological_status(5);
+
+			setTimeout(set_posted_button, 3000);
+		});
+	});
+
+	$("#pause_feed").click(function() {
+		if (paused === true) {
+			paused = false;
+			$('#pause_feed').text("Pause Feed");
+		} else {
+			paused = true;
+			$('#pause_feed').text("Un-pause Feed");
+		}
+	});
+
+	$("#load_older_statuses").click(function() {
+		$("#load_older_statuses").text("Loading...");
+		$('#load_older_statuses').prop('disabled', true);
+		get_and_show_older_chronological_statuses(function() {
+			$("#load_older_statuses").text("Load older statuses");
+			$('#load_older_statuses').prop('disabled', false);
+		});
+	});
+
+	$("#search_statuses_button").click(function() {
+		run_search();
+	});
+
+	$("#search_statuses_text").keyup(function(event) {
+		if (event.keyCode == 13) {
+			run_search();
+		}
+	});
+
 	random_status_timeout = setTimeout(get_and_show_random_status, 10);
 	inititalise_my_stars();
 	inititalise_my_statuses();
@@ -86,14 +148,20 @@ function get_and_show_chronological_status(calling_point) {
 			console.debug("Finished!");
 			publish_status(status, "#chronological_statuses", true);
 
-			chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(1)}, 5000);
+			chronological_status_timeout = setTimeout(function() {
+				get_and_show_chronological_status(1)
+			}, 5000);
 		}).fail(function() {
 			console.debug("No new statuses found");
-			chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(2)}, 10000);
+			chronological_status_timeout = setTimeout(function() {
+				get_and_show_chronological_status(2)
+			}, 10000);
 		});
 
 	} else {
-		chronological_status_timeout = setTimeout(function(){get_and_show_chronological_status(3)}, 5000);
+		chronological_status_timeout = setTimeout(function() {
+			get_and_show_chronological_status(3)
+		}, 5000);
 	}
 }
 
@@ -154,7 +222,7 @@ function get_and_show_older_chronological_statuses(callback) {
 			}
 		}).done(function(statuses) {
 			console.debug(statuses);
-			for (var i = statuses.length-1; i >= 0; i--) {
+			for (var i = statuses.length - 1; i >= 0; i--) {
 
 				if (statuses[i].timestamp < oldest_status_timestamp) {
 					oldest_status_timestamp = statuses[i].timestamp;
@@ -200,67 +268,6 @@ function intitialise_chronological() {
 		});
 	}
 }
-
-$("#post_status").click(function() {
-	$('#post_status').prop('disabled', true);
-	$('#post_status').text("Posting ...");
-
-	$.ajax({
-		url: '/status',
-		type: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify({
-			text: $('#statusText').val()
-		}),
-		success: function(savedStatusID) {
-			save_my_status(savedStatusID);
-		},
-		complete: function(xhr, textStatus) {
-			if (xhr.status == 503) {
-				_rollbar.push("503 error saving status");
-				$("#main_error").show();
-			} else {
-				$("#main_error").hide();
-			}
-		}
-	}).done(function(data) {
-		$('#post_status').prop('disabled', false);
-		$('#post_status').text("Posted!");
-		$('#statusText').val("");
-		get_and_show_chronological_status(5);
-
-		setTimeout(set_posted_button, 3000);
-	});
-});
-
-$("#pause_feed").click(function() {
-	if (paused === true) {
-		paused = false;
-		$('#pause_feed').text("Pause Feed");
-	} else {
-		paused = true;
-		$('#pause_feed').text("Un-pause Feed");
-	}
-});
-
-$("#load_older_statuses").click(function() {
-	$("#load_older_statuses").text("Loading...");
-	$('#load_older_statuses').prop('disabled', true);
-	get_and_show_older_chronological_statuses(function() {
-		$("#load_older_statuses").text("Load older statuses");
-		$('#load_older_statuses').prop('disabled', false);
-	});
-});
-
-$("#search_statuses_button").click(function() {
-	run_search();
-});
-
-$("#search_statuses_text").keyup(function(event) {
-	if (event.keyCode == 13) {
-		run_search();
-	}
-});
 
 function run_search() {
 	$("#search_statuses_button").text("Searching...");
