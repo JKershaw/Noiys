@@ -21,8 +21,7 @@ describe('Given I visit the root URL', function(done) {
 		expect(browser.query('#tab-chronological.active')).not.to.exist;
 	});
 
-	it("a random status appears", function() {
-							
+	it("a random status appears", function() {					
 		browser.wait(browser.query('#random_statuses .status_panel'), function() {
 			expect(browser.query('#random_statuses .status_panel')).to.exist;
 		});

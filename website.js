@@ -12,6 +12,7 @@ app.use(express.bodyParser());
 app.use(express.static(ASSETS_DIRECTORY));
 
 require("./routes/home")(app);
+
 require("./routes/status")(app);
 require("./routes/statuses")(app);
 require("./routes/vote")(app);

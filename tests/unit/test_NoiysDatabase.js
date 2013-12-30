@@ -313,8 +313,6 @@ test("I can search for statuses by keyword", function(done) {
 
 		noiysDatabase.findStatusesBySearch("zebra", function(statuses) {
 
-			console.log(statuses);
-
 			var foundStatus1 = false;
 
 			for (var i = 0; i < statuses.length; i++) {
