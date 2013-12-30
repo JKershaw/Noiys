@@ -23,6 +23,10 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 			}
 		});
 
+		$("#top-nav-tabs > li > a").click(function() {
+			change_feed_type($(this).attr('data-feed'));
+		});
+
 		random_status_timeout = setTimeout(get_and_show_random_status, 10);
 		inititalise_my_stars();
 		inititalise_my_statuses();
