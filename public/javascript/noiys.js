@@ -272,7 +272,7 @@ function run_search() {
 }
 
 function publish_status(status, wrapper, prepend) {
-	// delete existing posts with this ID
+
 	$(wrapper + " #" + status.id).remove();
 
 	if (prepend) {
