@@ -280,7 +280,7 @@ function publish_status(status, wrapper, prepend) {
 	var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 	if (quote_to_hide_selector) {
-		quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" onclick=\"show_hidden_quote('" + status.id + "', '" + wrapper + "')\">Show quote</a></div></div>");
+		quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
 		quote_to_hide_selector.hide();
 	}
 
@@ -305,36 +305,36 @@ function generate_status_html(status, wrapper) {
 			response_string = String(status.responses.length) + " replies";
 		}
 
-		responses_array_string = "'" + status.responses.join("', '") + "'";
+		responses_array_string = status.responses.join(",");
 
-		response_string = "<a style=\"cursor:pointer\" onclick=\"show_replies('" + status.id + "', [" + responses_array_string + "])\">" + response_string + "</a>";
+		response_string = "<a style=\"cursor:pointer\" class=\"button-show-replies\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
 
 	}
 
 	var hashtag_regex = /&#35;\w*/g
 
 	status.text = status.text.replace(hashtag_regex, function(match) {
-		return "<a style=\"cursor:pointer;\" onclick=\"goto_search('" + match + "')\" >" + match + "</a>";
+		return "<a style=\"cursor:pointer;\" class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
 	});
 
 	var text_string = "<p>" + status.text + " </p>";
 
 	var votes_string = "<span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>";
 
-	var verb_string = "<a style=\"cursor:pointer;\" onclick=\"vote('" + status.id + "')\" >VERB</a>";
+	var verb_string = "<a style=\"cursor:pointer;\" class=\"button-vote\" data-id='" + status.id + "' >VERB</a>";
 
-	var reply_string = "<a style=\"cursor:pointer\" onclick=\"reply('" + status.id + "');\"><span class=\"glyphicon glyphicon-retweet\"></a>";
+	var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
 
 	var trash_string = "";
 
 	if (wrapper == "#me_statuses") {
-		trash_string = "<a style=\"cursor:pointer; float:right;\" onclick=\"remove_my_status('" + status.id + "');\"><span class=\"glyphicon glyphicon-remove\"></span></a>";
+		trash_string = "<a style=\"cursor:pointer; float:right;\" class=\"button-remove-my-status\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-remove\"></span></a>";
 	}
 
 	if (is_starred(status.id)) {
-		var star_string = "<a style=\"cursor:pointer\" onclick=\"star('" + status.id + "');\"><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star\"></a>";
+		var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star\"></a>";
 	} else {
-		var star_string = "<a style=\"cursor:pointer\" onclick=\"star('" + status.id + "');\"><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star-empty\"></a>";
+		var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star-empty\"></a>";
 	}
 
 
