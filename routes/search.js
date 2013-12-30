@@ -14,9 +14,6 @@ module.exports = function(app) {
 
 		HTMLEncoder().encode(request.params.search_term, function(search_term) {
 
-			//can be removed after 30th dec 3pm
-			search_term = search_term.replace("&#35;", "");
-			
 			console.log("SEARCHING statuses for: ", search_term);
 
 			noiysDatabase.findStatusesBySearch(search_term, function(statuses) {
