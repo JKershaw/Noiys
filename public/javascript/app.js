@@ -1,4 +1,4 @@
-define(['jquery', 'timeago', 'bootstrap'], function($) {
+define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 	var paused = false;
 	var feed_type = "random";
@@ -11,7 +11,9 @@ define(['jquery', 'timeago', 'bootstrap'], function($) {
 
 	$(document).ready(function() {
 		$("#post_status").click(function() {
-			post_status();
+			noiseApi.getStatus("testing", function(){
+				post_status();
+			});
 		});
 
 		$("#pause_feed").click(function() {
