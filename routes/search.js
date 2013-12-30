@@ -28,8 +28,8 @@ module.exports = function(app) {
 					var finished = _.after(statuses.length, function() {
 
 						messages.sort(function compare(a, b) {
-							if (a.timestamp > b.timestamp) return -1;
-							if (a.timestamp < b.timestamp) return 1;
+							if (a.timestamp < b.timestamp) return -1;
+							if (a.timestamp > b.timestamp) return 1;
 							return 0;
 						});
 

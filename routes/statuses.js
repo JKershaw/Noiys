@@ -5,29 +5,24 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 
 module.exports = function(app) {
 
-	var statusMessageFactory = new StatusMessageFactory();
 	var number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
-
-		var statusMessageFactory = new StatusMessageFactory();
-
 		console.log("GETTING recent statuses");
-
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
-				handle_returned_statuses(statuses, response, "asc");
+				handle_returned_statuses(statuses, response);
 			});
 		} else {
 			noiysDatabase.findRecentStatuses(number_of_statuses, function(statuses) {
-				handle_returned_statuses(statuses, response, "desc");
+				handle_returned_statuses(statuses, response);
 			});
 		}
 	});
 };
 
-function handle_returned_statuses(statuses, response, order) {
+function handle_returned_statuses(statuses, response) {
 	var messages = new Array(),
 		statusMessageFactory = new StatusMessageFactory();
 
