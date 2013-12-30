@@ -16,54 +16,38 @@ module.exports = function(app) {
 
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
-
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
-
-				var messages = new Array();
-
-				var finished = _.after(statuses.length, function() {
-
-					messages.sort(function compare(a, b) {
-						if (a.timestamp > b.timestamp) return -1;
-						if (a.timestamp < b.timestamp) return 1;
-						return 0;
-					});
-
-					response.contentType('json');
-					response.send(messages);
-				});
-
-				_.each(statuses, function(status) {
-					statusMessageFactory.create(status, function(message) {
-						messages.push(message);
-						finished();
-					});
-				});
+				handle_returned_statuses(statuses, response, "asc");
 			});
 		} else {
 			noiysDatabase.findRecentStatuses(number_of_statuses, function(statuses) {
-
-				var messages = new Array();
-
-				var finished = _.after(statuses.length, function() {
-
-					messages.sort(function compare(a, b) {
-						if (a.timestamp < b.timestamp) return -1;
-						if (a.timestamp > b.timestamp) return 1;
-						return 0;
-					});
-
-					response.contentType('json');
-					response.send(messages);
-				});
-
-				_.each(statuses, function(status) {
-					statusMessageFactory.create(status, function(message) {
-						messages.push(message);
-						finished();
-					});
-				});
+				handle_returned_statuses(statuses, response, "desc");
 			});
 		}
 	});
 };
+
+function handle_returned_statuses(statuses, response, order) {
+	var messages = new Array(),
+		statusMessageFactory = new StatusMessageFactory();
+
+
+	var finished = _.after(statuses.length, function() {
+
+		messages.sort(function compare(a, b) {
+			if (a.timestamp < b.timestamp) return -1;
+			if (a.timestamp > b.timestamp) return 1;
+			return 0;
+		});
+
+		response.contentType('json');
+		response.send(messages);
+	});
+
+	_.each(statuses, function(status) {
+		statusMessageFactory.create(status, function(message) {
+			messages.push(message);
+			finished();
+		});
+	});
+}

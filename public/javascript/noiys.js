@@ -154,7 +154,7 @@ function get_and_show_older_chronological_statuses(callback) {
 			}
 		}).done(function(statuses) {
 			console.debug(statuses);
-			for (var i = 0; i < statuses.length; i++) {
+			for (var i = statuses.length-1; i >= 0; i--) {
 
 				if (statuses[i].timestamp < oldest_status_timestamp) {
 					oldest_status_timestamp = statuses[i].timestamp;
