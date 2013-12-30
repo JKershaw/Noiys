@@ -1,4 +1,5 @@
 set -e
+pkill node &
 mongo statuses --eval "db.dropDatabase()"
 mocha tests/unit/ --ui qunit --reporter nyan
 foreman start &

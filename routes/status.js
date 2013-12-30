@@ -9,7 +9,7 @@ module.exports = function(app) {
 	var statusMessageFactory = new StatusMessageFactory();
 
 	app.post('/status', function(request, response) {
-		console.log("POSTING a status");
+		console.log("POSTING a status: ");
 
 		HTMLEncoder().encode(request.body.text, function(encodedText) {
 

@@ -206,26 +206,11 @@ test("I can get the most recent statuses back", function(done) {
 
 				noiysDatabase.findRecentStatuses(expectedNumberOfResponses, function(statuses) {
 
-					var foundStatus1 = false,
-						foundStatus2 = false,
-						foundStatus3 = false;
-
 					assert.equal(statuses.length, expectedNumberOfResponses);
 
 					for (var i = 0; i < statuses.length; i++) {
-						if (statuses[i].id == status1ID) {
-							foundStatus1 = true;
-						}
-						if (statuses[i].id == status2ID) {
-							foundStatus2 = true;
-						}
-						if (statuses[i].id == status3ID) {
-							foundStatus3 = true;
-						}
+						assert.equal(statuses[i].timestamp >= latestTimestamp, true);
 					}
-
-					assert.equal(foundStatus3, false);
-					assert.equal(statuses[0].timestamp >= latestTimestamp, true);
 					done();
 
 				});
