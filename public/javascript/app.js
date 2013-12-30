@@ -11,9 +11,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 	$(document).ready(function() {
 		$("#post_status").click(function() {
-			noiseApi.getStatus("testing", function(){
-				post_status();
-			});
+			post_status();
 		});
 
 		$("#pause_feed").click(function() {
@@ -95,37 +93,29 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		$('#post_status').prop('disabled', true);
 		$('#post_status').text("Posting ...");
 
-		$.ajax({
-			url: '/status',
-			type: 'POST',
-			contentType: 'application/json',
-			data: JSON.stringify({
-				text: $('#statusText').val()
-			}),
-			success: function(savedStatusID) {
-				console.log("post_status", my_statuses);
-				save_my_status(savedStatusID);
-			},
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					_rollbar.push("503 error saving status");
-					$("#main_error").show();
-				} else if (xhr.status == 400) {
-					$("#main_error").hide();
-					$('#post_status').prop('disabled', false);
-					$('#post_status').text("Not Posted ...");
-					setTimeout(set_posted_button, 3000);
-				} else {
-					$("#main_error").hide();
-				}
-			}
-		}).done(function(data) {
-			$('#post_status').prop('disabled', false);
-			$('#post_status').text("Posted!");
-			$('#statusText').val("");
-			get_and_show_chronological_status(5);
+		noiseApi.postStatus($('#statusText').val(), function(xhr) {
+			if (xhr.status == 503) {
+				_rollbar.push("503 error saving status");
+				$("#main_error").show();
 
-			setTimeout(set_posted_button, 3000);
+			} else if (xhr.status == 400) {
+				$("#main_error").hide();
+				$('#post_status').prop('disabled', false);
+				$('#post_status').text("Not Posted ...");
+				setTimeout(set_posted_button, 3000);
+
+			} else if (xhr.status == 200) {
+				$('#post_status').prop('disabled', false);
+				$('#post_status').text("Posted!");
+				$('#statusText').val("");
+
+				get_and_show_chronological_status(5);
+				setTimeout(set_posted_button, 3000);
+				save_my_status(xhr.responseText);
+			} else {
+
+				$("#main_error").hide();
+			}
 		});
 	}
 
