@@ -281,7 +281,7 @@ function publish_status(status, wrapper, prepend) {
 	} else {
 		console.debug("appending", status.id);
 		$(wrapper + " .final").before(generate_status_html(status, wrapper));
-		$(wrapper + " div").show();
+		$(wrapper + " > div").show();
 	}
 
 	var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
