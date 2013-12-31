@@ -13,6 +13,8 @@ module.exports = function(app) {
 
 		HTMLEncoder().encode(request.body.text, function(encodedText) {
 
+			encodedText = encodedText.trim();
+			
 			var status = {
 				text: encodedText,
 				timestamp: Math.round(new Date().getTime() / 1000),
