@@ -18,7 +18,8 @@ require("./routes/statuses")(app);
 require("./routes/vote")(app);
 require("./routes/search")(app);
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 3000;
+console.log("Port: ", port);
 app.listen(port, function() {
 	console.log("Listening on " + port);
 	console.log("Environment: ", process.env.environment);

@@ -76,10 +76,14 @@ module.exports = function(app) {
 		} else {
 			console.log("Getting a RANDOM status");
 			get_random_status(function(status) {
-				statusMessageFactory.create(status, function(message) {
-					response.contentType('json');
-					response.send(message);
-				});
+				if (status){
+					statusMessageFactory.create(status, function(message) {
+						response.contentType('json');
+						response.send(message);
+					});
+				} else {
+					response.send(404);
+				}
 			});
 		}
 	});
@@ -88,12 +92,17 @@ module.exports = function(app) {
 function get_random_status(callback) {
 
 	noiysDatabase.getStatuses(function(statuses) {
-		var status = statuses[Math.floor(Math.random() * statuses.length)];
 
-		if (status.length > 5) {
-			callback(status);
+		if (statuses.length > 0) {
+			var status = statuses[Math.floor(Math.random() * statuses.length)];
+
+			if (status.length > 5) {
+				callback(status);
+			} else {
+				callback(statuses[Math.floor(Math.random() * statuses.length)]);
+			}
 		} else {
-			callback(statuses[Math.floor(Math.random() * statuses.length)]);
+			callback();
 		}
 
 	});

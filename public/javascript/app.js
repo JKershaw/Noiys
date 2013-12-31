@@ -32,6 +32,12 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 			}
 		});
 
+		$("#button-go-up").click(function() {
+			$('html, body').animate({
+				scrollTop: 0
+			}, 'fast');
+		});
+
 		$("#top-nav-tabs > li > a").click(function() {
 			change_feed_type($(this).attr('data-feed'));
 		});
