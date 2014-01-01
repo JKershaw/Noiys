@@ -67,8 +67,9 @@ module.exports = function(app) {
 
 					if (status)
 					{
+
 						statusMessageFactory.create(status, function(message) {
-							var model = {message: message};
+							var model = {text: message.text};
 							response.render('individual-status.ejs', model);
 						});
 					} else {
