@@ -54,34 +54,40 @@ define(['noise-api', 'noise-publish-status'], function(noiseApi, noisePublishSta
 	
 	function get_my_statuses(callback) {
 
-		noiseApi.getStatuses(my_statuses, function(statuses){
-			console.log("got statuses");
+		if (my_statuses.length > 0)
+		{
+			noiseApi.getStatuses(my_statuses, function(statuses){
+				console.log("got statuses");
 
-			if (statuses) {
-				var found_statusIDs_array = Array();
+				if (statuses) {
+					var found_statusIDs_array = Array();
 
-				for(var i=0; i < statuses.length; i++)
-				{
-					found_statusIDs_array.push(statuses[i].id);	
+					for(var i=0; i < statuses.length; i++)
+					{
+						found_statusIDs_array.push(statuses[i].id);	
+					}
+
+					for(var i=0; i < my_statuses.length; i++)
+					{
+						var index = found_statusIDs_array.indexOf(my_statuses[i]);
+						if (index <= -1) {
+							remove_my_status(my_statuses[i]);
+						} 			
+					}
+					
+				} else if(statuses === false) {
+					for(var i=0; i < my_statuses.length; i++)
+					{
+						remove_my_status(my_statuses[i]);			
+					}
 				}
 
-				for(var i=0; i < my_statuses.length; i++)
-				{
-					var index = found_statusIDs_array.indexOf(my_statuses[i]);
-					if (index <= -1) {
-						remove_my_status(my_statuses[i]);
-					} 			
-				}
-				
-			} else if(statuses === false) {
-				for(var i=0; i < my_statuses.length; i++)
-				{
-					remove_my_status(my_statuses[i]);			
-				}
-			}
-
-			callback(statuses);
-		});
+				callback(statuses);
+			});
+		} else {
+			callback([]);
+		}
+	
 	}
 	
 	return {

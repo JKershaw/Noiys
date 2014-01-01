@@ -168,7 +168,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 	function get_and_show_random_status() {
 
-		if (paused === false) {
+		if ((paused === false) && (feed_type == 'random')) {
 			noiseApi.getStatusRandom(function(status) {
 				noiseStatus.publish(status, "#random_statuses", true);
 				$("#main_error").hide();

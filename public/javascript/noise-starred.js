@@ -56,35 +56,40 @@ define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi
 
 	function get_my_starred_statuses(callback) {
 
-		noiseApi.getStatuses(my_stars, function(statuses){
-			console.log("got statuses");
+		if (my_stars.length > 0)
+		{
+			noiseApi.getStatuses(my_stars, function(statuses){
+				console.log("got statuses");
 
-			if (statuses) {
-				var found_statusIDs_array = Array();
+				if (statuses) {
+					var found_statusIDs_array = Array();
 
-				for(var i=0; i < statuses.length; i++)
-				{
-					found_statusIDs_array.push(statuses[i].id);	
+					for(var i=0; i < statuses.length; i++)
+					{
+						found_statusIDs_array.push(statuses[i].id);	
+					}
+
+					for(var i=0; i < my_stars.length; i++)
+					{
+						var index = found_statusIDs_array.indexOf(my_stars[i]);
+						if (index <= -1) {
+							console.log("removing star");
+							remove_my_star(my_stars[i]);
+						} 			
+					}
+					
+				} else if(statuses === false) {
+					for(var i=0; i < my_stars.length; i++)
+					{
+						remove_my_star(my_stars[i]);			
+					}
 				}
 
-				for(var i=0; i < my_stars.length; i++)
-				{
-					var index = found_statusIDs_array.indexOf(my_stars[i]);
-					if (index <= -1) {
-						console.log("removing star");
-						remove_my_star(my_stars[i]);
-					} 			
-				}
-				
-			} else if(statuses === false) {
-				for(var i=0; i < my_stars.length; i++)
-				{
-					remove_my_star(my_stars[i]);			
-				}
-			}
-
-			callback(statuses);
-		});
+				callback(statuses);
+			});
+		} else {
+			callback([]);
+		}
 	}
 	
 	return {
