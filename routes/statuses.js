@@ -8,10 +8,15 @@ module.exports = function(app) {
 	var number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
-		console.log("GETTING recent statuses");
+		console.log("GETTING statuses =>", request.query);
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
+				handle_returned_statuses(statuses, response);
+			});
+		} else if(request.query['IDs']) {
+			console.log("Several IDs given");
+			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
 				handle_returned_statuses(statuses, response);
 			});
 		} else {

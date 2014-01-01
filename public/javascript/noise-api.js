@@ -87,6 +87,24 @@ define(['jquery'], function($) {
 		});
 	}
 
+	function getStatuses(IDs, callback) {
+		$.ajax({
+			url: "statuses?IDs=" + IDs.join(','),
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "statuses?IDs=" + IDs.join(','));
+					callback();
+				}
+			}
+		});
+	}
+
 	function getStatusesBefore(timestamp, callback) {
 		$.ajax({
 			url: "statuses?before=" + timestamp,
@@ -132,6 +150,7 @@ define(['jquery'], function($) {
 		getStatusRandom: getStatusRandom,
 		getStatusSince: getStatusSince,
 
+		getStatuses: getStatuses,
 		getStatusesBefore: getStatusesBefore,
 		getStatusesSearch:getStatusesSearch
 	}

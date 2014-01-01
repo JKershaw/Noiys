@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noise-publish-status', 'timeago', 'bootstrap'], function($, _, noiseApi, noiseMine, noiseStarred, noisePublishStatus) {
+define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noise-status', 'timeago', 'bootstrap'], function($, _, noiseApi, noiseMine, noiseStarred, noiseStatus) {
 
 	var paused = false;
 	var feed_type = "random";
@@ -163,7 +163,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		if (paused === false) {
 			noiseApi.getStatusRandom(function(status) {
-				noisePublishStatus.publish_status(status, "#random_statuses", true);
+				noiseStatus.publish(status, "#random_statuses", true);
 				$("#main_error").hide();
 			});
 		}
@@ -182,7 +182,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 				$('#search_statuses_result').html('');
 
 				for (var i = 0; i < statuses.length; i++) {
-					noisePublishStatus.publish_status(statuses[i], "#search_statuses_result", true);
+					noiseStatus.publish(statuses[i], "#search_statuses_result", true);
 				}
 
 				$('#search_statuses_result>div').sort(function(a, b) {
@@ -217,7 +217,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 			noiseApi.getStatusSince(newest_status_timestamp, function(status) {
 				if (status) {
 					newest_status_timestamp = status.timestamp;
-					noisePublishStatus.publish_status(status, "#chronological_statuses", true);
+					noiseStatus.publish(status, "#chronological_statuses", true);
 
 					chronological_status_timeout = setTimeout(function() {
 						get_and_show_chronological_status(1)
@@ -256,7 +256,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 							oldest_status_timestamp = statuses[i].timestamp;
 						}
 
-						publish_status(statuses[i], "#chronological_statuses", false);
+						noiseStatus.publish(statuses[i], "#chronological_statuses", false);
 					}
 				} else if (statuses === false) {
 					console.debug("No older statuses found");
@@ -283,7 +283,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 						oldest_status_timestamp = statuses[i].timestamp;
 					}
 
-					noisePublishStatus.publish_status(statuses[i], "#chronological_statuses", true);
+					noiseStatus.publish(statuses[i], "#chronological_statuses", true);
 				}
 
 				$('#main_info').hide();
@@ -333,7 +333,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 	function show_replies(status_id, wrapper, replies_ids) {
 		for (var i = 0; i < replies_ids.length; i++) {
 			noiseApi.getStatus(replies_ids[i], function(status) {
-				publish_status(status, wrapper + " #" + status_id + " .responses", true);
+				noiseStatus.publish(status, wrapper + " #" + status_id + " .responses", true);
 			});
 		}
 	}
@@ -342,7 +342,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		noiseStarred.get_my_starred_statuses(function(statuses){
 			_.each(statuses, function(status) {
-				noisePublishStatus.publish_status(status, "#stars_statuses", true);
+				noiseStatus.publish(status, "#stars_statuses", true);
 			});
 
 			$('#stars_statuses>div').sort(function(a, b) {
@@ -355,7 +355,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		noiseMine.get_my_statuses(function(statuses){
 			_.each(statuses, function(status) {
-				noisePublishStatus.publish_status(status, "#me_statuses", true);
+				noiseStatus.publish(status, "#me_statuses", true);
 			});
 
 			$('#me_statuses>div').sort(function(a, b) {

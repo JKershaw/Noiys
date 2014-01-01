@@ -2,7 +2,7 @@
 var expect = require('chai').expect,
 	assert = require('assert'),
 	http = require('http'),
-	request = require('request');;
+	request = require('request');
 
 require('chai').should();
 

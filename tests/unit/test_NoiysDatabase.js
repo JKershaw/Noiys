@@ -190,7 +190,7 @@ test("I can get the most recent statuses back", function(done) {
 			timestamp: Math.round(new Date().getTime() / 1000) - 1,
 			votes: 0
 		},
-		latestTimestamp = Math.round(new Date().getTime() / 1000),
+		latestTimestamp = Math.round(new Date().getTime() / 1000)-1,
 		status3 = {
 			text: "This is a newer status to test most recent statuses back",
 			timestamp: latestTimestamp,
@@ -312,6 +312,67 @@ test("I can search for statuses by keyword", function(done) {
 			assert.equal(foundStatus1, true);
 
 			done();
+		});
+	});
+});
+
+test("I can get several statuses back", function(done) {
+
+	var status1 = {
+		text: "This is a status that is too old",
+		timestamp: Math.round(new Date().getTime() / 1000) - 7200,
+		votes: 0
+	},
+		status2 = {
+			text: "This is a new status to test most recent statuses back",
+			timestamp: Math.round(new Date().getTime() / 1000) - 1,
+			votes: 0
+		},
+		latestTimestamp = Math.round(new Date().getTime() / 1000)-1,
+		status3 = {
+			text: "This is a newer status to test most recent statuses back",
+			timestamp: latestTimestamp,
+			votes: 0
+		},
+		expectedNumberOfResponses = 3;
+
+	noiysDatabase.saveStatus(status1, function(result) {
+		var status1ID = result.id;
+		noiysDatabase.saveStatus(status2, function(result) {
+			var status2ID = result.id;
+			noiysDatabase.saveStatus(status3, function(result) {
+				var status3ID = result.id;
+
+				var status_array = [status1ID, status2ID, status3ID];
+				
+				noiysDatabase.getStatusesFromIDs(status_array, function(statuses) {
+
+					assert.equal(statuses.length, expectedNumberOfResponses);
+
+					var foundStatus1 = false,
+						foundStatus2 = false,
+						foundStatus3 = false;
+
+					for (var i = 0; i < statuses.length; i++) {
+						if (statuses[i].id == status1ID) {
+							foundStatus1 = true;
+						}
+						if (statuses[i].id == status2ID) {
+							foundStatus2 = true;
+						}
+						if (statuses[i].id == status3ID) {
+							foundStatus3 = true;
+						}
+					}
+
+					assert.equal(foundStatus1, true);
+					assert.equal(foundStatus2, true);
+					assert.equal(foundStatus3, true);
+
+					done();
+
+				});
+			});
 		});
 	});
 });

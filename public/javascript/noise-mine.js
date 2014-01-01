@@ -54,26 +54,36 @@ define(['noise-api', 'noise-publish-status'], function(noiseApi, noisePublishSta
 	
 	function get_my_statuses(callback) {
 
-		var my_statuses_array = Array();
+		noiseApi.getStatuses(my_statuses, function(statuses){
+			console.log("got statuses");
 
-		var finished = _.after(my_statuses.length, function() {
-			callback(my_statuses_array);
-		});
+			if (statuses) {
+				var found_statusIDs_array = Array();
 
-		_.each(my_statuses, function(statusID) {
-			(function(statusID) {
-				noiseApi.getStatus(statusID, function(status) {
-					if (status) {
-						my_statuses_array.push(status);
-					} else if (status === false) {
-						remove_my_status(statusID);
-					}
+				for(var i=0; i < statuses.length; i++)
+				{
+					found_statusIDs_array.push(statuses[i].id);	
+				}
 
-					finished();
-				});
-			})(statusID);
+				for(var i=0; i < my_statuses.length; i++)
+				{
+					var index = found_statusIDs_array.indexOf(my_statuses[i]);
+					if (index <= -1) {
+						remove_my_status(my_statuses[i]);
+					} 			
+				}
+				
+			} else if(statuses === false) {
+				for(var i=0; i < my_statuses.length; i++)
+				{
+					remove_my_status(my_statuses[i]);			
+				}
+			}
+
+			callback(statuses);
 		});
 	}
+	
 	return {
 		save_my_status: save_my_status,
 		remove_my_status: remove_my_status,

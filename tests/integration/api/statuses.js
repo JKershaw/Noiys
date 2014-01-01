@@ -78,4 +78,46 @@ describe('Getting from /statuses', function(done) {
 			});
 		});
 	});
+
+	it("I can get multiple statuses back from /statuses/ID1,ID2", function(done){
+
+		var status1ID, status2ID;
+
+		var post_details = {
+			url: 'http://localhost:3000/status',
+			form: {
+				text: "Status 1"
+			}
+		};
+		var post2_details = {
+			url: 'http://localhost:3000/status',
+			form: {
+				text: "Status 2"
+			}
+		};
+
+		request.post(post_details, function(error, response, body) {
+			status1ID = body;
+			request.post(post2_details, function(error, response, body) {
+				status2ID = body;
+				http.get('http://localhost:3000/statuses?IDs=' + status1ID + "," + status2ID, function(res) {
+					console.log("Got response: " + res.statusCode);
+					assert.equal(200, res.statusCode);
+
+					res.on("data", function(chunk) {
+						data = JSON.parse(chunk);
+
+						console.log(data);
+
+						assert.equal("Status 1", data[0].text);
+						assert.equal("Status 2", data[1].text);
+						done();
+
+					});
+				});
+			});
+		});
+
+		
+	});
 });

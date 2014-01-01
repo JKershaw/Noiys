@@ -56,28 +56,34 @@ define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi
 
 	function get_my_starred_statuses(callback) {
 
-		var my_starred_statuses = Array();
+		noiseApi.getStatuses(my_stars, function(statuses){
+			console.log("got statuses");
 
-		var finished = _.after(my_stars.length, function() {
-			console.log("finished finished");
-			callback(my_starred_statuses);
-		});
+			if (statuses) {
+				var found_statusIDs_array = Array();
 
-		_.each(my_stars, function(statusID) {
-			console.log("In the Each for ", statusID);
-			(function(statusID) {
-				noiseApi.getStatus(statusID, function(status) {
-					if (status) {
-						console.log("found ", statusID);
-						my_starred_statuses.push(status);
-					} else if (status === false) {
-						console.log("removing ", statusID);
-						remove_my_star(statusID);
-					}
+				for(var i=0; i < statuses.length; i++)
+				{
+					found_statusIDs_array.push(statuses[i].id);	
+				}
 
-					finished();
-				});
-			})(statusID);
+				for(var i=0; i < my_stars.length; i++)
+				{
+					var index = found_statusIDs_array.indexOf(my_stars[i]);
+					if (index <= -1) {
+						console.log("removing star");
+						remove_my_star(my_stars[i]);
+					} 			
+				}
+				
+			} else if(statuses === false) {
+				for(var i=0; i < my_stars.length; i++)
+				{
+					remove_my_star(my_stars[i]);			
+				}
+			}
+
+			callback(statuses);
 		});
 	}
 	
