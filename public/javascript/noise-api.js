@@ -9,11 +9,11 @@ define(['jquery'], function($) {
 				text: statusText
 			}),
 			complete: function(xhr, status) {
-				if (xhr.status == 400) {
-					callback(false);
-				} else if (xhr.status == 200) {
+				if (xhr.status == 200) {
 					callback(xhr.responseText);
-				} else {
+				} else if (xhr.status == 400) {
+					callback(false);
+				} else  {
 					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
 					callback();
 				}

@@ -115,6 +115,11 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		});
 	}
 
+	function set_posted_button() {
+		$('#post_status').text("Post Status");
+		$('#post_status').removeClass("btn-warning");
+	}
+
 	function change_feed_type(selected_feed_type) {
 		$('.nav-tabs li').removeClass("active");
 		$('.statuses_wrap').hide();
@@ -162,6 +167,35 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		random_status_timeout = setTimeout(get_and_show_random_status, 6000);
 	}
 
+	function get_and_show_search_statuses(search_term, callback) {
+		console.debug("get_and_show_search_statuses called");
+
+		noiseApi.getStatusesSearch(search_term, function(statuses) {
+		
+			$("#main_error").hide();
+
+			if (statuses) {
+				$('#search_statuses_result').html('');
+
+				for (var i = 0; i < statuses.length; i++) {
+					publish_status(statuses[i], "#search_statuses_result", true);
+				}
+
+				$('#search_statuses_result>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#search_statuses_result");
+
+			} else if (statuses === false){
+				$('#search_statuses_result').html('No statuses found.');
+			} else {
+				$('#search_statuses_result').html('Err, error?');
+				$("#main_error").show();
+			}
+			
+			callback();
+		});
+	}
+
 	function load_older_chronological_statuses_clicked() {
 		$("#load_older_statuses").text("Loading...");
 		$('#load_older_statuses').prop('disabled', true);
@@ -200,35 +234,6 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 				get_and_show_chronological_status(3)
 			}, 5000);
 		}
-	}
-
-	function get_and_show_search_statuses(search_term, callback) {
-		console.debug("get_and_show_search_statuses called");
-
-		noiseApi.getStatusesSearch(search_term, function(statuses) {
-		
-			$("#main_error").hide();
-
-			if (statuses) {
-				$('#search_statuses_result').html('');
-
-				for (var i = 0; i < statuses.length; i++) {
-					publish_status(statuses[i], "#search_statuses_result", true);
-				}
-
-				$('#search_statuses_result>div').sort(function(a, b) {
-					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-				}).appendTo("#search_statuses_result");
-
-			} else if (statuses === false){
-				$('#search_statuses_result').html('No statuses found.');
-			} else {
-				$('#search_statuses_result').html('Err, error?');
-				$("#main_error").show();
-			}
-			
-			callback();
-		});
 	}
 
 	function get_and_show_older_chronological_statuses(callback) {
@@ -294,6 +299,42 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		});
 	}
 
+	function show_hidden_quote(statusID, wrapper) {
+		$(wrapper + " #" + statusID + " * .show_quote_link").remove();
+		var quote_to_hide_selector = $(wrapper + " #" + statusID + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
+		quote_to_hide_selector.fadeIn();
+	}
+
+	function goto_search(search_term) {
+		change_feed_type("search");
+		$('#search_statuses_text').val(search_term);
+		run_search();
+	}
+
+	function vote(id) {
+		$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
+		$("#" + id + " .votes").css("color", "green");
+
+		noiseApi.postVote(id, function(posted){});
+	}
+
+	function reply(id) {
+		var newText = "@" + id + "\n" + $('#statusText').val();
+		$('#statusText').val(newText).focus();
+		$('html, body').animate({
+			scrollTop: 0
+		}, 'fast');
+	}
+
+	function show_replies(status_id, wrapper, replies_ids) {
+		for (var i = 0; i < replies_ids.length; i++) {
+			noiseApi.getStatus(replies_ids[i], function(status) {
+				publish_status(status, wrapper + " #" + status_id + " .responses", true);
+			});
+		}
+	}
+
+
 	function publish_status(status, wrapper, prepend) {
 
 		$(wrapper + " #" + status.id).remove();
@@ -318,15 +359,8 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 	}
 
-	function show_hidden_quote(statusID, wrapper) {
-		$(wrapper + " #" + statusID + " * .show_quote_link").remove();
-		var quote_to_hide_selector = $(wrapper + " #" + statusID + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
-		quote_to_hide_selector.fadeIn();
-	}
-
 	function generate_status_html(status, wrapper) {
 
-		//are there any responses?
 		var response_string = "";
 		if (status.responses) {
 			if (status.responses.length == 1) {
@@ -372,40 +406,6 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 
 		return "<div style=\"display:none\" class=\"panel panel-default status_panel\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
-	}
-
-	function goto_search(search_term) {
-		change_feed_type("search");
-		$('#search_statuses_text').val(search_term);
-		run_search();
-	}
-
-	function vote(id) {
-		$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
-		$("#" + id + " .votes").css("color", "green");
-
-		noiseApi.postVote(id, function(posted){});
-	}
-
-	function reply(id) {
-		var newText = "@" + id + "\n" + $('#statusText').val();
-		$('#statusText').val(newText).focus();
-		$('html, body').animate({
-			scrollTop: 0
-		}, 'fast');
-	}
-
-	function set_posted_button() {
-		$('#post_status').text("Post Status");
-		$('#post_status').removeClass("btn-warning");
-	}
-
-	function show_replies(status_id, wrapper, replies_ids) {
-		for (var i = 0; i < replies_ids.length; i++) {
-			noiseApi.getStatus(replies_ids[i], function(status) {
-				publish_status(status, wrapper + " #" + status_id + " .responses", true);
-			});
-		}
 	}
 
 	function save_my_status(statusID) {
@@ -497,12 +497,6 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		refresh_my_statuses();
 	}
 
-	function inititalise_my_stars() {
-		perma_load_my_stars();
-		refresh_my_stars();
-	}
-
-
 	function star(statusID) {
 		console.debug("toggling Star");
 
@@ -583,40 +577,4 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		perma_load_my_stars();
 		refresh_my_stars();
 	}
-
-	function timeSince(delta) {
-
-		var ps, pm, ph, pd, min, hou, sec, days;
-
-		if (delta <= 59) {
-			ps = (delta > 1) ? "s" : "";
-			return delta + " second" + ps
-		}
-
-		if (delta >= 60 && delta <= 3599) {
-			min = Math.floor(delta / 60);
-			sec = delta - (min * 60);
-			pm = (min > 1) ? "s" : "";
-			ps = (sec > 1) ? "s" : "";
-			return min + " minute" + pm + " " + sec + " second" + ps;
-		}
-
-		if (delta >= 3600 && delta <= 86399) {
-			hou = Math.floor(delta / 3600);
-			min = Math.floor((delta - (hou * 3600)) / 60);
-			ph = (hou > 1) ? "s" : "";
-			pm = (min > 1) ? "s" : "";
-			return hou + " hour" + ph + " " + min + " minute" + pm;
-		}
-
-		if (delta >= 86400) {
-			days = Math.floor(delta / 86400);
-			hou = Math.floor((delta - (days * 86400)) / 60);
-			pd = (days > 1) ? "s" : "";
-			ph = (hou > 1) ? "s" : "";
-			return delta + " day" + pd + " " + hou + " hour" + ph;
-		}
-
-	}
-
 });
