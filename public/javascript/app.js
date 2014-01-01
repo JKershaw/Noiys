@@ -135,8 +135,8 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		feed_type = selected_feed_type;
 		localStorage.current_tab = feed_type;
 
-		$('.nav li #extended').hide();
-		$('#tab-' + feed_type + " #extended").show();
+		$('.nav li .extended').hide();
+		$('#tab-' + feed_type + " .extended").show();
 		$('#tab-' + feed_type).addClass("active");
 		$('#' + feed_type + '_statuses').show();
 		$('#pause_feed').hide();
@@ -163,46 +163,37 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 	function get_and_show_random_status() {
 
 		if (paused === false) {
-			$.get("status", function(status) {
+			noiseApi.getStatusRandom(function(status) {
 				publish_status(status, "#random_statuses", true);
 				$("#main_error").hide();
 			});
 		}
 
 		random_status_timeout = setTimeout(get_and_show_random_status, 6000);
-
 	}
 
 	function get_and_show_chronological_status(calling_point) {
 		console.debug("get_and_show_chronological_status called from ", calling_point);
 
 		if ((paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
+			noiseApi.getStatusSince(newest_status_timestamp, function(xhr) {
+				if (xhr.status == 404) {
+					console.debug("No new statuses found");
+					chronological_status_timeout = setTimeout(function() {
+						get_and_show_chronological_status(2)
+					}, 10000);
+				} else if (xhr.status == 200) {
+					var status = JSON.parse(xhr.responseText);
+					newest_status_timestamp = status.timestamp;
+					publish_status(status, "#chronological_statuses", true);
 
-			$.ajax({
-				url: "status?since=" + newest_status_timestamp,
-				type: 'GET',
-				contentType: 'application/json',
-				complete: function(xhr, textStatus) {
-					if (xhr.status == 503) {
-						$("#main_error").show();
-						_rollbar.push("503 error: " + "status?since=" + newest_status_timestamp);
-					} else {
-						$("#main_error").hide();
-					}
+					chronological_status_timeout = setTimeout(function() {
+						get_and_show_chronological_status(1)
+					}, 5000);
+				} else {
+					$("#main_error").show();
+					_rollbar.push(xhr.status + " error: " + "status?since=" + newest_status_timestamp);
 				}
-			}).done(function(status) {
-				newest_status_timestamp = status.timestamp;
-				console.debug("Finished!");
-				publish_status(status, "#chronological_statuses", true);
-
-				chronological_status_timeout = setTimeout(function() {
-					get_and_show_chronological_status(1)
-				}, 5000);
-			}).fail(function() {
-				console.debug("No new statuses found");
-				chronological_status_timeout = setTimeout(function() {
-					get_and_show_chronological_status(2)
-				}, 10000);
 			});
 
 		} else {
@@ -215,39 +206,33 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 	function get_and_show_search_statuses(search_term, callback) {
 		console.debug("get_and_show_search_statuses called");
 
-		$.ajax({
-			url: "search/" + encodeURIComponent(search_term),
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 503) {
-					$("#main_error").show();
-					_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
-				} else {
-					$("#main_error").hide();
+		noiseApi.getStatusesSearch(search_term, function(xhr) {
+			if (xhr.status == 200) {
+				var statuses = JSON.parse(xhr.responseText);
+				console.debug(statuses);
+				$('#search_statuses_result').html('');
+
+				for (var i = 0; i < statuses.length; i++) {
+					publish_status(statuses[i], "#search_statuses_result", true);
 				}
+
+				$('#search_statuses_result>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#search_statuses_result");
+
+				$('#main_info').hide();
+				$("#main_error").hide();
+
+				callback();
+			} else if (xhr.status == 404) {
+				$('#search_statuses_result').html('No statuses found.');
+				$("#main_error").hide();
+				callback();
+			} else {
+				$("#main_error").show();
+				_rollbar.push(xhr.status + " error: " + "search=" + search_term);
 			}
-		}).done(function(statuses) {
-			console.debug(statuses);
-			$('#search_statuses_result').html('');
-
-			for (var i = 0; i < statuses.length; i++) {
-				publish_status(statuses[i], "#search_statuses_result", true);
-			}
-
-			$('#search_statuses_result>div').sort(function(a, b) {
-				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-			}).appendTo("#search_statuses_result");
-
-			$('#main_info').hide();
-			$("#main_error").hide();
-
-			callback();
-		}).fail(function() {
-			$('#search_statuses_result').html('No statuses found.');
-			callback();
 		});
-
 	}
 
 	function get_and_show_older_chronological_statuses(callback) {
@@ -255,38 +240,30 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 		if ((oldest_status_timestamp < Number.MAX_VALUE) && (feed_type == 'chronological')) {
 
-			$.ajax({
-				url: "statuses?before=" + oldest_status_timestamp,
-				type: 'GET',
-				contentType: 'application/json',
-				complete: function(xhr, textStatus) {
-					if (xhr.status == 503) {
-						$("#main_error").show();
-						_rollbar.push("503 error: " + "status?before=" + oldest_status_timestamp);
-					} else {
-						$("#main_error").hide();
-					}
-				}
-			}).done(function(statuses) {
-				console.debug(statuses);
-				for (var i = statuses.length - 1; i >= 0; i--) {
+			noiseApi.getStatusesBefore(oldest_status_timestamp, function(xhr) {
+				if (xhr.status == 200) {
+					var statuses = JSON.parse(xhr.responseText);
+					console.debug(statuses);
+					for (var i = statuses.length - 1; i >= 0; i--) {
 
-					if (statuses[i].timestamp < oldest_status_timestamp) {
-						oldest_status_timestamp = statuses[i].timestamp;
+						if (statuses[i].timestamp < oldest_status_timestamp) {
+							oldest_status_timestamp = statuses[i].timestamp;
+						}
+
+						publish_status(statuses[i], "#chronological_statuses", false);
 					}
 
-					publish_status(statuses[i], "#chronological_statuses", false);
+					$('#main_info').hide();
+					$("#main_error").hide();
+
+					callback();
+				} else if (xhr.status == 404) {
+					console.debug("No older statuses found");
+				} else {
+					$("#main_error").show();
+					_rollbar.push(xhr.status + " error: " + "status?before=" + oldest_status_timestamp);
 				}
-
-				$('#main_info').hide();
-				$("#main_error").hide();
-
-				callback();
-
-			}).fail(function() {
-				console.debug("No older statuses found");
 			});
-
 		}
 	}
 
@@ -415,16 +392,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
 		$("#" + id + " .votes").css("color", "green");
 
-		$.ajax({
-			url: '/vote',
-			type: 'POST',
-			contentType: 'application/json',
-			data: JSON.stringify({
-				id: id
-			})
-		}).done(function(data) {
-			//something?
-		});
+		noiseApi.postVote(id, function(){});
 	}
 
 	function reply(id) {
@@ -441,7 +409,8 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 	function show_replies(status_id, wrapper, replies_ids) {
 		for (var i = 0; i < replies_ids.length; i++) {
-			$.get("status/" + replies_ids[i], function(status) {
+			noiseApi.getStatus(replies_ids[i], function(xhr) {
+				var status = JSON.parse(xhr.responseText);
 				publish_status(status, wrapper + " #" + status_id + " .responses", true);
 			});
 		}
@@ -501,35 +470,32 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 		for (var i = 0; i < my_statuses.length; i++) {
 			(function(i) {
+
 				var statusID = my_statuses[i];
 
-				$.ajax({
-					url: "status/" + statusID,
-					type: 'GET',
-					contentType: 'application/json',
-					complete: function(xhr, textStatus) {
-						if (xhr.status == 503) {
-							$("#main_error").show();
-							_rollbar.push("503 error: " + "status" + statusID);
-						}
-						if (xhr.status == 404) {
-							console.debug("Status not found: ", statusID);
-							remove_my_status(statusID);
-						} else {
-							$("#main_error").hide();
-						}
+				noiseApi.getStatus(statusID, function(xhr) {
+					if (xhr.status == 404) {
+						$("#main_error").hide();
+						console.debug("Status not found: ", statusID);
+						remove_my_status(statusID);
+
+					} else if (xhr.status == 200) {
+						$("#main_error").hide();
+						var status = JSON.parse(xhr.responseText);
+						console.log("Status found: ", status);
+						publish_status(status, "#me_statuses", true);
+
+						// sort the page
+						$('#me_statuses>div').sort(function(a, b) {
+							return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+						}).appendTo("#me_statuses");
+
+					} else {
+						$("#main_error").show();
+						_rollbar.push(xhr.status + " error: " + "status" + statusID);
 					}
-				}).done(function(status) {
-					console.log("Status found: ", status);
-
-					publish_status(status, "#me_statuses", true);
-					$("#main_error").hide();
-
-					// sort the page
-					$('#me_statuses>div').sort(function(a, b) {
-						return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-					}).appendTo("#me_statuses");
 				});
+
 			})(i);
 		}
 
@@ -603,30 +569,23 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 			(function(i) {
 				var statusID = my_stars[i];
 
-				$.ajax({
-					url: "status/" + statusID,
-					type: 'GET',
-					contentType: 'application/json',
-					complete: function(xhr, textStatus) {
-						if (xhr.status == 503) {
-							$("#main_error").show();
-							_rollbar.push("503 error: " + "status" + statusID);
-						}
-						if (xhr.status == 404) {
-							console.debug("Status not found: ", statusID);
-							remove_my_star(statusID);
-						} else {
-							$("#main_error").hide();
-						}
-					}
-				}).done(function(status) {
-					console.log("Status found");
-					publish_status(status, "#stars_statuses", true);
-					$("#main_error").hide();
+				noiseApi.getStatus(statusID, function(xhr) {
+					if (xhr.status == 200) {
+						$("#main_error").hide();
+						var status = JSON.parse(xhr.responseText);
+						console.log("Status found");
+						publish_status(status, "#stars_statuses", true);
 
-					$('#stars_statuses>div').sort(function(a, b) {
-						return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-					}).appendTo("#stars_statuses");
+						$('#stars_statuses>div').sort(function(a, b) {
+							return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+						}).appendTo("#stars_statuses");
+					} else if (xhr.status == 404) {
+						console.debug("Status not found: ", statusID);
+						remove_my_star(statusID);
+					} else {
+						$("#main_error").show();
+						_rollbar.push(xhr.status + " error: " + "status" + statusID);
+					}
 				});
 			})(i);
 		}
