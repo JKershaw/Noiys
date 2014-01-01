@@ -9,7 +9,14 @@ define(['jquery'], function($) {
 				text: statusText
 			}),
 			complete: function(xhr, status) {
-				callback(xhr);
+				if (xhr.status == 400) {
+					callback(false);
+				} else if (xhr.status == 200) {
+					callback(xhr.responseText);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
+					callback();
+				}
 			}
 		});
 	}
@@ -23,14 +30,24 @@ define(['jquery'], function($) {
 				id: statusID
 			}),
 			complete: function(xhr, status) {
-				callback();
+				if (xhr.status == 200) {
+					callback(true);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "vote" + timestamp);
+					callback();
+				}
 			}
 		});
 	}
 
 	function getStatusRandom(callback) {
-		$.get("status", function(status) {
-			callback(status);
+		$.ajax({
+			url: "status",
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				callback(JSON.parse(xhr.responseText));
+			}
 		});
 	}
 
@@ -40,7 +57,14 @@ define(['jquery'], function($) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				callback(xhr);
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
+					callback();
+				}
 			}
 		});
 	}
@@ -51,7 +75,14 @@ define(['jquery'], function($) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				callback(xhr);
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "status?since=" + timestamp);
+					callback();
+				}
 			}
 		});
 	}
@@ -62,7 +93,14 @@ define(['jquery'], function($) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				callback(xhr);
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "statuses?before=" + timestamp);
+					callback();
+				}
 			}
 		});
 	}
@@ -74,7 +112,14 @@ define(['jquery'], function($) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				callback(xhr);
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "search=" + search_term);
+					callback();
+				}
 			}
 		});
 	}
