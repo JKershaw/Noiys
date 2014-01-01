@@ -46,18 +46,39 @@ module.exports = function(app) {
 
 		console.log("GETTING a specific status: ", request.params.ID);
 
-		noiysDatabase.findStatus(request.params.ID, function(status) {
+		
 			
-			if (status)
-			{
-				statusMessageFactory.create(status, function(message) {
-					response.contentType('json');
-					response.send(message);
-				});
-			} else {
-				response.send(404);
-			}
-		});
+			noiysDatabase.findStatus(request.params.ID, function(status) {
+
+				var requestType = request.get('Content-Type');
+				if (requestType && (requestType.indexOf('json') > -1)) {
+			
+					if (status)
+					{
+						statusMessageFactory.create(status, function(message) {
+							response.contentType('json');
+							response.send(message);
+						});
+					} else {
+						response.send(404);
+					}
+
+				} else {
+
+					if (status)
+					{
+						statusMessageFactory.create(status, function(message) {
+							var model = {message: message};
+							response.render('individual-status.ejs', model);
+						});
+					} else {
+						response.render('individual-status-404.ejs');
+					}					
+				}
+
+			});
+		
+
 	});
 
 	app.get('/status', function(request, response) {

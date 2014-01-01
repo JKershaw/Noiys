@@ -53,6 +53,8 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 		var verb_string = "<a style=\"cursor:pointer;\" class=\"button-vote\" data-wrapper=\"" + wrapper + "\" data-id='" + status.id + "' >VERB</a>";
 
 		var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
+		
+		var link_string = "<a class=\"button-link\" target=\"_blank\" href=\"status/" + status.id + "\"><span class=\"glyphicon glyphicon-link\"></a>";
 
 		var trash_string = "";
 
@@ -70,7 +72,7 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 		var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
 
 
-		return "<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
+		return "<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "&nbsp;&nbsp;&nbsp;" + link_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
 	}
 
 	return {
