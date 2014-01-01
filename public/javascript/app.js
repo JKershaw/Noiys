@@ -77,8 +77,15 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		noiseMine.inititalise_my_statuses();
 		refresh_my_statuses();
 
+		hide_loding_page();
+
 		random_status_timeout = setTimeout(get_and_show_random_status, 10);
 	});
+	
+	function hide_loding_page() {
+		$('#loading-container').hide();
+		$('#main-container').show();
+	}
 
 	function toggle_pause() {
 		if (paused === true) {
