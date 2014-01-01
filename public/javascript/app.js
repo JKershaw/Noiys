@@ -41,7 +41,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		});
 
 		$('body').on('click', 'a.button-vote', function() {
-			vote($(this).attr('data-id'));
+			vote($(this).attr('data-id'), $(this).attr('data-wrapper'));
 		});
 
 		$('body').on('click', 'a.button-reply', function() {
@@ -322,9 +322,9 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		run_search();
 	}
 
-	function vote(id) {
-		$("#" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
-		$("#" + id + " .votes").css("color", "green");
+	function vote(id, wrapper) {
+		$(wrapper + " #" + id + " .votes").text(parseInt($("#" + id + " .votes").text()) + 1);
+		$(wrapper + " #" + id + " .votes").css("color", "green");
 
 		noiseApi.postVote(id, function(posted){});
 	}

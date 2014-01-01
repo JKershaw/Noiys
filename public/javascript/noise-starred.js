@@ -6,12 +6,12 @@ define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi
 		console.debug("toggling Star");
 
 		if (is_starred(statusID)) {
-			$("#star-" + statusID).removeClass("glyphicon-star");
-			$("#star-" + statusID).addClass("glyphicon-star-empty");
+			$(".star-" + statusID).removeClass("glyphicon-star");
+			$(".star-" + statusID).addClass("glyphicon-star-empty");
 			remove_my_star(statusID)
 		} else {
-			$("#star-" + statusID).addClass("glyphicon-star");
-			$("#star-" + statusID).removeClass("glyphicon-star-empty");
+			$(".star-" + statusID).addClass("glyphicon-star");
+			$(".star-" + statusID).removeClass("glyphicon-star-empty");
 			my_stars.push(statusID);
 			perma_save_my_stars();
 		}
@@ -41,13 +41,18 @@ define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi
 	}
 
 	function remove_my_star(statusID) {
-		console.debug("removeing star ", statusID);
+		console.debug("removing star ", statusID);
 
 		var index = my_stars.indexOf(statusID);
 		if (index > -1) {
 			my_stars.splice(index, 1);
 		}
+
 		perma_save_my_stars();
+
+		$("#stars_statuses #" + statusID).fadeOut("fast", function() {
+			$("#stars_statuses #" + statusID).remove();
+		});
 	}
 
 	function inititalise_my_stars() {
