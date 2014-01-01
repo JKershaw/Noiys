@@ -1,4 +1,4 @@
-define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
+define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noise-publish-status', 'timeago', 'bootstrap'], function($, _, noiseApi, noiseMine, noiseStarred, noisePublishStatus) {
 
 	var paused = false;
 	var feed_type = "random";
@@ -6,8 +6,6 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 	var newest_status_timestamp = 0;
 	var oldest_status_timestamp = Number.MAX_VALUE;
 	var init_chronological = false;
-	var my_statuses = Array();
-	var my_stars = Array();
 
 	$(document).ready(function() {
 		$("#post_status").click(function() {
@@ -51,11 +49,12 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		});
 
 		$('body').on('click', 'a.button-remove-my-status', function() {
-			remove_my_status($(this).attr('data-id'));
+			noiseMine.remove_my_status($(this).attr('data-id'));
 		});
 
 		$('body').on('click', 'a.button-star', function() {
-			star($(this).attr('data-id'));
+			noiseStarred.star($(this).attr('data-id'));
+			refresh_my_stars();
 		});
 
 		$('body').on('click', 'a.button-show-hidden-quote', function() {
@@ -72,9 +71,13 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 		select_initial_tab();
 
+		noiseStarred.inititalise_my_stars();
+		refresh_my_stars();
+
+		noiseMine.inititalise_my_statuses();
+		refresh_my_statuses();
+
 		random_status_timeout = setTimeout(get_and_show_random_status, 10);
-		inititalise_my_stars();
-		inititalise_my_statuses();
 	});
 
 	function toggle_pause() {
@@ -99,7 +102,8 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 				$('#post_status').text("Posted!");
 				$('#statusText').val("");
 
-				save_my_status(posted);
+				noiseMine.save_my_status(posted);
+				refresh_my_statuses();
 				get_and_show_chronological_status(5);
 
 			} else if (posted === false) {
@@ -159,7 +163,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 
 		if (paused === false) {
 			noiseApi.getStatusRandom(function(status) {
-				publish_status(status, "#random_statuses", true);
+				noisePublishStatus.publish_status(status, "#random_statuses", true);
 				$("#main_error").hide();
 			});
 		}
@@ -178,7 +182,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 				$('#search_statuses_result').html('');
 
 				for (var i = 0; i < statuses.length; i++) {
-					publish_status(statuses[i], "#search_statuses_result", true);
+					noisePublishStatus.publish_status(statuses[i], "#search_statuses_result", true);
 				}
 
 				$('#search_statuses_result>div').sort(function(a, b) {
@@ -213,7 +217,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 			noiseApi.getStatusSince(newest_status_timestamp, function(status) {
 				if (status) {
 					newest_status_timestamp = status.timestamp;
-					publish_status(status, "#chronological_statuses", true);
+					noisePublishStatus.publish_status(status, "#chronological_statuses", true);
 
 					chronological_status_timeout = setTimeout(function() {
 						get_and_show_chronological_status(1)
@@ -279,7 +283,7 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 						oldest_status_timestamp = statuses[i].timestamp;
 					}
 
-					publish_status(statuses[i], "#chronological_statuses", true);
+					noisePublishStatus.publish_status(statuses[i], "#chronological_statuses", true);
 				}
 
 				$('#main_info').hide();
@@ -334,247 +338,30 @@ define(['jquery', 'noise-api', 'timeago', 'bootstrap'], function($, noiseApi) {
 		}
 	}
 
+	function refresh_my_stars() {
 
-	function publish_status(status, wrapper, prepend) {
+		noiseStarred.get_my_starred_statuses(function(statuses){
+			_.each(statuses, function(status) {
+				noisePublishStatus.publish_status(status, "#stars_statuses", true);
+			});
 
-		$(wrapper + " #" + status.id).remove();
-
-		if (prepend) {
-			$(wrapper).prepend(generate_status_html(status, wrapper));
-			$(wrapper + " div").first().hide().fadeIn();
-		} else {
-			console.debug("appending", status.id);
-			$(wrapper + " .final").before(generate_status_html(status, wrapper));
-			$(wrapper + " > div").show();
-		}
-
-		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
-
-		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
-			quote_to_hide_selector.hide();
-		}
-
-		$("span.timeago").timeago();
-
-	}
-
-	function generate_status_html(status, wrapper) {
-
-		var response_string = "";
-		if (status.responses) {
-			if (status.responses.length == 1) {
-				response_string = "1 reply";
-			} else {
-				response_string = String(status.responses.length) + " replies";
-			}
-
-			responses_array_string = status.responses.join(",");
-
-			response_string = "<a style=\"cursor:pointer\" class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
-
-		}
-
-		var hashtag_regex = /&#35;\w*/g
-
-		status.text = status.text.replace(hashtag_regex, function(match) {
-			return "<a style=\"cursor:pointer;\" class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
-		});
-
-		var text_string = "<p>" + status.text + " </p>";
-
-		var votes_string = "<span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>";
-
-		var verb_string = "<a style=\"cursor:pointer;\" class=\"button-vote\" data-id='" + status.id + "' >VERB</a>";
-
-		var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
-
-		var trash_string = "";
-
-		if (wrapper == "#me_statuses") {
-			trash_string = "<a style=\"cursor:pointer; float:right;\" class=\"button-remove-my-status\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-remove\"></span></a>";
-		}
-
-		if (is_starred(status.id)) {
-			var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star\"></a>";
-		} else {
-			var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"glyphicon glyphicon-star-empty\"></a>";
-		}
-
-
-		var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
-
-
-		return "<div style=\"display:none\" class=\"panel panel-default status_panel\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
-	}
-
-	function save_my_status(statusID) {
-		console.debug("saving Status: ", statusID);
-		console.debug("current: ", my_statuses);
-		my_statuses.push(statusID);
-		console.debug("new: ", my_statuses);
-		perma_save_my_statuses();
-		refresh_my_statuses();
-	}
-
-	function perma_save_my_statuses() {
-		console.debug("perma save");
-		localStorage.my_statuses = JSON.stringify(my_statuses);
-		console.debug(my_statuses);
-	}
-
-	function perma_load_my_statuses() {
-		console.debug("perma load my statuses");
-		if (localStorage.my_statuses) {
-			my_statuses = JSON.parse(localStorage.my_statuses);
-		}
-		console.debug(my_statuses);
-	}
-
-	function remove_my_status(statusID) {
-		console.debug("Removing status ", statusID);
-
-		var index = my_statuses.indexOf(statusID);
-		if (index > -1) {
-			my_statuses.splice(index, 1);
-		}
-
-		perma_save_my_statuses();
-
-		$("#me_statuses #" + statusID).fadeOut("fast", function() {
-			$("#me_statuses #" + statusID).remove();
+			$('#stars_statuses>div').sort(function(a, b) {
+				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+			}).appendTo("#stars_statuses");
 		});
 	}
-
-
-	function is_my_status(statusID) {
-		var index = my_statuses.indexOf(statusID);
-		if (index > -1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 
 	function refresh_my_statuses() {
-		console.debug("Refreshing my statuses");
 
-		for (var i = 0; i < my_statuses.length; i++) {
-			(function(i) {
+		noiseMine.get_my_statuses(function(statuses){
+			_.each(statuses, function(status) {
+				noisePublishStatus.publish_status(status, "#me_statuses", true);
+			});
 
-				var statusID = my_statuses[i];
-
-				noiseApi.getStatus(statusID, function(status) {
-					if (status === false) {
-						$("#main_error").hide();
-						console.debug("Status not found: ", statusID);
-						remove_my_status(statusID);
-
-					} else if (status) {
-						$("#main_error").hide();
-						console.log("Status found: ", status);
-						publish_status(status, "#me_statuses", true);
-
-						// sort the page
-						$('#me_statuses>div').sort(function(a, b) {
-							return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-						}).appendTo("#me_statuses");
-
-					} else {
-						$("#main_error").show();
-					}
-				});
-
-			})(i);
-		}
-
-		console.debug(my_statuses);
+			$('#me_statuses>div').sort(function(a, b) {
+				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+			}).appendTo("#me_statuses");
+		});
 	}
 
-	function inititalise_my_statuses() {
-		perma_load_my_statuses();
-		refresh_my_statuses();
-	}
-
-	function star(statusID) {
-		console.debug("toggling Star");
-
-		if (is_starred(statusID)) {
-			$("#star-" + statusID).removeClass("glyphicon-star");
-			$("#star-" + statusID).addClass("glyphicon-star-empty");
-			remove_my_star(statusID)
-		} else {
-			$("#star-" + statusID).addClass("glyphicon-star");
-			$("#star-" + statusID).removeClass("glyphicon-star-empty");
-			my_stars.push(statusID);
-			perma_save_my_stars();
-		}
-		refresh_my_stars();
-	}
-
-	function is_starred(statusID) {
-		var index = my_stars.indexOf(statusID);
-		if (index > -1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	function perma_save_my_stars() {
-		console.debug("perma save stars");
-		localStorage.my_stars = JSON.stringify(my_stars);
-		console.debug(my_stars);
-	}
-
-	function perma_load_my_stars() {
-		console.debug("perma load stars");
-		if (localStorage.my_stars) {
-			my_stars = JSON.parse(localStorage.my_stars);
-		}
-		console.debug(my_stars);
-	}
-
-	function remove_my_star(statusID) {
-		console.debug("removeing star ", statusID);
-
-		var index = my_stars.indexOf(statusID);
-		if (index > -1) {
-			my_stars.splice(index, 1);
-		}
-		perma_save_my_stars();
-	}
-
-	function refresh_my_stars() {
-		console.debug("refresh");
-		$("#stars_statuses").html("");
-		for (var i = 0; i < my_stars.length; i++) {
-			(function(i) {
-				var statusID = my_stars[i];
-
-				noiseApi.getStatus(statusID, function(status) {
-					if (status) {
-						$("#main_error").hide();
-						console.log("Status found");
-						publish_status(status, "#stars_statuses", true);
-
-						$('#stars_statuses>div').sort(function(a, b) {
-							return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-						}).appendTo("#stars_statuses");
-					} else if (status === false) {
-						console.debug("Status not found: ", statusID);
-						remove_my_star(statusID);
-					} else {
-						$("#main_error").show();
-					}
-				});
-			})(i);
-		}
-	}
-
-	function inititalise_my_stars() {
-		perma_load_my_stars();
-		refresh_my_stars();
-	}
 });
