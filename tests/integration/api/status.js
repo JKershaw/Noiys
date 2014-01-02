@@ -124,5 +124,211 @@ describe('Posting to /status', function(done) {
 				});
 			});
 		});
+
+
+		it("I can reply to the status", function(done) {
+
+			var post_details = {
+				url: 'http://localhost:3000/status',
+				form: {
+					text: "@" + statusID + "\n This is a magic reply!"
+				}
+			}
+
+			request.post(post_details, function(error, response, body) {
+				assert.equal(200, response.statusCode);
+				replyStatusID = body;
+				done();
+			});
+		});
+
+		describe("and we can get the status back", function(done) {
+			it("visiting /status/[the ID] gives us the status back", function(done) {
+				var options = {
+					port: 3000,
+					hostname: 'localhost',
+					path: '/status/' + replyStatusID,
+					method: 'GET',
+					headers: {
+						'content-type': 'application/json'
+					}
+				};
+
+				http.get(options, function(res) {
+					assert.equal(200, res.statusCode);
+
+					res.on("data", function(chunk) {
+						data = JSON.parse(chunk);
+
+						data.text.should.contain(statusText);
+						assert.equal(data.ancestors[0], statusID);
+						done();
+
+					});
+				});
+			});
+
+			it("I can reply to the status", function(done) {
+
+				var post_details = {
+					url: 'http://localhost:3000/status',
+					form: {
+						text: "@" + replyStatusID + "\n This is a second reply!"
+					}
+				}
+
+				request.post(post_details, function(error, response, body) {
+					assert.equal(200, response.statusCode);
+					done();
+				});
+			});
+
+			describe("and we can get the status back", function(done) {
+				it("visiting /status/[the ID] gives us the status back with the same ancestor", function(done) {
+
+					var options = {
+						port: 3000,
+						hostname: 'localhost',
+						path: '/status/' + replyStatusID,
+						method: 'GET',
+						headers: {
+							'content-type': 'application/json'
+						}
+					};
+
+					http.get(options, function(res) {
+						console.log("Got response: " + res.statusCode);
+						assert.equal(200, res.statusCode);
+
+						res.on("data", function(chunk) {
+							data = JSON.parse(chunk);
+							console.log("======", data);
+
+							data.text.should.contain(statusText);
+							assert.equal(data.ancestors[0], statusID);
+							done();
+
+						});
+					});
+				});
+			});
+		});
+	});
+});
+
+
+describe('Posting to /status to test multiple ancestors', function(done) {
+
+	var ancestor1StatusID, ancestor2StatusID, statusText = "This is a test status";
+
+	it("I can post two statuses", function(done) {
+
+		var post_details = {
+			url: 'http://localhost:3000/status',
+			form: {
+				text: statusText
+			}
+		}
+
+		request.post(post_details, function(error, response, body) {
+			ancestor1StatusID = body;
+			request.post(post_details, function(error, response, body) {
+				ancestor2StatusID = body;
+				done();
+			});
+		});
+	});
+
+
+	describe("and can can quote them both", function(done) {
+
+		it("I post a new status", function(done) {
+
+			var post_details = {
+				url: 'http://localhost:3000/status',
+				form: {
+					text: "@" + ancestor1StatusID + "\n @" + ancestor2StatusID + "\n This is a reply to two statuses!"
+				}
+			}
+
+			request.post(post_details, function(error, response, body) {
+				assert.equal(200, response.statusCode);
+				replyStatusID = body;
+				done();
+			});
+		});
+
+		describe("and we can get the status back", function(done) {
+			it("visiting /status/[the ID] gives us the status back", function(done) {
+
+				var options = {
+					port: 3000,
+					hostname: 'localhost',
+					path: '/status/' + replyStatusID,
+					method: 'GET',
+					headers: {
+						'content-type': 'application/json'
+					}
+				};
+
+				http.get(options, function(res) {
+					console.log("Got response: " + res.statusCode);
+					assert.equal(200, res.statusCode);
+
+					res.on("data", function(chunk) {
+						data = JSON.parse(chunk);
+						console.log("======", data);
+
+						data.text.should.contain(statusText);
+						assert.equal(data.ancestors[0], ancestor1StatusID);
+						assert.equal(data.ancestors[1], ancestor2StatusID);
+						done();
+
+					});
+				});
+			});
+
+			it("I can reply to the status", function(done) {
+
+				var post_details = {
+					url: 'http://localhost:3000/status',
+					form: {
+						text: "@" + replyStatusID + "\n This is a second reply!"
+					}
+				}
+
+				request.post(post_details, function(error, response, body) {
+					assert.equal(200, response.statusCode);
+					done();
+				});
+			});
+
+			describe("and we can get the status back", function(done) {
+				it("with the same ancestors", function(done) {
+					var options = {
+						port: 3000,
+						hostname: 'localhost',
+						path: '/status/' + replyStatusID,
+						method: 'GET',
+						headers: {
+							'content-type': 'application/json'
+						}
+					};
+					http.get(options, function(res) {
+						assert.equal(200, res.statusCode);
+
+						res.on("data", function(chunk) {
+							data = JSON.parse(chunk);
+
+							data.text.should.contain(statusText);
+							assert.equal(data.ancestors[0], ancestor1StatusID);
+							assert.equal(data.ancestors[1], ancestor2StatusID);
+							done();
+
+						});
+					});
+				});
+			});
+		});
 	});
 });

@@ -14,27 +14,28 @@ module.exports = function(app) {
 		HTMLEncoder().encode(request.body.text, function(encodedText) {
 
 			encodedText = encodedText.trim();
-			
-			var status = {
-				text: encodedText,
-				timestamp: Math.round(new Date().getTime() / 1000),
-				votes: 0
-			};
+			if (encodedText != "") {
+				var status = {
+					text: encodedText,
+					timestamp: Math.round(new Date().getTime() / 1000),
+					votes: 0
+				};
 
-			if (encodedText != "")
-			{
+				find_ancestors(status, function(ancestors) {
+					status.ancestors = ancestors;
 
-				noiysDatabase.saveStatus(status, function(saved) {
+					noiysDatabase.saveStatus(status, function(saved) {
 
-					var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
+						var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
 
-					if (quotes) {
-						console.log("there are quotes!");
-						process_quotes(saved.id, quotes);
-					}
+						if (quotes) {
+							console.log("there are quotes!");
+							process_quotes(saved.id, quotes);
+						}
 
-					response.send(String(saved.id));
+						response.send(String(saved.id));
 
+					});
 				});
 			} else {
 				response.send(400);
@@ -46,40 +47,39 @@ module.exports = function(app) {
 
 		console.log("GETTING a specific status: ", request.params.ID);
 
-		
-			
-			noiysDatabase.findStatus(request.params.ID, function(status) {
 
-				var requestType = request.get('Content-Type');
-				console.log("Connection type: ", requestType);
-				if (requestType && (requestType.indexOf('json') > -1)) {
-			
-					if (status)
-					{
-						statusMessageFactory.create(status, function(message) {
-							response.contentType('json');
-							response.send(message);
-						});
-					} else {
-						response.send(404);
-					}
+		noiysDatabase.findStatus(request.params.ID, function(status) {
 
+			var requestType = request.get('Content-Type');
+			console.log("Connection type: ", requestType);
+			if (requestType && (requestType.indexOf('json') > -1)) {
+
+				if (status) {
+					statusMessageFactory.create(status, function(message) {
+						response.contentType('json');
+						response.send(message);
+					});
 				} else {
-
-					if (status)
-					{
-
-						statusMessageFactory.create(status, function(message) {
-							var model = {text: message.text};
-							response.render('individual-status.ejs', model);
-						});
-					} else {
-						response.render('individual-status-404.ejs');
-					}					
+					response.send(404);
 				}
 
-			});
-		
+			} else {
+
+				if (status) {
+
+					statusMessageFactory.create(status, function(message) {
+						var model = {
+							text: message.text
+						};
+						response.render('individual-status.ejs', model);
+					});
+				} else {
+					response.render('individual-status-404.ejs');
+				}
+			}
+
+		});
+
 
 	});
 
@@ -101,7 +101,7 @@ module.exports = function(app) {
 		} else {
 			console.log("Getting a RANDOM status");
 			get_random_status(function(status) {
-				if (status){
+				if (status) {
 					statusMessageFactory.create(status, function(message) {
 						response.contentType('json');
 						response.send(message);
@@ -164,4 +164,32 @@ function add_response_to_status(status_id, response_id) {
 			console.log("Saved responses");
 		});
 	});
+}
+
+function find_ancestors(status, callback) {
+
+	var quotes = status.text.match(/@[a-f0-9]{24,24}/g);
+	var ancestors = Array();
+
+	if (quotes) {
+
+		var finished = _.after(quotes.length, function() {
+			callback(ancestors);
+		});
+
+		_.each(quotes, function(quote) {
+
+			noiysDatabase.findStatus(quote, function(status) {
+				if (status && status.ancestors) {
+					ancestors.push(status.ancestors);
+				} else {
+					ancestors.push(quote.replace("@", ""));
+				}
+				finished();
+			});
+		});
+
+	} else {
+		callback(ancestors);
+	}
 }
