@@ -68,11 +68,31 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 			var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star-empty\"></a>";
 		}
 
-
 		var timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
 
+		var status_html = " \
+		<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"> \
+			<div class=\"panel-body\"> \
+				" + trash_string + text_string + " \
+			</div> \
+			<ul class=\"list-group\"><li class=\"list-group-item\"> \
+				<div class=\"row\"> \
+					<div class=\"col-md-4\"> \
+						<small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "&nbsp;&nbsp;&nbsp;" + link_string + " \
+						</small> \
+					</div> \
+					<div class=\"col-md-4\" style=\"text-align:center\"> \
+						<small>" + response_string + "</small> \
+					</div> \
+					<div class=\"col-md-4\"> \
+						" + timeago_string + " \
+					</div>  \
+				</div> \
+			</li></ul> \
+			<div class=\"responses\"></div> \
+		</div>";
 
-		return "<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"><div class=\"panel-body\">" + trash_string + "" + text_string + "<div class=\"row\"><div class=\"col-md-4\"><small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "&nbsp;&nbsp;&nbsp;" + link_string + "</small></div><div class=\"col-md-4\" style=\"text-align:center\"><small>" + response_string + "</small></div><div class=\"col-md-4\">" + timeago_string + "</div></div><div class=\"responses\"></div></div>";
+		return status_html;
 	}
 
 	return {
