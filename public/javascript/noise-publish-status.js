@@ -78,11 +78,18 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 			<ul class=\"list-group\"><li class=\"list-group-item\"> \
 				<div class=\"row\"> \
 					<div class=\"col-md-4\"> \
-						<small>" + votes_string + "&nbsp;&nbsp;&nbsp;" + verb_string + "&nbsp;&nbsp;&nbsp;" + reply_string + "&nbsp;&nbsp;&nbsp;" + star_string + "&nbsp;&nbsp;&nbsp;" + link_string + " \
+						<small> \
+							" + votes_string + "&nbsp;&nbsp; \
+							" + verb_string + "&nbsp;&nbsp; \
+							" + reply_string + "&nbsp;&nbsp; \
+							" + star_string + "&nbsp;&nbsp; \
+							" + link_string + " \
 						</small> \
 					</div> \
 					<div class=\"col-md-4\" style=\"text-align:center\"> \
-						<small>" + response_string + "</small> \
+						<small> \
+							" + response_string + " \
+						</small> \
 					</div> \
 					<div class=\"col-md-4\"> \
 						" + timeago_string + " \
