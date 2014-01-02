@@ -2,7 +2,7 @@
 var expect = require('chai').expect,
 	assert = require('assert'),
 	http = require('http'),
-	request = require('request');;
+	request = require('request');
 
 require('chai').should();
 
@@ -30,8 +30,19 @@ describe('Getting from /status', function(done) {
 	});
 
 	it("visiting /status/1234 gives a 404", function(done) {
-		http.get('http://localhost:3000/status/1234', function(res) {
-			console.log("Got response: " + res.statusCode);
+
+		var options = {
+			port: 3000,
+			hostname: 'localhost',
+			path: '/status/1234',
+			method: 'GET',
+			headers: {
+				'content-type': 'application/json'
+			}
+		};
+
+		http.get(options, function(res) {
+			console.log("Got response (wanted 404): " + res.statusCode);
 			assert.equal(404, res.statusCode);
 			done();
 		});
@@ -89,7 +100,18 @@ describe('Posting to /status', function(done) {
 
 	describe("and we can get the status back", function(done) {
 		it("visiting /status/[the ID] gives us the status back", function(done) {
-			http.get('http://localhost:3000/status/' + statusID, function(res) {
+
+			var options = {
+				port: 3000,
+				hostname: 'localhost',
+				path: '/status/' + statusID,
+				method: 'GET',
+				headers: {
+					'content-type': 'application/json'
+				}
+			};
+
+			http.get(options, function(res) {
 				console.log("Got response: " + res.statusCode);
 				assert.equal(200, res.statusCode);
 

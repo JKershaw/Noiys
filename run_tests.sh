@@ -1,6 +1,6 @@
 set -e
-pkill node
-#mongo statuses --eval "db.dropDatabase()"
+pkill node &
+mongo statuses --eval "db.dropDatabase()"
 mocha tests/unit/ --ui qunit --reporter nyan
 echo "Unit tests complete"
 sleep 1
