@@ -46,7 +46,7 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 			return "<a style=\"cursor:pointer;\" class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
 		});
 
-		var text_string = "<p>" + status.text + " </p>";
+		var text_string = status.text;
 
 		var votes_string = "<span style=\"font-weight:bold;\" class=\"votes\">" + status.votes + "</span>";
 
