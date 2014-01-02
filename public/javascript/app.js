@@ -338,7 +338,8 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 	function show_replies(status_id, wrapper, replies_ids) {
 		for (var i = 0; i < replies_ids.length; i++) {
 			noiseApi.getStatus(replies_ids[i], function(status) {
-				noiseStatus.publish(status, wrapper + " #" + status_id + " .responses", true);
+				//noiseStatus.publish(status, wrapper + " #" + status_id + " .responses", true);
+				noiseStatus.replace(status, wrapper, status_id);
 			});
 		}
 	}

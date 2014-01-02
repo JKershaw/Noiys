@@ -8,7 +8,6 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 			$(wrapper).prepend(generate_status_html(status, wrapper));
 			$(wrapper + " div").first().hide().fadeIn();
 		} else {
-			console.debug("appending", status.id);
 			$(wrapper + " .final").before(generate_status_html(status, wrapper));
 			$(wrapper + " > div").show();
 		}
@@ -21,7 +20,23 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 		}
 
 		$("span.timeago").timeago();
+	}
 
+	function replace_status(status, wrapper, statusIDToReplace) {
+
+
+		$(wrapper + " #" + statusIDToReplace).before(generate_status_html(status, wrapper));
+		$(wrapper + " #" + status.id).fadeIn();
+		$(wrapper + " #" + statusIDToReplace).hide();
+
+		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
+
+		if (quote_to_hide_selector) {
+			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
+			quote_to_hide_selector.hide();
+		}
+
+		$("span.timeago").timeago();
 	}
 
 	function generate_status_html(status, wrapper) {
@@ -103,6 +118,7 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 	}
 
 	return {
-		publish_status: publish_status
+		publish_status: publish_status,
+		replace_status: replace_status
 	}
 });
