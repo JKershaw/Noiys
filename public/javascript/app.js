@@ -79,7 +79,10 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
     			});
 			} else {
 
-				var status = {id: $(this).parent().attr('data-id')};
+				var status = {
+						id: $(this).parent().attr('data-id'),
+						votes: $(this).parent().attr('data-votes')
+					};
 				var extra_bar = noiseStatus.get_icon_row_html(status, "");
 
 				$(this).parent().append(extra_bar);
