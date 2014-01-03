@@ -81,12 +81,14 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 				var status = {
 						id: $(this).parent().attr('data-id'),
-						votes: $(this).parent().attr('data-votes')
+						votes: $(this).parent().attr('data-votes'),
+						ISO8601timestamp: $(this).parent().attr('data-ISO8601timestamp')
 					};
 				var extra_bar = noiseStatus.get_icon_row_html(status, "");
 
 				$(this).parent().append(extra_bar);
 
+				$("span.timeago").timeago();
 			}
 
 		});
