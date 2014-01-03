@@ -69,6 +69,39 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 			goto_search($(this).attr('data-search-term'));
 		});
 
+		$('body').on('click', '.statuses_wrap>.panel>.panel-body .panel>.panel-body', function(e) {
+    		e.stopPropagation();
+
+    		if (($(this).siblings().size() > 0))
+    		{
+    			$(this).siblings('.list-group').slideUp('fast', function(){
+    				$(this).remove();
+    			});
+			} else {
+
+				var id = $(this).parent().attr('data-id');
+				
+				var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
+
+	    		var extra_bar = " \
+	    		<ul class=\"list-group\"><li class=\"list-group-item\"> \
+					<div class=\"row\"> \
+						<div class=\"col-md-4\"> \
+							<small> \
+								" + reply_string + "&nbsp;&nbsp; \
+							</small> \
+						</div> \
+						<div class=\"col-md-4\" style=\"text-align:center\"> \
+						</div> \
+					</div> \
+				</li></ul>";
+
+				$(this).parent().append(extra_bar);
+
+			}
+
+		});
+
 		select_initial_tab();
 
 		noiseStarred.inititalise_my_stars();
