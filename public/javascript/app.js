@@ -82,13 +82,23 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 				var id = $(this).parent().attr('data-id');
 				
 				var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
+				
+				var link_string = "<a class=\"button-link\" target=\"_blank\" href=\"status/" + id + "\"><span class=\"glyphicon glyphicon-link\"></a>";
+				
+				if (noiseStarred.is_starred(status.id)) {
+					var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star\"></a>";
+				} else {
+					var star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star-empty\"></a>";
+				}
 
 	    		var extra_bar = " \
 	    		<ul class=\"list-group\"><li class=\"list-group-item\"> \
 					<div class=\"row\"> \
 						<div class=\"col-md-4\"> \
 							<small> \
-								" + reply_string + "&nbsp;&nbsp; \
+							" + reply_string + "&nbsp;&nbsp; \
+							" + star_string + "&nbsp;&nbsp; \
+							" + link_string + " \
 							</small> \
 						</div> \
 						<div class=\"col-md-4\" style=\"text-align:center\"> \
