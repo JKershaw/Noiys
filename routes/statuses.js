@@ -1,7 +1,9 @@
 var NoiysDatabase = require('../lib/NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	_ = require("underscore")._,
-	StatusMessageFactory = require('../lib/StatusMessageFactory');
+	StatusMessageFactory = require('../lib/StatusMessageFactory'),
+	NoiysFeed = require('../lib/NoiysFeed'),
+	noiysFeed = new NoiysFeed();
 
 module.exports = function(app) {
 
@@ -24,6 +26,15 @@ module.exports = function(app) {
 				handle_returned_statuses(statuses, response);
 			});
 		}
+	});
+
+	app.get('/statuses/feed', function(request, response) {
+		console.log("GETTING FEED");
+
+		noiysFeed.getStatuses(function(statuses) {
+			handle_returned_statuses(statuses, response);
+		});
+		
 	});
 };
 
