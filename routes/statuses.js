@@ -39,6 +39,11 @@ module.exports = function(app) {
 };
 
 function handle_returned_statuses(statuses, response) {
+	
+	if(!statuses || statuses.length ==0){
+		response.send(404);
+	}
+
 	var messages = new Array(),
 		statusMessageFactory = new StatusMessageFactory();
 
