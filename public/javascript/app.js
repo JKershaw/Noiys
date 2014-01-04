@@ -1,4 +1,16 @@
-define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noise-status', 'timeago', 'bootstrap'], function($, _, noiseApi, noiseMine, noiseStarred, noiseStatus) {
+define([
+		'jquery', 
+		'underscore', 
+		'noise-api', 
+		'noise-mine', 
+		'noise-starred', 
+		'noise-status'], function(
+			$, 
+			_, 
+			noiysApi, 
+			noiysMine, 
+			noiysStarred, 
+			noiysStatus) {
 
 	var paused = false;
 	var auto_pause = false;
@@ -42,12 +54,9 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		});
 
 		$(window).on('scroll', function(){
-			if (window.pageYOffset > $('#pause_feed').position().top)
-			{
+			if (window.pageYOffset > $('#pause_feed').position().top){
 				auto_pause = true;
-			}
-			else
-			{
+			} else {
 				auto_pause = false;
 			}
 		});
@@ -62,11 +71,11 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		});
 
 		$('body').on('click', 'a.button-remove-my-status', function() {
-			noiseMine.remove_my_status($(this).attr('data-id'));
+			noiysMine.remove_my_status($(this).attr('data-id'));
 		});
 
 		$('body').on('click', 'a.button-star', function() {
-			noiseStarred.star($(this).attr('data-id'));
+			noiysStarred.star($(this).attr('data-id'));
 			refresh_my_stars();
 		});
 
@@ -97,7 +106,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 						votes: $(this).parent().attr('data-votes'),
 						ISO8601timestamp: $(this).parent().attr('data-ISO8601timestamp')
 					};
-				var extra_bar = noiseStatus.get_icon_row_html(status, "");
+				var extra_bar = noiysStatus.get_icon_row_html(status, "");
 
 				$(this).parent().append(extra_bar);
 
@@ -108,10 +117,10 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		select_initial_tab();
 
-		noiseStarred.inititalise_my_stars();
+		noiysStarred.inititalise_my_stars();
 		refresh_my_stars();
 
-		noiseMine.inititalise_my_statuses();
+		noiysMine.inititalise_my_statuses();
 		refresh_my_statuses();
 
 		hide_loding_page();
@@ -136,7 +145,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		$('#post_status').prop('disabled', true);
 		$('#post_status').text("Posting ...");
 
-		noiseApi.postStatus($('#statusText').val(), function(posted) {
+		noiysApi.postStatus($('#statusText').val(), function(posted) {
 			
 			$("#main_error").hide();
 			
@@ -144,7 +153,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 				$('#post_status').text("Posted!");
 				$('#statusText').val("");
 
-				noiseMine.save_my_status(posted);
+				noiysMine.save_my_status(posted);
 				refresh_my_statuses();
 				get_and_show_chronological_status(5);
 
@@ -204,8 +213,8 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 	function get_and_show_random_status() {
 
 		if ((auto_pause === false) && (paused === false) && (feed_type == 'random')) {
-			noiseApi.getStatusRandom(function(status) {
-				noiseStatus.publish(status, "#random_statuses", true);
+			noiysApi.getStatusRandom(function(status) {
+				noiysStatus.publish(status, "#random_statuses", true);
 				$("#main_error").hide();
 			});
 			random_status_timeout = setTimeout(get_and_show_random_status, 6000);
@@ -219,7 +228,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 	function get_and_show_search_statuses(search_term, callback) {
 		console.debug("get_and_show_search_statuses called");
 
-		noiseApi.getStatusesSearch(search_term, function(statuses) {
+		noiysApi.getStatusesSearch(search_term, function(statuses) {
 		
 			$("#main_error").hide();
 
@@ -227,7 +236,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 				$('#search_statuses_result').html('');
 
 				for (var i = 0; i < statuses.length; i++) {
-					noiseStatus.publish(statuses[i], "#search_statuses_result", true);
+					noiysStatus.publish(statuses[i], "#search_statuses_result", true);
 				}
 
 				$('#search_statuses_result>div').sort(function(a, b) {
@@ -259,10 +268,10 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		if ((auto_pause === false) && (paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
 			
-			noiseApi.getStatusSince(newest_status_timestamp, function(status) {
+			noiysApi.getStatusSince(newest_status_timestamp, function(status) {
 				if (status) {
 					newest_status_timestamp = status.timestamp;
-					noiseStatus.publish(status, "#chronological_statuses", true);
+					noiysStatus.publish(status, "#chronological_statuses", true);
 
 					chronological_status_timeout = setTimeout(function() {
 						get_and_show_chronological_status(1)
@@ -290,7 +299,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 		if ((oldest_status_timestamp < Number.MAX_VALUE) && (feed_type == 'chronological')) {
 
-			noiseApi.getStatusesBefore(oldest_status_timestamp, function(statuses) {
+			noiysApi.getStatusesBefore(oldest_status_timestamp, function(statuses) {
 				
 				$("#main_error").hide();
 
@@ -301,7 +310,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 							oldest_status_timestamp = statuses[i].timestamp;
 						}
 
-						noiseStatus.publish(statuses[i], "#chronological_statuses", false);
+						noiysStatus.publish(statuses[i], "#chronological_statuses", false);
 					}
 				} else if (statuses === false) {
 					console.debug("No older statuses found");
@@ -328,7 +337,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 						oldest_status_timestamp = statuses[i].timestamp;
 					}
 
-					noiseStatus.publish(statuses[i], "#chronological_statuses", true);
+					noiysStatus.publish(statuses[i], "#chronological_statuses", true);
 				}
 
 				$('#main_info').hide();
@@ -364,7 +373,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		$(".votes-" + id).text(parseInt($("#" + id + " .votes").text()) + 1);
 		$(".votes-" + id).css("color", "green");
 
-		noiseApi.postVote(id, function(posted){});
+		noiysApi.postVote(id, function(posted){});
 	}
 
 	function reply(id) {
@@ -377,17 +386,17 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 	function show_replies(status_id, wrapper, replies_ids) {
 		for (var i = 0; i < replies_ids.length; i++) {
-			noiseApi.getStatus(replies_ids[i], function(status) {
-				noiseStatus.replace(status, wrapper, status_id);
+			noiysApi.getStatus(replies_ids[i], function(status) {
+				noiysStatus.replace(status, wrapper, status_id);
 			});
 		}
 	}
 
 	function refresh_my_stars() {
 
-		noiseStarred.get_my_starred_statuses(function(statuses){
+		noiysStarred.get_my_starred_statuses(function(statuses){
 			_.each(statuses, function(status) {
-				noiseStatus.publish(status, "#stars_statuses", true);
+				noiysStatus.publish(status, "#stars_statuses", true);
 			});
 
 			$('#stars_statuses>div').sort(function(a, b) {
@@ -398,9 +407,9 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 	function refresh_my_statuses() {
 
-		noiseMine.get_my_statuses(function(statuses){
+		noiysMine.get_my_statuses(function(statuses){
 			_.each(statuses, function(status) {
-				noiseStatus.publish(status, "#me_statuses", true);
+				noiysStatus.publish(status, "#me_statuses", true);
 			});
 
 			$('#me_statuses>div').sort(function(a, b) {

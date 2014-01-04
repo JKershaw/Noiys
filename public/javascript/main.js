@@ -19,6 +19,9 @@ requirejs.config({
 		},
 		bootstrap: {
 			deps: ["jquery"]
+		},
+		app: {
+			deps: ["timeago", "bootstrap"]
 		}
 	}
 });
