@@ -4,13 +4,15 @@ define([
 		'noise-api', 
 		'noise-mine', 
 		'noise-starred', 
-		'noise-status'], function(
+		'noise-status', 
+		'noiys-vote'], function(
 			$, 
 			_, 
 			noiysApi, 
 			noiysMine, 
 			noiysStarred, 
-			noiysStatus) {
+			noiysStatus, 
+			noiysVote) {
 
 	var paused = false;
 	var auto_pause = false;
@@ -61,9 +63,8 @@ define([
 			}
 		});
 
-
 		$('body').on('click', 'a.button-vote', function() {
-			vote($(this).attr('data-id'));
+			noiysVote.vote($(this).attr('data-id'));
 		});
 
 		$('body').on('click', 'a.button-reply', function() {
@@ -367,13 +368,6 @@ define([
 		change_feed_type("search");
 		$('#search_statuses_text').val(search_term);
 		run_search();
-	}
-
-	function vote(id) {
-		$(".votes-" + id).text(parseInt($("#" + id + " .votes").text()) + 1);
-		$(".votes-" + id).css("color", "green");
-
-		noiysApi.postVote(id, function(posted){});
 	}
 
 	function reply(id) {
