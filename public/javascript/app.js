@@ -146,7 +146,7 @@ define([
 		$('#post_status').prop('disabled', true);
 		$('#post_status').text("Posting ...");
 
-		noiysApi.postStatus($('#statusText').val(), function(posted) {
+		noiysStatus.post($('#statusText').val(), function(posted) {
 			
 			$("#main_error").hide();
 			
@@ -328,7 +328,8 @@ define([
 			init_chronological = true;
 			console.debug("intitialise_chronological");
 			$('#main_info').show().html("Just loading the latest statuses now.");
-			$.get("statuses", function(statuses) {
+
+			noiysApi.getStatusesLatest(function(statuses){
 				for (var i = 0; i < statuses.length; i++) {
 
 					if (statuses[i].timestamp > newest_status_timestamp) {

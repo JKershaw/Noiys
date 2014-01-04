@@ -1,4 +1,4 @@
-define(['noise-publish-status'], function(noisePublishStatus) {
+define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiysApi) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);
@@ -12,9 +12,16 @@ define(['noise-publish-status'], function(noisePublishStatus) {
 		return noisePublishStatus.get_icon_row_html(status, wrapper)
 	}
 
+	function post(status_text, callback) {
+		noiysApi.postStatus(status_text, function(posted) {
+			callback(posted);
+		});
+	}
+
 	return {
 		get_icon_row_html: get_icon_row_html,
 		publish: publish,
-		replace: replace
+		replace: replace,
+		post: post
 	}
 });

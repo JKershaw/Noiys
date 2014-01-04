@@ -105,6 +105,24 @@ define(['jquery'], function($) {
 		});
 	}
 
+	function getStatusesLatest(callback) {
+		$.ajax({
+			url: "statuses",
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				if (xhr.status == 200) {
+					callback(JSON.parse(xhr.responseText));
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					_rollbar.push(xhr.status + " error: " + "statuses");
+					callback();
+				}
+			}
+		});
+	}
+
 	function getStatusesBefore(timestamp, callback) {
 		$.ajax({
 			url: "statuses?before=" + timestamp,
@@ -151,6 +169,7 @@ define(['jquery'], function($) {
 		getStatusSince: getStatusSince,
 
 		getStatuses: getStatuses,
+		getStatusesLatest: getStatusesLatest,
 		getStatusesBefore: getStatusesBefore,
 		getStatusesSearch:getStatusesSearch
 	}
