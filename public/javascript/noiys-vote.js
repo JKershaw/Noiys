@@ -36,7 +36,7 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 		noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
 			if (statuses) {
 				_.each(statuses, function(status){
-					if (status.votes != current_vote_count[status.id])
+					if (status.votes > current_vote_count[status.id])
 					{
 						current_vote_count[status.id] = status.votes;
 						refresh(status.id);
