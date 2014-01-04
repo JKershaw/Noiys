@@ -1,7 +1,6 @@
 define([
 		'jquery', 
 		'underscore', 
-		'noise-api', 
 		'noise-mine', 
 		'noise-starred', 
 		'noise-status', 
@@ -9,7 +8,6 @@ define([
 		'noiys-feed'], function(
 			$, 
 			_, 
-			noiysApi, 
 			noiysMine, 
 			noiysStarred, 
 			noiysStatus, 
@@ -81,7 +79,8 @@ define([
 		});
 
 		$('body').on('click', 'a.button-show-replies', function() {
-			show_replies($(this).attr('data-id'), $(this).attr('data-wrapper'), $(this).attr('data-responses-array').split(","));
+			$(this).html('Loading ...');
+			noiysStatus.show_replies($(this).attr('data-id'), $(this).attr('data-wrapper'), $(this).attr('data-responses-array').split(","));
 		});
 
 		$('body').on('click', 'a.button-search', function() {
@@ -171,7 +170,7 @@ define([
 			change_feed_type("random");
 		}
 	}
-	
+
 	function load_older_chronological_statuses_clicked() {
 		$("#load_older_statuses").text("Loading...");
 		$('#load_older_statuses').prop('disabled', true);
@@ -181,39 +180,10 @@ define([
 		});
 	}
 
-	function get_and_show_search_statuses(search_term, callback) {
-		console.debug("get_and_show_search_statuses called");
-
-		noiysApi.getStatusesSearch(search_term, function(statuses) {
-		
-			$("#main_error").hide();
-
-			if (statuses) {
-				$('#search_statuses_result').html('');
-
-				for (var i = 0; i < statuses.length; i++) {
-					noiysStatus.publish(statuses[i], "#search_statuses_result", true);
-				}
-
-				$('#search_statuses_result>div').sort(function(a, b) {
-					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-				}).appendTo("#search_statuses_result");
-
-			} else if (statuses === false){
-				$('#search_statuses_result').html('No statuses found.');
-			} else {
-				$('#search_statuses_result').html('Err, error?');
-				$("#main_error").show();
-			}
-			
-			callback();
-		});
-	}
-
 	function run_search() {
 		$("#search_statuses_button").text("Searching...");
 		$('#search_statuses_button').prop('disabled', true);
-		get_and_show_search_statuses($('#search_statuses_text').val(), function() {
+		noiysFeed.get_and_show_search_statuses($('#search_statuses_text').val(), function() {
 			$("#search_statuses_button").text("Search");
 			$('#search_statuses_button').prop('disabled', false);
 		});
@@ -237,14 +207,6 @@ define([
 		$('html, body').animate({
 			scrollTop: 0
 		}, 'fast');
-	}
-
-	function show_replies(status_id, wrapper, replies_ids) {
-		for (var i = 0; i < replies_ids.length; i++) {
-			noiysApi.getStatus(replies_ids[i], function(status) {
-				noiysStatus.replace(status, wrapper, status_id);
-			});
-		}
 	}
 
 	function refresh_my_stars() {

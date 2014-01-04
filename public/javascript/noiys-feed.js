@@ -45,8 +45,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		}
 	}
 
-
-
 	var random_status_timeout;
 
 	function get_and_show_random_status() {
@@ -69,19 +67,14 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		clearTimeout(random_status_timeout);
 	}
 
-
-
 	var init_chronological = false;
 	var newest_status_timestamp = 0;
 	var oldest_status_timestamp = Number.MAX_VALUE;
 	var chronological_status_timeout;
 
-
-
 	function clear_chronological_feed_timeout(){
 		clearTimeout(chronological_status_timeout);
 	}
-
 
 	function intitialise_chronological() {
 		if (!init_chronological) {
@@ -168,6 +161,36 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 	}
 
 
+	function get_and_show_search_statuses(search_term, callback) {
+		console.debug("get_and_show_search_statuses called");
+
+		noiysApi.getStatusesSearch(search_term, function(statuses) {
+		
+			$("#main_error").hide();
+
+			if (statuses) {
+				$('#search_statuses_result').html('');
+
+				for (var i = 0; i < statuses.length; i++) {
+					noiysStatus.publish(statuses[i], "#search_statuses_result", true);
+				}
+
+				$('#search_statuses_result>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#search_statuses_result");
+
+			} else if (statuses === false){
+				$('#search_statuses_result').html('No statuses found.');
+			} else {
+				$('#search_statuses_result').html('Err, error?');
+				$("#main_error").show();
+			}
+			
+			callback();
+		});
+	}
+
+
 	return {
 		toggle_manual_pause: toggle_manual_pause,
 		set_auto_pause: set_auto_pause,
@@ -182,6 +205,8 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		get_and_show_chronological_status: get_and_show_chronological_status,
 		clear_chronological_feed_timeout: clear_chronological_feed_timeout,
 		get_and_show_older_chronological_statuses: get_and_show_older_chronological_statuses,
+
+		get_and_show_search_statuses: get_and_show_search_statuses,
 
 		change: change
 	}

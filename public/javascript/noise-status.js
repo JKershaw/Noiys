@@ -40,11 +40,22 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 		});
 	}
 
+
+	function show_replies(status_id, wrapper, replies_ids) {
+		for (var i = 0; i < replies_ids.length; i++) {
+			noiysApi.getStatus(replies_ids[i], function(status) {
+				replace(status, wrapper, status_id);
+			});
+		}
+	}
+
+
 	return {
 		get_icon_row_html: get_icon_row_html,
 		toggle_icon_row: toggle_icon_row,
 		publish: publish,
 		replace: replace,
-		post: post
+		post: post,
+		show_replies: show_replies
 	}
 });
