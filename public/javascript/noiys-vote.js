@@ -1,15 +1,22 @@
 define(['underscore', 'noise-api'], function(_, noiysApi) {
 
 	var current_vote_count = [],
-		vote_checker_timeout;
+		vote_checker_timeout,
+		voting = false;
 
 	function post(id) {
-		var current_vote = parseInt($("#" + id + " .votes").first().text());
-
-		current_vote_count[id] =  current_vote + 1;
-		refresh(id);
-
-		noiysApi.postVote(id, function(posted){});
+		if (!voting)
+		{
+			var current_vote = parseInt($("#" + id + " .votes").first().text());
+			$(".votes-" + id).text("--");
+			
+			voting = true;
+			noiysApi.postVote(id, function(posted){
+				voting = false;
+				current_vote_count[id] =  current_vote + 1;
+				refresh(id);
+			});
+		}
 
 	}
 
