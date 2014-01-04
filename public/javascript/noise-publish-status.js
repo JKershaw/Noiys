@@ -73,8 +73,6 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 	}
 
 	function get_icon_row_html(status, wrapper) {
-
-		console.debug("get_icon_row_html: ", status, wrapper);
 		var response_string = "";
 		var votes_string = "";
 		var verb_string = "";

@@ -5,17 +5,17 @@ define([
 		'noise-mine', 
 		'noise-starred', 
 		'noise-status', 
-		'noiys-vote'], function(
+		'noiys-vote', 
+		'noiys-feed'], function(
 			$, 
 			_, 
 			noiysApi, 
 			noiysMine, 
 			noiysStarred, 
 			noiysStatus, 
-			noiysVote) {
+			noiysVote,
+			noiysFeed) {
 
-	var paused = false;
-	var auto_pause = false;
 	var feed_type = "random";
 	var random_status_timeout, chronological_status_timeout;
 	var newest_status_timestamp = 0;
@@ -28,7 +28,7 @@ define([
 		});
 
 		$("#pause_feed").click(function() {
-			toggle_pause();
+			noiysFeed.toggle_manual_pause();
 		});
 
 		$("#load_older_statuses").click(function() {
@@ -57,9 +57,9 @@ define([
 
 		$(window).on('scroll', function(){
 			if (window.pageYOffset > $('#pause_feed').position().top){
-				auto_pause = true;
+				noiysFeed.set_auto_pause(true);
 			} else {
-				auto_pause = false;
+				noiysFeed.set_auto_pause(false);
 			}
 		});
 
@@ -111,16 +111,6 @@ define([
 	function hide_loding_page() {
 		$('#loading-container').hide();
 		$('#main-container').show();
-	}
-
-	function toggle_pause() {
-		if (paused === true) {
-			paused = false;
-			$('#pause_feed').text("Pause Feed");
-		} else {
-			paused = true;
-			$('#pause_feed').text("Un-pause Feed");
-		}
 	}
 
 	function post_status() {
@@ -194,7 +184,7 @@ define([
 
 	function get_and_show_random_status() {
 
-		if ((auto_pause === false) && (paused === false) && (feed_type == 'random')) {
+		if (!noiysFeed.is_paused() && (feed_type == 'random')) {
 			noiysApi.getStatusRandom(function(status) {
 				noiysStatus.publish(status, "#random_statuses", true);
 				$("#main_error").hide();
@@ -248,7 +238,7 @@ define([
 	function get_and_show_chronological_status(calling_point) {
 		console.debug("get_and_show_chronological_status called from ", calling_point);
 
-		if ((auto_pause === false) && (paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
+		if (!noiysFeed.is_paused() && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
 			
 			noiysApi.getStatusSince(newest_status_timestamp, function(status) {
 				if (status) {
@@ -265,7 +255,6 @@ define([
 					}, 10000);
 				} else {
 					$("#main_error").show();
-					_rollbar.push(xhr.status + " error: " + "status?since=" + newest_status_timestamp);
 				}
 			});
 
