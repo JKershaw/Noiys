@@ -1,6 +1,7 @@
 define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noise-status', 'timeago', 'bootstrap'], function($, _, noiseApi, noiseMine, noiseStarred, noiseStatus) {
 
 	var paused = false;
+	var auto_pause = false;
 	var feed_type = "random";
 	var random_status_timeout, chronological_status_timeout;
 	var newest_status_timestamp = 0;
@@ -39,6 +40,18 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 		$("#top-nav-tabs > li > a").click(function() {
 			change_feed_type($(this).attr('data-feed'));
 		});
+
+		$(window).on('scroll', function(){
+			if (window.pageYOffset > $('#pause_feed').position().top)
+			{
+				auto_pause = true;
+			}
+			else
+			{
+				auto_pause = false;
+			}
+		});
+
 
 		$('body').on('click', 'a.button-vote', function() {
 			vote($(this).attr('data-id'));
@@ -190,14 +203,17 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 
 	function get_and_show_random_status() {
 
-		if ((paused === false) && (feed_type == 'random')) {
+		if ((auto_pause === false) && (paused === false) && (feed_type == 'random')) {
 			noiseApi.getStatusRandom(function(status) {
 				noiseStatus.publish(status, "#random_statuses", true);
 				$("#main_error").hide();
 			});
+			random_status_timeout = setTimeout(get_and_show_random_status, 6000);
+		}
+		else {
+			random_status_timeout = setTimeout(get_and_show_random_status, 1000);
 		}
 
-		random_status_timeout = setTimeout(get_and_show_random_status, 6000);
 	}
 
 	function get_and_show_search_statuses(search_term, callback) {
@@ -241,7 +257,7 @@ define(['jquery', 'underscore', 'noise-api', 'noise-mine', 'noise-starred', 'noi
 	function get_and_show_chronological_status(calling_point) {
 		console.debug("get_and_show_chronological_status called from ", calling_point);
 
-		if ((paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
+		if ((auto_pause === false) && (paused === false) && (newest_status_timestamp > 0) && (feed_type == 'chronological')) {
 			
 			noiseApi.getStatusSince(newest_status_timestamp, function(status) {
 				if (status) {
