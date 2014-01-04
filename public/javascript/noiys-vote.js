@@ -33,7 +33,7 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 
 		var keys = _.keys(current_vote_count);
 
-		noiysApi.getStatuses(keys, function(statuses) {
+		noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
 			if (statuses) {
 				_.each(statuses, function(status){
 					if (status.votes != current_vote_count[status.id])
@@ -43,12 +43,12 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 					}
 				});
 			}
-			vote_checker_timeout = setTimeout(check_all_votes, 10000);
+			vote_checker_timeout = setTimeout(check_all_votes, 5000);
 		});
 	}
 
 	function inititalise_vote_updater() {
-		vote_checker_timeout = setTimeout(check_all_votes, 10000);
+		vote_checker_timeout = setTimeout(check_all_votes, 5000);
 	}
 
 	return {

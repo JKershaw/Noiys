@@ -14,16 +14,16 @@ module.exports = function(app) {
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
-				handle_returned_statuses(statuses, response);
+				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
 		} else if(request.query['IDs']) {
 			console.log("Several IDs given");
 			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
-				handle_returned_statuses(statuses, response);
+				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
 		} else {
 			noiysDatabase.findRecentStatuses(number_of_statuses, function(statuses) {
-				handle_returned_statuses(statuses, response);
+				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
 		}
 	});
@@ -38,15 +38,15 @@ module.exports = function(app) {
 	});
 };
 
-function handle_returned_statuses(statuses, response) {
+function handle_returned_statuses(statuses, response, raw) {
 	
 	if(!statuses || statuses.length ==0){
 		response.send(404);
 	}
+	console.log(raw);
 
 	var messages = new Array(),
 		statusMessageFactory = new StatusMessageFactory();
-
 
 	var finished = _.after(statuses.length, function() {
 
@@ -61,9 +61,17 @@ function handle_returned_statuses(statuses, response) {
 	});
 
 	_.each(statuses, function(status) {
-		statusMessageFactory.create(status, function(message) {
-			messages.push(message);
-			finished();
-		});
+		if (raw) {
+			statusMessageFactory.createRaw(status, function(message) {
+				messages.push(message);
+				finished();
+			});
+		} else {
+			statusMessageFactory.create(status, function(message) {
+				messages.push(message);
+				finished();
+			});
+		}
 	});
+	
 }

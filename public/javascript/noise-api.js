@@ -87,45 +87,36 @@ define(['jquery'], function($) {
 		});
 	}
 
-	function getStatuses(IDs, callback) {
-		$.ajax({
-			url: "statuses?IDs=" + IDs.join(','),
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
-				} else if (xhr.status == 404) {
-					callback(false);
-				} else {
-					_rollbar.push(xhr.status + " error: " + "statuses?IDs=" + IDs.join(','));
-					callback();
-				}
-			}
-		});
+	function getStatusesFromIDs(IDs, callback) {
+		var options = ["IDs=" + IDs.join(',')];
+		getStatuses(options, callback);
+	}
+
+	function getRawStatusesFromIDs(IDs, callback) {
+		var options = ["IDs=" + IDs.join(','), "raw=true"];
+		getStatuses(options, callback);
 	}
 
 	function getStatusesLatest(callback) {
-		$.ajax({
-			url: "statuses",
-			type: 'GET',
-			contentType: 'application/json',
-			complete: function(xhr, textStatus) {
-				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
-				} else if (xhr.status == 404) {
-					callback(false);
-				} else {
-					_rollbar.push(xhr.status + " error: " + "statuses");
-					callback();
-				}
-			}
-		});
+		var options = [];
+		getStatuses(options, callback);
 	}
 
 	function getStatusesBefore(timestamp, callback) {
+		var options = ["before=" + timestamp];
+		getStatuses(options, callback);
+	}
+
+	function getStatuses(options, callback) {
+
+		var options_string = "";
+		if (options && options.length>0){
+			options_string = "?" + options.join('&');
+		}
+
+		var ajax_url = "statuses" + options_string;
 		$.ajax({
-			url: "statuses?before=" + timestamp,
+			url: ajax_url,
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
@@ -134,7 +125,7 @@ define(['jquery'], function($) {
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
-					_rollbar.push(xhr.status + " error: " + "statuses?before=" + timestamp);
+					_rollbar.push(xhr.status + " error: " + ajax_url);
 					callback();
 				}
 			}
@@ -168,9 +159,11 @@ define(['jquery'], function($) {
 		getStatusRandom: getStatusRandom,
 		getStatusSince: getStatusSince,
 
-		getStatuses: getStatuses,
+		getStatusesFromIDs: getStatusesFromIDs,
 		getStatusesLatest: getStatusesLatest,
 		getStatusesBefore: getStatusesBefore,
-		getStatusesSearch:getStatusesSearch
+		getStatusesSearch:getStatusesSearch,
+		
+		getRawStatusesFromIDs: getRawStatusesFromIDs
 	}
 });

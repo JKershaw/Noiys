@@ -56,7 +56,7 @@ define(['noise-api', 'noise-publish-status'], function(noiseApi, noisePublishSta
 
 		if (my_statuses.length > 0)
 		{
-			noiseApi.getStatuses(my_statuses, function(statuses){
+			noiseApi.getStatusesFromIDs(my_statuses, function(statuses){
 				console.log("got statuses");
 
 				if (statuses) {

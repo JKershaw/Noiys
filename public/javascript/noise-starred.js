@@ -63,7 +63,7 @@ define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi
 
 		if (my_stars.length > 0)
 		{
-			noiseApi.getStatuses(my_stars, function(statuses){
+			noiseApi.getStatusesFromIDs(my_stars, function(statuses){
 				console.log("got statuses");
 
 				if (statuses) {
