@@ -2,7 +2,8 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 
 	var manual_pause = false,
 		auto_pause = false,
-		current_feed_type;
+		current_feed_type,
+		init_home = false;
 
 	function toggle_manual_pause() {
 		manual_pause = !manual_pause;
@@ -39,6 +40,8 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		
 		if (selected_feed_type == "random") {
 			get_and_show_random_status();
+		} else if (selected_feed_type == "home") {
+			initialise_home();
 		} else if (selected_feed_type == "chronological") {
 			intitialise_chronological();
 			get_and_show_chronological_status();
@@ -188,6 +191,24 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 			
 			callback();
 		});
+	}
+
+	function initialise_home() {
+		if (!init_home) {
+			init_home = true;
+			console.debug("intitialise_home");
+
+			$('#main_info').show().html("Just loading your home feed now.");
+
+			noiysApi.getStatusesHome(function(statuses){
+				for (var i = 0; i < statuses.length; i++) {
+					noiysStatus.publish(statuses[i], "#home_statuses", true);
+				}
+
+				$('#main_info').hide();
+				$("#main_error").hide();
+			});
+		}
 	}
 
 

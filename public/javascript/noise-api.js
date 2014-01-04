@@ -98,12 +98,17 @@ define(['jquery'], function($) {
 	}
 
 	function getStatusesLatest(callback) {
-		var options = [];
+		var options = ["latest=true"];
 		getStatuses(options, callback);
 	}
 
 	function getStatusesBefore(timestamp, callback) {
 		var options = ["before=" + timestamp];
+		getStatuses(options, callback);
+	}
+
+	function getStatusesHome(callback) {
+		var options = ["home=true"];
 		getStatuses(options, callback);
 	}
 
@@ -159,10 +164,11 @@ define(['jquery'], function($) {
 		getStatusRandom: getStatusRandom,
 		getStatusSince: getStatusSince,
 
+		getStatusesHome: getStatusesHome,
 		getStatusesFromIDs: getStatusesFromIDs,
 		getStatusesLatest: getStatusesLatest,
 		getStatusesBefore: getStatusesBefore,
-		getStatusesSearch:getStatusesSearch,
+		getStatusesSearch: getStatusesSearch,
 		
 		getRawStatusesFromIDs: getRawStatusesFromIDs
 	}
