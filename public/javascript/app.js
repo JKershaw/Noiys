@@ -57,33 +57,40 @@ define([
 			}
 		});
 
-		$('body').on('click', 'a.button-vote', function() {
+		$('body').on('click', 'a.button-vote', function(e) {
+    		e.stopPropagation();
 			noiysVote.post($(this).attr('data-id'));
 		});
 
-		$('body').on('click', 'a.button-reply', function() {
+		$('body').on('click', 'a.button-reply', function(e) {
+    		e.stopPropagation();
 			reply($(this).attr('data-id'));
 		});
 
-		$('body').on('click', 'a.button-remove-my-status', function() {
+		$('body').on('click', 'a.button-remove-my-status', function(e) {
+    		e.stopPropagation();
 			noiysMine.remove_my_status($(this).attr('data-id'));
 		});
 
-		$('body').on('click', 'a.button-star', function() {
+		$('body').on('click', 'a.button-star', function(e) {
+    		e.stopPropagation();
 			noiysStarred.star($(this).attr('data-id'));
 			refresh_my_stars();
 		});
 
-		$('body').on('click', 'a.button-show-hidden-quote', function() {
+		$('body').on('click', 'a.button-show-hidden-quote', function(e) {
+    		e.stopPropagation();
 			show_hidden_quote($(this).attr('data-id'), $(this).attr('data-wrapper'));
 		});
 
-		$('body').on('click', 'a.button-show-replies', function() {
+		$('body').on('click', 'a.button-show-replies', function(e) {
+    		e.stopPropagation();
 			$(this).html('Loading ...');
 			noiysStatus.show_replies($(this).attr('data-id'), $(this).attr('data-wrapper'), $(this).attr('data-responses-array').split(","));
 		});
 
-		$('body').on('click', 'a.button-search', function() {
+		$('body').on('click', 'a.button-search', function(e) {
+    		e.stopPropagation();
 			goto_search($(this).attr('data-search-term'));
 		});
 
