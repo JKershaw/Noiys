@@ -98,7 +98,7 @@ define(['jquery'], function($) {
 	}
 
 	function getStatusesLatest(callback) {
-		var options = ["latest=true"];
+		var options = [];
 		getStatuses(options, callback);
 	}
 

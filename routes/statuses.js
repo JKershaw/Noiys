@@ -10,13 +10,14 @@ module.exports = function(app) {
 	var number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
+
 		console.log("GETTING statuses =>", request.query);
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
-		} else if(request.query['IDs']) {
+		} else if(request.query['IDs'] && (request.query['IDs'] !== "undefined")) {
 			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
@@ -53,6 +54,8 @@ function handle_home_statuses(request, response) {
 				return 0;
 			});
 
+			messages = messages.slice(0, 20);
+
 			response.contentType('json');
 			response.send(messages);
 		});
@@ -71,7 +74,6 @@ function handle_returned_statuses(statuses, response, raw) {
 	if(!statuses || statuses.length ==0){
 		response.send(404);
 	}
-	console.log(raw);
 
 	var messages = new Array(),
 		statusMessageFactory = new StatusMessageFactory();
@@ -83,8 +85,6 @@ function handle_returned_statuses(statuses, response, raw) {
 			if (a.timestamp > b.timestamp) return 1;
 			return 0;
 		});
-
-		messages = messages.slice(0, 5);
 
 		response.contentType('json');
 		response.send(messages);

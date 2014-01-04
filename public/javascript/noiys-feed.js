@@ -38,9 +38,12 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		clear_random_feed_timeout();
 		clear_chronological_feed_timeout()
 		
+		$('#about_home').hide();
+		
 		if (selected_feed_type == "random") {
 			get_and_show_random_status();
 		} else if (selected_feed_type == "home") {
+			$('#about_home').show();
 			initialise_home();
 		} else if (selected_feed_type == "chronological") {
 			intitialise_chronological();
