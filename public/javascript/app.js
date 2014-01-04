@@ -58,7 +58,7 @@ define([
 		});
 
 		$('body').on('click', 'a.button-vote', function() {
-			noiysVote.vote($(this).attr('data-id'));
+			noiysVote.post($(this).attr('data-id'));
 		});
 
 		$('body').on('click', 'a.button-reply', function() {
@@ -99,6 +99,8 @@ define([
 
 		noiysMine.inititalise_my_statuses();
 		refresh_my_statuses();
+
+		noiysVote.inititalise_vote_updater();
 
 		hide_loding_page();
 	});

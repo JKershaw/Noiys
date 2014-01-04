@@ -1,4 +1,4 @@
-define(['jquery', 'noise-starred'], function($, noiseStarred) {
+define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiysVote) {
 
 	function publish_status(status, wrapper, prepend) {
 
@@ -75,7 +75,6 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 	function get_icon_row_html(status, wrapper) {
 		var response_string = "";
 		var votes_string = "";
-		var verb_string = "";
 		var star_string = "";
 		var timeago_string = "";
 
@@ -93,8 +92,7 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 		}
 
 		if (status.votes !== undefined) {
-			votes_string = "<span style=\"font-weight:bold;\" class=\"votes votes-" + status.id + "\">" + status.votes + "</span>&nbsp;&nbsp;";
-			verb_string = "<a style=\"cursor:pointer;\" class=\"button-vote\" data-id='" + status.id + "' >VERB</a>&nbsp;&nbsp;";
+			votes_string = noiysVote.get_verb_and_vote_html(status.id, status.votes);
 		}
 
 		if (status.ISO8601timestamp !== undefined) {
@@ -116,7 +114,6 @@ define(['jquery', 'noise-starred'], function($, noiseStarred) {
 					<div class=\"col-md-4\"> \
 						<small> \
 							" + votes_string + " \
-							" + verb_string + " \
 							" + reply_string + "&nbsp;&nbsp; \
 							" + star_string + "&nbsp;&nbsp; \
 							" + link_string + " \
