@@ -94,26 +94,7 @@ define([
 
 		$('body').on('click', '.statuses_wrap>.panel>.panel-body .panel>.panel-body', function(e) {
     		e.stopPropagation();
-
-    		if (($(this).siblings().size() > 0))
-    		{
-    			$(this).siblings('.list-group').slideUp('fast', function(){
-    				$(this).remove();
-    			});
-			} else {
-
-				var status = {
-						id: $(this).parent().attr('data-id'),
-						votes: $(this).parent().attr('data-votes'),
-						ISO8601timestamp: $(this).parent().attr('data-ISO8601timestamp')
-					};
-				var extra_bar = noiysStatus.get_icon_row_html(status, "");
-
-				$(this).parent().append(extra_bar);
-
-				$("span.timeago").timeago();
-			}
-
+    		noiysStatus.toggle_icon_row(this);
 		});
 
 		select_initial_tab();

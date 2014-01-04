@@ -12,6 +12,28 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 		return noisePublishStatus.get_icon_row_html(status, wrapper)
 	}
 
+	function toggle_icon_row(selector) {
+		if (($(selector).siblings().size() > 0))
+		{
+			$(selector).siblings('.list-group').slideUp('fast', function(){
+				$(selector).siblings('.list-group').remove();
+			});
+		} else {
+
+			var status = {
+					id: $(selector).parent().attr('data-id'),
+					votes: $(selector).parent().attr('data-votes'),
+					ISO8601timestamp: $(selector).parent().attr('data-ISO8601timestamp')
+				};
+				
+			var extra_bar = get_icon_row_html(status, "");
+
+			$(selector).parent().append(extra_bar);
+
+			$("span.timeago").timeago();
+		}
+	}
+
 	function post(status_text, callback) {
 		noiysApi.postStatus(status_text, function(posted) {
 			callback(posted);
@@ -20,6 +42,7 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 
 	return {
 		get_icon_row_html: get_icon_row_html,
+		toggle_icon_row: toggle_icon_row,
 		publish: publish,
 		replace: replace,
 		post: post
