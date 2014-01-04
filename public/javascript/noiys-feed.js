@@ -205,7 +205,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 
 			noiysApi.getStatusesHome(function(statuses){
 				for (var i = 0; i < statuses.length; i++) {
-					noiysStatus.publish(statuses[i], "#home_statuses", true);
+					noiysStatus.publish(statuses[i], "#home_statuses", false);
 				}
 
 				$('#main_info').hide();

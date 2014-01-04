@@ -41,7 +41,16 @@ module.exports = function(app) {
 };
 
 function handle_home_statuses(request, response) {
+
 	noiysDatabase.getStatuses(function(statuses) {
+
+		statuses.sort(function compare(a, b) {
+			if (a.votes > b.votes) return -1;
+			if (a.votes < b.votes) return 1;
+			return 0;
+		});
+
+		statuses = statuses.slice(0, 30);
 
 		var messages = new Array(),
 			statusMessageFactory = new StatusMessageFactory();
@@ -49,12 +58,10 @@ function handle_home_statuses(request, response) {
 		var finished = _.after(statuses.length, function() {
 
 			messages.sort(function compare(a, b) {
-				if (a.votes < b.votes) return -1;
-				if (a.votes > b.votes) return 1;
+				if (a.votes > b.votes) return -1;
+				if (a.votes < b.votes) return 1;
 				return 0;
 			});
-
-			messages = messages.slice(0, 20);
 
 			response.contentType('json');
 			response.send(messages);
