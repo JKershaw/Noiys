@@ -7,17 +7,15 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 	function post(id) {
 		if (!voting)
 		{
-			var current_vote = parseInt($("#" + id + " .votes").first().text());
 			$(".votes-" + id).text("--");
 			
 			voting = true;
 			noiysApi.postVote(id, function(posted){
 				voting = false;
-				current_vote_count[id] =  current_vote + 1;
+				current_vote_count[id] =  current_vote_count[id] + 1;
 				refresh(id);
 			});
 		}
-
 	}
 
 	function refresh(id) {
@@ -27,7 +25,7 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 
 	function get_verb_and_vote_html(id, vote_count){
 
-		current_vote_count[id] = vote_count;
+		current_vote_count[id] = parseInt(vote_count);
 
 		var vote_string = "<span style=\"font-weight:bold;\" class=\"votes votes-" + id + "\">" + vote_count + "</span>&nbsp;&nbsp; \
 				<a class=\"button-vote\" data-id='" + id + "' >VERB</a>&nbsp;&nbsp;";
