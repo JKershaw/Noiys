@@ -22,111 +22,112 @@
 		<% include customCSS %>
 	</head>
 	<body>
-		<div class="container" id='loading-container'>
-			<h1>
-				<a href="http://www.noiys.com">NOIYS</a>
-			</h1>
-			<p>Loading ...</p>
-		</div>
-		<div class="container" id='main-container' style="display:none;">
+		<div class="container">
+
 			<% include header %>
-			<p>
-				<textarea class="form-control" rows="3" id="statusText" /></textarea>
-			</p>
-			<p>
-				<small>
-					Your note will be automatically deleted after 24 hours
-				</small>
-			</p>
-			<div class="row">
-				<div class="col-md-6">
-					<button type="button" class="btn btn-primary btn-lg" id="post_status">
-						Post Note
-					</button>
-				</div>
-				<div class="col-md-6">
-				</div>
+
+			<div id='loading-container'>
+				<p><i>Loading ...</i></p>
 			</div>
-			<br />
-			<ul id='top-nav-tabs' class="nav nav-tabs">
-				<li class="active" id="tab-random">
-					<a data-feed='random'><span class="glyphicon glyphicon-random"></span><span style="display:none" class='extended'> Random</span></a>
-				</li>
-				<li id="tab-chronological">
-					<a data-feed='chronological'><span class="glyphicon glyphicon-time"></span><span style="display:none" class='extended'> Recent</span></a>
-				</li>
-				<li id="tab-me">
-					<a data-feed='me'><span class="glyphicon glyphicon-user"></span><span style="display:none" class='extended'> Mine</span></a>
-				</li>
-				<li id="tab-stars">
-					<a data-feed='stars'><span class="glyphicon glyphicon-star"></span><span style="display:none" class='extended'> Starred</span></a>
-				</li>
-				<li id="tab-search">
-					<a data-feed='search'><span class="glyphicon glyphicon-search"></span><span style="display:none" class='extended'> Search</span></a>
-				</li>
-				<li id="tab-home">
-					<a data-feed='home'><span class="glyphicon glyphicon-tree-deciduous"></span><span style="display:none" class='extended'> Home</span></a>
-				</li>
-			</ul>
-			<br />
-			<p>
-				<button type="button" class="btn btn-default btn-xs" id="pause_feed">
-					<span class="glyphicon glyphicon-pause"></span> Pause Feed
-				</button>
-			</p>
 
-			<p id='about_home' style="display:none">The <b>Home</b> feed will eventually be the default feed for NOIYS. It'll show the "best" notes from the last 24 hours, and eventually become tailored to your preferences. This is work in progress, so don't be all that surprised if it's rubbish for a little while. <a class="button-search" data-search-term="#feedback">#feedback</a> and <a class="button-search" data-search-term="#feature">#feature</a> requests are always appreciated.</p>
-
-			<div class="alert alert-warning" style="display:none;" id="main_error"></div>
-			<div class="alert alert-info" style="display:none;" id="main_info"></div>
-
-			<div class="statuses_wrap" id="random_statuses"></div>
-
-			<div class="statuses_wrap" id="chronological_statuses">
-				<p style="text:align: centre" class="final">
-					<button type="button" class="btn btn-default btn-xs" id="load_older_statuses">
-						Load older notes
-					</button>
+			<div id='main-container' style="display:none;">
+				<p>
+					<textarea class="form-control" rows="3" id="statusText" /></textarea>
 				</p>
-			</div>
-
-			<div class="statuses_wrap" id="me_statuses"></div>
-
-			<div class="statuses_wrap" id="stars_statuses"></div>
-
-			<div class="statuses_wrap" id="search_statuses">
+				<p>
+					<small>
+						Your note will be automatically deleted after 24 hours
+					</small>
+				</p>
 				<div class="row">
-					<div class="col-lg-6">
-						<div class="input-group">
-							<input type="text" class="form-control" id="search_statuses_text">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button" id="search_statuses_button">
-									Search
-								</button>
-							</span>
-						</div>
+					<div class="col-md-6">
+						<button type="button" class="btn btn-primary btn-lg" id="post_status">
+							Post Note
+						</button>
+					</div>
+					<div class="col-md-6">
 					</div>
 				</div>
 				<br />
-				<div id="search_statuses_result"></div>
-			</div>
+				<ul id='top-nav-tabs' class="nav nav-tabs">
+					<li class="active" id="tab-random">
+						<a data-feed='random'><span class="glyphicon glyphicon-random"></span><span style="display:none" class='extended'> Random</span></a>
+					</li>
+					<li id="tab-chronological">
+						<a data-feed='chronological'><span class="glyphicon glyphicon-time"></span><span style="display:none" class='extended'> Recent</span></a>
+					</li>
+					<li id="tab-me">
+						<a data-feed='me'><span class="glyphicon glyphicon-user"></span><span style="display:none" class='extended'> Mine</span></a>
+					</li>
+					<li id="tab-stars">
+						<a data-feed='stars'><span class="glyphicon glyphicon-star"></span><span style="display:none" class='extended'> Starred</span></a>
+					</li>
+					<li id="tab-search">
+						<a data-feed='search'><span class="glyphicon glyphicon-search"></span><span style="display:none" class='extended'> Search</span></a>
+					</li>
+					<li id="tab-home">
+						<a data-feed='home'><span class="glyphicon glyphicon-tree-deciduous"></span><span style="display:none" class='extended'> Home</span></a>
+					</li>
+				</ul>
+				<br />
+				<p>
+					<button type="button" class="btn btn-default btn-xs" id="pause_feed">
+						<span class="glyphicon glyphicon-pause"></span> Pause Feed
+					</button>
+				</p>
 
-			<div class="statuses_wrap" id="home_statuses">
-				<div class="final"></div>
-			</div>
+				<p id='about_home' style="display:none">The <b>Home</b> feed will eventually be the default feed for NOIYS. It'll show the "best" notes from the last 24 hours, and eventually become tailored to your preferences. This is work in progress, so don't be all that surprised if it's rubbish for a little while. <a class="button-search" data-search-term="#feedback">#feedback</a> and <a class="button-search" data-search-term="#feature">#feature</a> requests are always appreciated.</p>
 
-			<br />
-			<br />
+				<div class="alert alert-warning" style="display:none;" id="main_error"></div>
+				<div class="alert alert-info" style="display:none;" id="main_info"></div>
 
-			<div class="row">
-				<div class="col-md-12" style="text-align:right; color:#999;">
-					<a><span id="button-go-up" class="glyphicon glyphicon-circle-arrow-up"></span></a>
+				<div class="statuses_wrap" id="random_statuses"></div>
+
+				<div class="statuses_wrap" id="chronological_statuses">
+					<p style="text:align: centre" class="final">
+						<button type="button" class="btn btn-default btn-xs" id="load_older_statuses">
+							Load older notes
+						</button>
+					</p>
 				</div>
-			</div>
 
-			
-			<% include footer %>
+				<div class="statuses_wrap" id="me_statuses"></div>
+
+				<div class="statuses_wrap" id="stars_statuses"></div>
+
+				<div class="statuses_wrap" id="search_statuses">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="input-group">
+								<input type="text" class="form-control" id="search_statuses_text">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button" id="search_statuses_button">
+										Search
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<br />
+					<div id="search_statuses_result"></div>
+				</div>
+
+				<div class="statuses_wrap" id="home_statuses">
+					<div class="final"></div>
+				</div>
+
+				<br />
+				<br />
+
+				<div class="row">
+					<div class="col-md-12" style="text-align:right; color:#999;">
+						<a><span id="button-go-up" class="glyphicon glyphicon-circle-arrow-up"></span></a>
+					</div>
+				</div>
+				
+				<% include footer %>
+
+			</div>
 		</div>
 	</body>
-
 </html>
