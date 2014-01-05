@@ -9,9 +9,9 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		manual_pause = !manual_pause;
 
 		if (manual_pause === false) {
-			$('#pause_feed').text("Pause Feed");
+			$('#pause_feed').html("<span class=\"glyphicon glyphicon-pause\"></span>Pause Feed");
 		} else {
-			$('#pause_feed').text("Un-pause Feed");
+			$('#pause_feed').html("<span class=\"glyphicon glyphicon-play\"></span> Un-pause Feed");
 		}
 	}
 
