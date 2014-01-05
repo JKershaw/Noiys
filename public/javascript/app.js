@@ -122,9 +122,7 @@ define([
 		$('#post_status').text("Posting ...");
 
 		noiysStatus.post($('#statusText').val(), function(posted) {
-			
-			$("#main_error").hide();
-			
+
 			if (posted) {
 				$('#post_status').text("Posted!");
 				$('#statusText').val("");
@@ -137,8 +135,6 @@ define([
 				$('#post_status').text("Not Posted ...");
 				$('#post_status').addClass("btn-warning");
 
-			} else {
-				$("#main_error").show();
 			}
 
 			$('#post_status').prop('disabled', false);

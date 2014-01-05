@@ -30,7 +30,7 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 		current_vote_count[id] = vote_count;
 
 		var vote_string = "<span style=\"font-weight:bold;\" class=\"votes votes-" + id + "\">" + vote_count + "</span>&nbsp;&nbsp; \
-				<a style=\"cursor:pointer;\" class=\"button-vote\" data-id='" + id + "' >VERB</a>&nbsp;&nbsp;";
+				<a class=\"button-vote\" data-id='" + id + "' >VERB</a>&nbsp;&nbsp;";
 
 		return vote_string;
 	}

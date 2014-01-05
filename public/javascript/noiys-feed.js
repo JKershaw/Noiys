@@ -59,7 +59,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		
 			noiysApi.getStatusRandom(function(status) {
 				noiysStatus.publish(status, "#random_statuses", true);
-				$("#main_error").hide();
 			});
 			random_status_timeout = setTimeout(get_and_show_random_status, 6000);
 		}
@@ -89,6 +88,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 			$('#main_info').show().html("Just loading the latest notes now.");
 
 			noiysApi.getStatusesLatest(function(statuses){
+				$('#main_info').hide();
 				for (var i = 0; i < statuses.length; i++) {
 
 					if (statuses[i].timestamp > newest_status_timestamp) {
@@ -101,8 +101,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 					noiysStatus.publish(statuses[i], "#chronological_statuses", true);
 				}
 
-				$('#main_info').hide();
-				$("#main_error").hide();
 
 				get_and_show_chronological_status(4);
 			});
@@ -127,8 +125,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 					chronological_status_timeout = setTimeout(function() {
 						get_and_show_chronological_status()
 					}, 10000);
-				} else {
-					$("#main_error").show();
 				}
 			});
 
@@ -145,9 +141,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		if (oldest_status_timestamp < Number.MAX_VALUE) {
 
 			noiysApi.getStatusesBefore(oldest_status_timestamp, function(statuses) {
-				
-				$("#main_error").hide();
-
 				if (statuses) {
 					for (var i = statuses.length - 1; i >= 0; i--) {
 						if (statuses[i].timestamp < oldest_status_timestamp) {
@@ -158,8 +151,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 					}
 				} else if (statuses === false) {
 					console.debug("No older statuses found");
-				} else {
-					$("#main_error").show();
 				}
 				callback();
 			});
@@ -171,8 +162,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		console.debug("get_and_show_search_statuses called");
 
 		noiysApi.getStatusesSearch(search_term, function(statuses) {
-		
-			$("#main_error").hide();
 
 			if (statuses) {
 				$('#search_statuses_result').html('');
@@ -189,7 +178,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 				$('#search_statuses_result').html('No statuses found.');
 			} else {
 				$('#search_statuses_result').html('Err, error?');
-				$("#main_error").show();
 			}
 			
 			callback();
@@ -209,7 +197,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 				}
 
 				$('#main_info').hide();
-				$("#main_error").hide();
 			});
 		}
 	}

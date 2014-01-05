@@ -15,7 +15,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
+			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
 			quote_to_hide_selector.hide();
 		}
 
@@ -32,7 +32,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a style=\"cursor:pointer\" class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
+			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
 			quote_to_hide_selector.hide();
 		}
 
@@ -46,14 +46,14 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		var hashtag_regex = /&#35;\w*/g
 
 		status.text = status.text.replace(hashtag_regex, function(match) {
-			return "<a style=\"cursor:pointer;\" class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
+			return "<a class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
 		});
 
 
 		var trash_string = "";
 
 		if (wrapper == "#me_statuses") {
-			trash_string = "<a style=\"cursor:pointer; float:right;\" class=\"button-remove-my-status\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-remove\"></span></a>";
+			trash_string = "<a style=\"float:right;\" class=\"button-remove-my-status\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-remove\"></span></a>";
 		}
 
 		var text_string = status.text;
@@ -87,7 +87,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 
 			responses_array_string = status.responses.join(",");
 
-			response_string = "<a style=\"cursor:pointer\" class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
+			response_string = "<a class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
 
 		}
 
@@ -100,12 +100,12 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		}
 		
 		if (noiseStarred.is_starred(status.id)) {
-			star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star\"></a>";
+			star_string = "<a class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star\"></a>";
 		} else {
-			star_string = "<a style=\"cursor:pointer\" class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star-empty\"></a>";
+			star_string = "<a class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star-empty\"></a>";
 		}
 
-		var reply_string = "<a style=\"cursor:pointer\" class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
+		var reply_string = "<a class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
 		
 		var link_string = "<a class=\"button-link\" target=\"_blank\" href=\"status/" + status.id + "\"><span class=\"glyphicon glyphicon-link\"></a>";
 

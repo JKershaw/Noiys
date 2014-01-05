@@ -75,21 +75,14 @@
 				</button>
 			</p>
 
-			<p id='about_home' style="display:none">The <b>Home</b> feed will eventually be the default feed for NOIYS. It'll show the "best" notes from the last 24 hours, and eventually become tailored to your preferences. This is work in progress, so don't be all that surprised if it's rubbish for a little while. <a style="cursor:pointer;" class="button-search" data-search-term="#feedback">#feedback</a> and <a style="cursor:pointer;" class="button-search" data-search-term="#feature">#feature</a> requests are always appreciated.</p>
+			<p id='about_home' style="display:none">The <b>Home</b> feed will eventually be the default feed for NOIYS. It'll show the "best" notes from the last 24 hours, and eventually become tailored to your preferences. This is work in progress, so don't be all that surprised if it's rubbish for a little while. <a class="button-search" data-search-term="#feedback">#feedback</a> and <a class="button-search" data-search-term="#feature">#feature</a> requests are always appreciated.</p>
 
+			<div class="alert alert-warning" style="display:none;" id="main_error"></div>
+			<div class="alert alert-info" style="display:none;" id="main_info"></div>
 
-			<div class="alert alert-warning" style="display:none;" id="main_error">
-				Ah crap, the server returned an error. This is probably because it's been overloaded.
-				It'll be back soon.
-			</div>
-			<div class="alert alert-info" style="display:none;" id="main_info">
-			</div>
+			<div class="statuses_wrap" id="random_statuses"></div>
 
-
-			<div class="statuses_wrap" id="random_statuses">
-			</div>
-
-			<div class="statuses_wrap" id="chronological_statuses" style="display:none;">
+			<div class="statuses_wrap" id="chronological_statuses">
 				<p style="text:align: centre" class="final">
 					<button type="button" class="btn btn-default btn-xs" id="load_older_statuses">
 						Load older notes
@@ -97,13 +90,11 @@
 				</p>
 			</div>
 
-			<div class="statuses_wrap" id="me_statuses" style="display:none;">
-			</div>
+			<div class="statuses_wrap" id="me_statuses"></div>
 
-			<div class="statuses_wrap" id="stars_statuses" style="display:none;">
-			</div>
+			<div class="statuses_wrap" id="stars_statuses"></div>
 
-			<div class="statuses_wrap" style="display:none;" id="search_statuses">
+			<div class="statuses_wrap" id="search_statuses">
 				<div class="row">
 					<div class="col-lg-6">
 						<div class="input-group">
@@ -126,9 +117,10 @@
 
 			<br />
 			<br />
+
 			<div class="row">
 				<div class="col-md-12" style="text-align:right; color:#999;">
-					<a style="cursor:pointer;"><span id="button-go-up" class="glyphicon glyphicon-circle-arrow-up"></span></a>
+					<a><span id="button-go-up" class="glyphicon glyphicon-circle-arrow-up"></span></a>
 				</div>
 			</div>
 
