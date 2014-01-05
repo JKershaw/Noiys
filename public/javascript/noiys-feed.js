@@ -86,7 +86,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 		if (!init_chronological) {
 			init_chronological = true;
 			console.debug("intitialise_chronological");
-			$('#main_info').show().html("Just loading the latest statuses now.");
+			$('#main_info').show().html("Just loading the latest notes now.");
 
 			noiysApi.getStatusesLatest(function(statuses){
 				for (var i = 0; i < statuses.length; i++) {

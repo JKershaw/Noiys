@@ -147,7 +147,7 @@ define([
 	}
 
 	function set_posted_button() {
-		$('#post_status').text("Post Status");
+		$('#post_status').text("Post Note");
 		$('#post_status').removeClass("btn-warning");
 	}
 
