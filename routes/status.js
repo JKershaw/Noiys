@@ -14,7 +14,7 @@ module.exports = function(app) {
 		HTMLEncoder().encode(request.body.text, function(encodedText) {
 
 			encodedText = encodedText.trim();
-			if (encodedText != "") {
+			if (encodedText && (encodedText != "") && (encodedText.length > 0)) {
 				var status = {
 					text: encodedText,
 					timestamp: Math.round(new Date().getTime() / 1000),
