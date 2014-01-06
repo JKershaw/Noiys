@@ -24,7 +24,7 @@ module.exports = function(app) {
 
 				var quotes = encodedText.match(/@[a-f0-9]{24,24}/g);
 
-				if (quotes) {
+				if (quotes && (quotes.length == 1)) {
 					status.parent = quotes[0].replace("@", "");
 					console.log("Parent: ", status.parent);
 				}
