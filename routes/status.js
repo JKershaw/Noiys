@@ -15,18 +15,25 @@ module.exports = function(app) {
 
 			encodedText = encodedText.trim();
 			if (encodedText && (encodedText != "") && (encodedText.length > 0)) {
+
 				var status = {
 					text: encodedText,
 					timestamp: Math.round(new Date().getTime() / 1000),
 					votes: 0
 				};
 
+				var quotes = encodedText.match(/@[a-f0-9]{24,24}/g);
+
+				if (quotes) {
+					status.parent = quotes[0].replace("@", "");
+					console.log("Parent: ", status.parent);
+				}
+
+
 				find_ancestors(status, function(ancestors) {
 					status.ancestors = ancestors;
 
 					noiysDatabase.saveStatus(status, function(saved) {
-
-						var quotes = saved.text.match(/@[a-f0-9]{24,24}/g);
 
 						if (quotes) {
 							console.log("there are quotes!");
