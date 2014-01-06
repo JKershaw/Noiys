@@ -1,7 +1,7 @@
 set -e
 pkill node &
 mongo statuses --eval "db.dropDatabase()"
-mocha tests/unit/ --ui qunit --reporter nyan
+mocha tests/unit/ --ui qunit --reporter nyan --timeout 5000
 echo "Unit tests complete"
 sleep 1
 foreman start &

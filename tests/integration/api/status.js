@@ -202,7 +202,6 @@ describe('Posting to /status', function(done) {
 
 						res.on("data", function(chunk) {
 							data = JSON.parse(chunk);
-							console.log("======", data);
 
 							data.text.should.contain(statusText);
 							assert.equal(data.ancestors[0], statusID);
@@ -277,7 +276,6 @@ describe('Posting to /status to test multiple ancestors', function(done) {
 
 					res.on("data", function(chunk) {
 						data = JSON.parse(chunk);
-						console.log("======", data);
 
 						data.text.should.contain(statusText);
 						assert.equal(data.ancestors[0], ancestor1StatusID);

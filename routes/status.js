@@ -26,7 +26,6 @@ module.exports = function(app) {
 
 				if (quotes) {
 					status.parent = quotes[0].replace("@", "");
-					console.log("Parent: ", status.parent);
 				}
 
 
@@ -58,7 +57,6 @@ module.exports = function(app) {
 		noiysDatabase.findStatus(request.params.ID, function(status) {
 
 			var requestType = request.get('Content-Type');
-			console.log("Connection type: ", requestType);
 			if (requestType && (requestType.indexOf('json') > -1)) {
 
 				if (status) {

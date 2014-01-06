@@ -41,6 +41,56 @@ describe('Getting from /statuses', function(done) {
 		});
 	});
 
+	it("visiting /statuses?raw=true returns a 200 with several raw statuses", function(done) {
+
+		http.get('http://localhost:3000/statuses?raw=true', function(res) {
+
+			res.on("data", function(chunk) {
+				data = JSON.parse(chunk);
+
+				assert.equal(200, res.statusCode);
+				assert.equal(true, data.length > 2);
+
+				var always_older = true;
+
+				for (var i = 0; i < data.length; i++) {
+					expect(data[i].text).to.exist;
+					expect(data[i].id).to.exist;
+					expect(data[i].age).to.exist;
+					expect(data[i].timestamp).to.exist;
+					expect(data[i].ISO8601timestamp).to.exist;
+				}
+
+				done();
+
+			});
+		});
+	});
+
+	it("visiting /statuses for the home feed returns a 200 with several statuses", function(done) {
+
+		http.get('http://localhost:3000/statuses?home=true', function(res) {
+
+			res.on("data", function(chunk) {
+				data = JSON.parse(chunk);
+
+				assert.equal(200, res.statusCode);
+				assert.equal(true, data.length > 2);
+
+				for (var i = 0; i < data.length; i++) {
+					expect(data[i].text).to.exist;
+					expect(data[i].id).to.exist;
+					expect(data[i].age).to.exist;
+					expect(data[i].timestamp).to.exist;
+					expect(data[i].ISO8601timestamp).to.exist;
+
+				}
+				done();
+
+			});
+		});
+	});
+
 	it("visiting /statuses with a before", function(done) {
 
 		var before_timestamp = Math.round(new Date().getTime() / 1000);
@@ -102,8 +152,6 @@ describe('Getting from /statuses', function(done) {
 
 					res.on("data", function(chunk) {
 						data = JSON.parse(chunk);
-
-						console.log(data);
 
 						assert.equal("Status 1", data[0].text);
 						assert.equal("Status 2", data[1].text);
