@@ -1,4 +1,4 @@
-define(['jquery', 'noiys-vote', 'noise-starred'], function($, noiysVote, noiseStarred) {
+define(['noise-starred'], function(noiseStarred) {
 
 	function generate_verb_html(id, vote_count) {
 		if (vote_count !== undefined) {
@@ -98,8 +98,6 @@ define(['jquery', 'noiys-vote', 'noise-starred'], function($, noiysVote, noiseSt
 
 
 	function generate_icon_row_html(status, wrapper) {
-
-		noiysVote.save_vote_count(status.id, status.votes);
 
 		var vote_string = generate_verb_html(status.id, status.votes);
 		var reply_string = generate_reply_html(status.id);

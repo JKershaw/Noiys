@@ -1,7 +1,6 @@
-define(['underscore', 'noise-api'], function(_, noiysApi) {
+define(['underscore', 'noise-api', 'noiys-vote-count'], function(_, noiysApi, noiysVoteCount) {
 
-	var current_vote_count = [],
-		vote_checker_timeout,
+	var vote_checker_timeout,
 		voting = false;
 
 	function post(id) {
@@ -12,31 +11,27 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 			voting = true;
 			noiysApi.postVote(id, function(posted){
 				voting = false;
-				current_vote_count[id] =  current_vote_count[id] + 1;
+				noiysVoteCount.incriment_count(id);
 				refresh(id);
 			});
 		}
 	}
 
 	function refresh(id) {
-		$(".votes-" + id).text(current_vote_count[id]).css("color", "green");
-	}
-
-	function save_vote_count(id, vote_count) {
-		current_vote_count[id] = parseInt(vote_count);
+		$(".votes-" + id).text(noiysVoteCount.get_count(id)).css("color", "green");
 	}
 
 	function check_all_votes(){
 		console.log("Refreshing all votes");
 
-		var keys = _.keys(current_vote_count);
+		var keys = noiysVoteCount.get_statusIDs();
 
 		noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
 			if (statuses) {
 				_.each(statuses, function(status){
-					if (status.votes > current_vote_count[status.id])
+					if (status.votes != $(".votes-" + status.id).text())
 					{
-						current_vote_count[status.id] = status.votes;
+						noiysVoteCount.set_count(status.id, status.votes);
 						refresh(status.id);
 					}
 				});
@@ -52,7 +47,6 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 	return {
 		post: post,
 		check_all_votes: check_all_votes,
-		inititalise_vote_updater: inititalise_vote_updater,
-		save_vote_count: save_vote_count
+		inititalise_vote_updater: inititalise_vote_updater
 	}
 });

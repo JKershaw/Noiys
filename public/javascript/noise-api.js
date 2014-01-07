@@ -1,4 +1,4 @@
-define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
+define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiError, noiysVoteCount) {
 
 	function postStatus(statusText, callback) {
 		$.ajax({
@@ -51,7 +51,9 @@ define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
-				callback(JSON.parse(xhr.responseText));
+				var status = JSON.parse(xhr.responseText);
+				noiysVoteCount.set_count_from_status(status);
+				callback(status);
 			}
 		});
 	}
@@ -64,7 +66,9 @@ define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
+					var status = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_status(status);
+					callback(status);
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
@@ -84,7 +88,9 @@ define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
+					var status = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_status(status);
+					callback(status);
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
@@ -136,7 +142,9 @@ define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
+					var statuses = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_statuses(statuses);
+					callback(statuses);
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
@@ -157,7 +165,9 @@ define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
-					callback(JSON.parse(xhr.responseText));
+					var statuses = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_statuses(statuses);
+					callback(statuses);
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
