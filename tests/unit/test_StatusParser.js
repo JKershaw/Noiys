@@ -41,3 +41,13 @@ test("Text with a link in has the link turned into a real link", function(done) 
 		done();
 	});
 });
+
+test("Text with a new line in has the new line turned into an html line break", function(done) {
+	var status_text = "Sample text with \nnew line",
+	expected_text = "Sample text with <br />new line"
+
+	StatusParser(status_text, function(parsed_text) {
+		assert.equal(expected_text, parsed_text);
+		done();
+	});
+});
