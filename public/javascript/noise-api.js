@@ -1,4 +1,4 @@
-define(['jquery', 'noiys-ui'], function($, noiysUi) {
+define(['jquery', 'noiys-ui-error'], function($, noiysUiError) {
 
 	function postStatus(statusText, callback) {
 		$.ajax({
@@ -9,13 +9,13 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 				text: statusText
 			}),
 			complete: function(xhr, status) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(xhr.responseText);
 				} else if (xhr.status == 400) {
 					callback(false);
 				} else  {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
 					callback();
 				}
@@ -32,11 +32,11 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 				id: statusID
 			}),
 			complete: function(xhr, status) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(true);
 				} else {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "vote" + timestamp);
 					callback();
 				}
@@ -50,7 +50,7 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				callback(JSON.parse(xhr.responseText));
 			}
 		});
@@ -62,13 +62,13 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(JSON.parse(xhr.responseText));
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
 					callback();
 				}
@@ -82,13 +82,13 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(JSON.parse(xhr.responseText));
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "status?since=" + timestamp);
 					callback();
 				}
@@ -134,13 +134,13 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(JSON.parse(xhr.responseText));
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + ajax_url);
 					callback();
 				}
@@ -155,13 +155,13 @@ define(['jquery', 'noiys-ui'], function($, noiysUi) {
 			type: 'GET',
 			contentType: 'application/json',
 			complete: function(xhr, textStatus) {
-				noiysUi.hide_error();
+				noiysUiError.hide_error();
 				if (xhr.status == 200) {
 					callback(JSON.parse(xhr.responseText));
 				} else if (xhr.status == 404) {
 					callback(false);
 				} else {
-					noiysUi.show_error();
+					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "search=" + search_term);
 					callback();
 				}

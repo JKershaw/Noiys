@@ -1,4 +1,4 @@
-define(['underscore', 'noise-api', 'noiys-ui'], function(_, noiysApi, noiysUi) {
+define(['underscore', 'noise-api'], function(_, noiysApi) {
 
 	var current_vote_count = [],
 		vote_checker_timeout,
@@ -22,13 +22,8 @@ define(['underscore', 'noise-api', 'noiys-ui'], function(_, noiysApi, noiysUi) {
 		$(".votes-" + id).text(current_vote_count[id]).css("color", "green");
 	}
 
-	function get_verb_and_vote_html(id, vote_count){
-
+	function save_vote_count(id, vote_count) {
 		current_vote_count[id] = parseInt(vote_count);
-
-		var vote_string = noiysUi.generate_verb_html(id, vote_count);
-
-		return vote_string;
 	}
 
 	function check_all_votes(){
@@ -56,8 +51,8 @@ define(['underscore', 'noise-api', 'noiys-ui'], function(_, noiysApi, noiysUi) {
 
 	return {
 		post: post,
-		get_verb_and_vote_html: get_verb_and_vote_html,
 		check_all_votes: check_all_votes,
-		inititalise_vote_updater: inititalise_vote_updater
+		inititalise_vote_updater: inititalise_vote_updater,
+		save_vote_count: save_vote_count
 	}
 });

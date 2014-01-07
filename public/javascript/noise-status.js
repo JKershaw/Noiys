@@ -1,4 +1,4 @@
-define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiysApi) {
+define(['noise-publish-status', 'noise-api', 'noiys-ui'], function(noisePublishStatus, noiysApi, noiysUi) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);
@@ -8,8 +8,18 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 		noisePublishStatus.replace_status(status, wrapper, statusIDToReplace);
 	}
 
-	function get_icon_row_html(status, wrapper) {
-		return noisePublishStatus.get_icon_row_html(status, wrapper)
+	function post(status_text, callback) {
+		noiysApi.postStatus(status_text, function(posted) {
+			callback(posted);
+		});
+	}
+
+	function show_replies(status_id, wrapper, replies_ids) {
+		for (var i = 0; i < replies_ids.length; i++) {
+			noiysApi.getStatus(replies_ids[i], function(status) {
+				replace(status, wrapper, status_id);
+			});
+		}
 	}
 
 	function toggle_icon_row(selector) {
@@ -26,7 +36,7 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 					ISO8601timestamp: $(selector).parent().attr('data-ISO8601timestamp')
 				};
 				
-			var extra_bar = get_icon_row_html(status, "");
+			var extra_bar = noiysUi.generate_icon_row_html(status, "");
 
 			$(selector).parent().append(extra_bar);
 
@@ -34,24 +44,8 @@ define(['noise-publish-status', 'noise-api'], function(noisePublishStatus, noiys
 		}
 	}
 
-	function post(status_text, callback) {
-		noiysApi.postStatus(status_text, function(posted) {
-			callback(posted);
-		});
-	}
-
-
-	function show_replies(status_id, wrapper, replies_ids) {
-		for (var i = 0; i < replies_ids.length; i++) {
-			noiysApi.getStatus(replies_ids[i], function(status) {
-				replace(status, wrapper, status_id);
-			});
-		}
-	}
-
 
 	return {
-		get_icon_row_html: get_icon_row_html,
 		toggle_icon_row: toggle_icon_row,
 		publish: publish,
 		replace: replace,

@@ -1,4 +1,4 @@
-define(['underscore', 'noise-api', 'noise-publish-status'], function(_, noiseApi, noisePublishStatus) {
+define(['underscore', 'noise-api'], function(_, noiseApi) {
 	
 	var my_stars = Array();
 	
