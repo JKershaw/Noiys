@@ -1,4 +1,4 @@
-define(['noise-publish-status', 'noise-api', 'noiys-ui'], function(noisePublishStatus, noiysApi, noiysUi) {
+define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], function(noisePublishStatus, noiysApi, noiysUi, noiseStarred) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);
@@ -39,6 +39,8 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui'], function(noisePublishS
 			var extra_bar = noiysUi.generate_icon_row_html(status, "");
 
 			$(selector).parent().append(extra_bar);
+
+			noiseStarred.update_star_html(status.id);
 
 			$("span.timeago").timeago();
 		}

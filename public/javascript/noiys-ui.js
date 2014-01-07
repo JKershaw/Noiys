@@ -1,4 +1,4 @@
-define(['noise-starred'], function(noiseStarred) {
+define([], function() {
 
 	function generate_verb_html(id, vote_count) {
 		if (vote_count !== undefined) {
@@ -17,12 +17,8 @@ define(['noise-starred'], function(noiseStarred) {
 		}
 	}
 
-	function generate_star_html(id, is_starred) {
-		if (is_starred) {
-			return "<a class=\"button-star\" data-id='" + id + "'><span id=\"star-" + id + "\"class=\"star-" + id + " glyphicon glyphicon-star\"></a>";
-		} else {
-			return "<a class=\"button-star\" data-id='" + id + "'><span id=\"star-" + id + "\"class=\"star-" + id + " glyphicon glyphicon-star-empty\"></a>";
-		}
+	function generate_star_html(id) {
+		return "<a class=\"button-star\" data-id='" + id + "'><span id=\"star-" + id + "\"class=\"star-" + id + " glyphicon glyphicon-star-empty\"></a>";
 	}
 
 	function generate_responses_html(responses, id, wrapper) {
@@ -55,10 +51,6 @@ define(['noise-starred'], function(noiseStarred) {
 				</div>";
 	}
 
-	function generate_hashtag_replacement_html(hashtag_string){
-		return "<a class=\"button-search\" data-search-term=\"" + hashtag_string + "\">" + hashtag_string + "</a>";
-	}
-
 	function generate_trash_html(id, wrapper) {
 		if (wrapper == "#me_statuses") {
 			return "<small><span style=\"float:right;color:#888;\"> \
@@ -81,14 +73,11 @@ define(['noise-starred'], function(noiseStarred) {
 
 	function generate_status_html(status, wrapper) {
 
-		var status_text = process_hashtags(status.text);
 		var icon_row = generate_icon_row_html(status, wrapper);
 
 		var status_html = " \
 		<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"> \
-			<div class=\"panel-body\"> \
-				" + status_text + " \
-			</div> \
+			" + status.html + " \
 			" + icon_row + " \
 			<div class=\"responses\"></div> \
 		</div>";
@@ -101,7 +90,7 @@ define(['noise-starred'], function(noiseStarred) {
 
 		var vote_string = generate_verb_html(status.id, status.votes);
 		var reply_string = generate_reply_html(status.id);
-		var star_string = generate_star_html(status.id, noiseStarred.is_starred(status.id));
+		var star_string = generate_star_html(status.id);
 		var link_string = generate_link_html(status.id);
 
 		var response_string = generate_responses_html(status.responses, status.id, wrapper);
@@ -132,25 +121,8 @@ define(['noise-starred'], function(noiseStarred) {
 				</li></ul>";
 	}
 
-	function process_hashtags(status_text) {
-		var hashtag_regex = /&#35;\w*/g
-
-		return status_text.replace(hashtag_regex, function(match) {
-			return generate_hashtag_replacement_html(match);
-		});
-	}
-
 	return {
-		generate_verb_html: generate_verb_html,
-		generate_timeago_html: generate_timeago_html,
-		generate_star_html: generate_star_html,
-		generate_responses_html: generate_responses_html,
 		generate_show_quote_html: generate_show_quote_html,
-		generate_hashtag_replacement_html: generate_hashtag_replacement_html,
-		generate_trash_html:generate_trash_html,
-		generate_reply_html: generate_reply_html,
-		generate_link_html: generate_link_html,
-
 		generate_icon_row_html: generate_icon_row_html,
 		generate_status_html: generate_status_html
 	}

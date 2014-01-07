@@ -6,14 +6,22 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 		console.debug("toggling Star");
 
 		if (is_starred(statusID)) {
-			$(".star-" + statusID).removeClass("glyphicon-star");
-			$(".star-" + statusID).addClass("glyphicon-star-empty");
 			remove_my_star(statusID)
 		} else {
-			$(".star-" + statusID).addClass("glyphicon-star");
-			$(".star-" + statusID).removeClass("glyphicon-star-empty");
 			my_stars.push(statusID);
 			perma_save_my_stars();
+		}
+
+		update_star_html(statusID);
+	}
+
+	function update_star_html(statusID) {
+		if (is_starred(statusID)) {
+			$(".star-" + statusID).addClass("glyphicon-star");
+			$(".star-" + statusID).removeClass("glyphicon-star-empty");
+		} else {
+			$(".star-" + statusID).removeClass("glyphicon-star");
+			$(".star-" + statusID).addClass("glyphicon-star-empty");
 		}
 	}
 
@@ -101,6 +109,7 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 		star: star,
 		is_starred: is_starred,
 		inititalise_my_stars: inititalise_my_stars,
-		get_my_starred_statuses: get_my_starred_statuses
+		get_my_starred_statuses: get_my_starred_statuses,
+		update_star_html: update_star_html
 	}
 });
