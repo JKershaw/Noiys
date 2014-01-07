@@ -1,4 +1,4 @@
-define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiysVote) {
+define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui'], function($, noiseStarred, noiysVote, noiysUi) {
 
 	function publish_status(status, wrapper, prepend) {
 
@@ -15,7 +15,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
+			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id, wrapper));
 			quote_to_hide_selector.hide();
 		}
 
@@ -32,7 +32,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after("<div class=\"show_quote_link panel panel-default status_panel\"><div class=\"panel-body\"><a class=\"button-show-hidden-quote\" data-id=\"" + status.id + "\" data-wrapper = \"" + wrapper + "\">Show quote</a></div></div>");
+			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id, wrapper));
 			quote_to_hide_selector.hide();
 		}
 
@@ -41,19 +41,16 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 
 	function generate_status_html(status, wrapper) {
 
-		
-
 		var hashtag_regex = /&#35;\w*/g
 
 		status.text = status.text.replace(hashtag_regex, function(match) {
-			return "<a class=\"button-search\" data-search-term=\"" + match + "\">" + match + "</a>";
+			return noiysUi.generate_hashtag_replacement_html(match);
 		});
-
 
 		var trash_string = "";
 
 		if (wrapper == "#me_statuses") {
-			trash_string = "<a style=\"float:right;\" class=\"button-remove-my-status\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-remove\"></span></a>";
+			trash_string = noiysUi.generate_trash_html(status.id);
 		}
 
 		var text_string = status.text;
@@ -73,42 +70,15 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 	}
 
 	function get_icon_row_html(status, wrapper) {
-		var response_string = "";
-		var votes_string = "";
-		var star_string = "";
-		var timeago_string = "";
 
-		if (status.responses !== undefined) {
-			if (status.responses.length == 1) {
-				response_string = "1 reply";
-			} else {
-				response_string = String(status.responses.length) + " replies";
-			}
+		var votes_string = noiysVote.get_verb_and_vote_html(status.id, status.votes);
+		var reply_string = noiysUi.generate_reply_html(status.id);
+		var star_string = noiysUi.generate_star_html(status.id, noiseStarred.is_starred(status.id));
+		var link_string = noiysUi.generate_link_html(status.id);
 
-			responses_array_string = status.responses.join(",");
-
-			response_string = "<a class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + status.id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
-
-		}
-
-		if (status.votes !== undefined) {
-			votes_string = noiysVote.get_verb_and_vote_html(status.id, status.votes);
-		}
-
-		if (status.ISO8601timestamp !== undefined) {
-			timeago_string = "<small><span style=\"float:right;color:#888;\">posted <span class=\"timeago\" title=\"" + status.ISO8601timestamp + "\"></span></span></small>";
-		}
+		var response_string = noiysUi.generate_responses_html(status.responses, status.id, wrapper);
+		var timeago_string = noiysUi.generate_timeago_html(status.ISO8601timestamp);
 		
-		if (noiseStarred.is_starred(status.id)) {
-			star_string = "<a class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star\"></a>";
-		} else {
-			star_string = "<a class=\"button-star\" data-id='" + status.id + "'><span id=\"star-" + status.id + "\"class=\"star-" + status.id + " glyphicon glyphicon-star-empty\"></a>";
-		}
-
-		var reply_string = "<a class=\"button-reply\" data-id='" + status.id + "'><span class=\"glyphicon glyphicon-retweet\"></a>";
-		
-		var link_string = "<a class=\"button-link\" target=\"_blank\" href=\"status/" + status.id + "\"><span class=\"glyphicon glyphicon-link\"></a>";
-
 		return "<ul class=\"list-group\"><li class=\"list-group-item\"> \
 				<div class=\"row\"> \
 					<div class=\"col-md-4\"> \
@@ -128,7 +98,7 @@ define(['jquery', 'noise-starred', 'noiys-vote'], function($, noiseStarred, noiy
 						" + timeago_string + " \
 					</div>  \
 				</div> \
-			</li></ul>";
+				</li></ul>";
 	}
 
 	return {

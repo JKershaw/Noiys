@@ -1,4 +1,4 @@
-define(['underscore', 'noise-api'], function(_, noiysApi) {
+define(['underscore', 'noise-api', 'noiys-ui'], function(_, noiysApi, noiysUi) {
 
 	var current_vote_count = [],
 		vote_checker_timeout,
@@ -19,16 +19,14 @@ define(['underscore', 'noise-api'], function(_, noiysApi) {
 	}
 
 	function refresh(id) {
-		$(".votes-" + id).text(current_vote_count[id]);
-		$(".votes-" + id).css("color", "green");
+		$(".votes-" + id).text(current_vote_count[id]).css("color", "green");
 	}
 
 	function get_verb_and_vote_html(id, vote_count){
 
 		current_vote_count[id] = parseInt(vote_count);
 
-		var vote_string = "<span style=\"font-weight:bold;\" class=\"votes votes-" + id + "\">" + vote_count + "</span>&nbsp;&nbsp; \
-				<a class=\"button-vote\" data-id='" + id + "' >VERB</a>&nbsp;&nbsp;";
+		var vote_string = noiysUi.generate_verb_html(id, vote_count);
 
 		return vote_string;
 	}
