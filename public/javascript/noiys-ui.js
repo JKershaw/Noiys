@@ -51,16 +51,12 @@ define([], function() {
 				</div>";
 	}
 
-	function generate_trash_html(id, wrapper) {
-		if (wrapper == "#me_statuses") {
-			return "<small><span style=\"float:right;color:#888;\"> \
-						&nbsp;<a class=\"button-remove-my-status\" data-id='" + id + "'> \
-							<span class=\"glyphicon glyphicon-remove\"></span> \
-						</a> \
-					</span></small>";
-		} else {
-			return "";
-		}
+	function generate_trash_html(id) {
+		return "<small><span class=\"trash_icon_wrapper\" style=\"float:right;color:#888;\"> \
+					&nbsp;<a class=\"button-remove-my-status\" data-id='" + id + "'> \
+						<span class=\"glyphicon glyphicon-remove\"></span> \
+					</a> \
+				</span></small>";
 	}
 
 	function generate_reply_html(id) {
@@ -96,7 +92,7 @@ define([], function() {
 		var response_string = generate_responses_html(status.responses, status.id, wrapper);
 
 		var timeago_string = generate_timeago_html(status.ISO8601timestamp);
-		var trash_string = generate_trash_html(status.id, wrapper);
+		var trash_string = generate_trash_html(status.id);
 
 		
 		return "<ul class=\"list-group\"><li class=\"list-group-item\"> \
