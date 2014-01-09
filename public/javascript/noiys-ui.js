@@ -12,7 +12,7 @@ define([], function() {
 
 
 	function generate_status_html(status) {
-		return status.html2;
+		return status.html;
 	}
 
 	return {
