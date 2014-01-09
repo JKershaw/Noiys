@@ -2,7 +2,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 
 	function publish_status(status, wrapper, prepend) {
 
-		$(wrapper + " #" + status.id).remove();
+		//$(wrapper + " #" + status.id).remove();
 
 		if (prepend) {
 			$(wrapper).prepend(noiysUi.generate_status_html(status));
