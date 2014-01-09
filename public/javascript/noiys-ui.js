@@ -21,7 +21,7 @@ define([], function() {
 		return "<a class=\"button-star\" data-id='" + id + "'><span id=\"star-" + id + "\"class=\"star-" + id + " glyphicon glyphicon-star-empty\"></a>";
 	}
 
-	function generate_responses_html(responses, id, wrapper) {
+	function generate_responses_html(responses, id) {
 		if (responses !== undefined) {
 
 			var response_string = "";
@@ -34,17 +34,17 @@ define([], function() {
 
 			responses_array_string = responses.join(",");
 
-			return "<a class=\"button-show-replies\" data-wrapper=\"" + wrapper + "\" data-id=\"" + id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
+			return "<a class=\"button-show-replies\" data-id=\"" + id + "\" data-responses-array=\"" + responses_array_string + "\">" + response_string + "</a>";
 
 		} else {
 			return "";
 		}
 	}
 
-	function generate_show_quote_html(id, wrapper) {
+	function generate_show_quote_html(id) {
 		return "<div class=\"show_quote_link panel panel-default status_panel\"> \
 					<div class=\"panel-body\"> \
-						<a class=\"button-show-hidden-quote\" data-id=\"" + id + "\" data-wrapper = \"" + wrapper + "\"> \
+						<a class=\"button-show-hidden-quote\" data-id=\"" + id + "\"> \
 							Show quote \
 						</a> \
 					</div> \
@@ -67,9 +67,9 @@ define([], function() {
 		return "<a class=\"button-link\" target=\"_blank\" href=\"status/" + id + "\"><span class=\"glyphicon glyphicon-link\"></a>";
 	}
 
-	function generate_status_html(status, wrapper) {
+	function generate_status_html(status) {
 
-		var icon_row = generate_icon_row_html(status, wrapper);
+		var icon_row = generate_icon_row_html(status);
 
 		var status_html = " \
 		<div style=\"display:none\" class=\"panel panel-default status_panel id-" + status.id + "\" timestamp=\"" + status.timestamp + "\" id=\"" + status.id + "\"> \
@@ -82,14 +82,14 @@ define([], function() {
 	}
 
 
-	function generate_icon_row_html(status, wrapper) {
+	function generate_icon_row_html(status) {
 
 		var vote_string = generate_verb_html(status.id, status.votes);
 		var reply_string = generate_reply_html(status.id);
 		var star_string = generate_star_html(status.id);
 		var link_string = generate_link_html(status.id);
 
-		var response_string = generate_responses_html(status.responses, status.id, wrapper);
+		var response_string = generate_responses_html(status.responses, status.id);
 
 		var timeago_string = generate_timeago_html(status.ISO8601timestamp);
 		var trash_string = generate_trash_html(status.id);

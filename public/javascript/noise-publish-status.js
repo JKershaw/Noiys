@@ -5,10 +5,10 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 		$(wrapper + " #" + status.id).remove();
 
 		if (prepend) {
-			$(wrapper).prepend(noiysUi.generate_status_html(status, wrapper));
+			$(wrapper).prepend(noiysUi.generate_status_html(status));
 			$(wrapper + " div").first().hide().fadeIn();
 		} else {
-			$(wrapper + " .final").before(noiysUi.generate_status_html(status, wrapper));
+			$(wrapper + " .final").before(noiysUi.generate_status_html(status));
 			$(wrapper + " > div").show();
 		}
 		
@@ -17,7 +17,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id, wrapper));
+			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id));
 			quote_to_hide_selector.hide();
 		}
 
@@ -27,7 +27,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 	function replace_status(status, wrapper, statusIDToReplace) {
 
 
-		$(wrapper + " #" + statusIDToReplace).before(noiysUi.generate_status_html(status, wrapper));
+		$(wrapper + " #" + statusIDToReplace).before(noiysUi.generate_status_html(status));
 		$(wrapper + " #" + status.id).fadeIn();
 		$(wrapper + " #" + statusIDToReplace).hide();
 		
@@ -36,7 +36,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 		var quote_to_hide_selector = $(wrapper + " #" + status.id + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
 
 		if (quote_to_hide_selector) {
-			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id, wrapper));
+			quote_to_hide_selector.after(noiysUi.generate_show_quote_html(status.id));
 			quote_to_hide_selector.hide();
 		}
 

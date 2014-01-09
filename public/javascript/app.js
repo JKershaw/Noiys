@@ -80,13 +80,13 @@ define([
 
 		$('body').on('click', 'a.button-show-hidden-quote', function(e) {
     		e.stopPropagation();
-			show_hidden_quote($(this).attr('data-id'), $(this).attr('data-wrapper'));
+			show_hidden_quote($(this).attr('data-id'), get_currently_visible_wrapper());
 		});
 
 		$('body').on('click', 'a.button-show-replies', function(e) {
     		e.stopPropagation();
 			$(this).html('Loading ...');
-			noiysStatus.show_replies($(this).attr('data-id'), $(this).attr('data-wrapper'), $(this).attr('data-responses-array').split(","));
+			noiysStatus.show_replies($(this).attr('data-id'), get_currently_visible_wrapper(), $(this).attr('data-responses-array').split(","));
 		});
 
 		$('body').on('click', 'a.button-search', function(e) {
@@ -165,6 +165,10 @@ define([
 		}
 
 		noiysFeed.change(selected_feed_type);
+	}
+
+	function get_currently_visible_wrapper() {
+		return '#' + localStorage.current_tab + '_statuses';
 	}
 
 

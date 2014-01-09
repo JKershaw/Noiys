@@ -20,7 +20,7 @@ describe('Given I visit the root URL', function(done) {
 		browser.clickLink('#tab-chronological a', function() {
 			browser.wait(browser.query('#chronological_statuses .status_panel'), function() {
 				expect(browser.query('#chronological_statuses .status_panel')).to.exist;
-			})
+			});
 
 		});
 	});
