@@ -32,12 +32,18 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], funct
 		}
 	}
 
+	function show_older_notes(selector) {
+		$(selector).parent().siblings(".list-status").fadeIn();
+		$(selector).parent().hide();
+	}
+
 
 	return {
 		toggle_icon_row: toggle_icon_row,
 		publish: publish,
 		replace: replace,
 		post: post,
-		show_replies: show_replies
+		show_replies: show_replies,
+		show_older_notes: show_older_notes
 	}
 });

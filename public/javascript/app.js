@@ -83,6 +83,11 @@ define([
 			show_hidden_quote($(this).attr('data-id'), get_currently_visible_wrapper());
 		});
 
+		$('body').on('click', 'a.button-show-older-notes', function(e) {
+    		e.stopPropagation();
+			noiysStatus.show_older_notes($(this));
+		});
+
 		$('body').on('click', 'a.button-show-replies', function(e) {
     		e.stopPropagation();
 			$(this).html('Loading ...');
