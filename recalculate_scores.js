@@ -1,0 +1,1 @@
+console.log('Recalculating scores now!');
