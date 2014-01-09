@@ -19,7 +19,8 @@ module.exports = function(app) {
 				var status = {
 					text: encodedText,
 					timestamp: Math.round(new Date().getTime() / 1000),
-					votes: 0
+					votes: 0,
+					score: 0
 				};
 
 				var quotes = encodedText.match(/@[a-f0-9]{24,24}/g);

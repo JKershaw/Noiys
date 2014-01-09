@@ -45,8 +45,8 @@ function handle_home_statuses(request, response) {
 	noiysDatabase.getStatuses(function(statuses) {
 
 		statuses.sort(function compare(a, b) {
-			if (a.votes > b.votes) return -1;
-			if (a.votes < b.votes) return 1;
+			if (a.score > b.score) return -1;
+			if (a.score < b.score) return 1;
 			return 0;
 		});
 
@@ -58,8 +58,8 @@ function handle_home_statuses(request, response) {
 		var finished = _.after(statuses.length, function() {
 
 			messages.sort(function compare(a, b) {
-				if (a.votes > b.votes) return -1;
-				if (a.votes < b.votes) return 1;
+				if (a.score > b.score) return -1;
+				if (a.score < b.score) return 1;
 				return 0;
 			});
 
