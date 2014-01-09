@@ -102,13 +102,14 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 				}
 
 
-				get_and_show_chronological_status(4);
+				get_and_show_chronological_status();
 			});
 		}
 	}
 
 	function get_and_show_chronological_status() {
 		console.debug("get_and_show_chronological_status called");
+		clear_chronological_feed_timeout();
 
 		if (!is_paused() && (newest_status_timestamp > 0) && (current_feed_type == 'chronological')) {
 			
@@ -130,7 +131,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 
 		} else {
 			chronological_status_timeout = setTimeout(function() {
-				get_and_show_chronological_status(3)
+				get_and_show_chronological_status()
 			}, 5000);
 		}
 	}
