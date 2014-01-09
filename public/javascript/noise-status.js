@@ -23,11 +23,11 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], funct
 	}
 
 	function toggle_icon_row(selector) {
-		if ($(selector).siblings('.list-group').is(":visible"))
+		if ($(selector).next().is(":visible"))
 		{
-			$(selector).siblings('.list-group').slideUp('fast');
+			$(selector).next().slideUp('fast');
 		} else {
-			$(selector).siblings('.list-group').show();
+			$(selector).next().show();
 			$("span.timeago").timeago();
 		}
 	}

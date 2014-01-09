@@ -94,7 +94,7 @@ define([
 			goto_search($(this).attr('data-search-term'));
 		});
 
-		$('body').on('click', '.statuses_wrap>.panel>.panel-body .panel>.panel-body', function(e) {
+		$('body').on('click', '.list-status', function(e) {
     		e.stopPropagation();
     		noiysStatus.toggle_icon_row(this);
 		});
@@ -211,6 +211,10 @@ define([
 	}
 
 	function reply(id) {
+		
+		$('#statusText').val($('#statusText').val().replace(/@[a-f0-9]{24,24}\n/g, ""));
+		$('#statusText').val($('#statusText').val().replace(/@[a-f0-9]{24,24}/g, ""));
+
 		var newText = "@" + id + "\n" + $('#statusText').val();
 		$('#statusText').val(newText).focus();
 		$('html, body').animate({
