@@ -159,15 +159,18 @@ function add_response_to_status(status_id, response_id) {
 
 	noiysDatabase.findStatus(status_id, function(status) {
 
-		if (!status.responses) {
-			status.responses = [];
+		if (status){
+			if (!status.responses) {
+				status.responses = [];
+			}
+
+			status.responses.push(response_id);
+
+			noiysDatabase.saveStatus(status, function() {
+				console.log("Saved responses");
+			});
+			
 		}
-
-		status.responses.push(response_id);
-
-		noiysDatabase.saveStatus(status, function() {
-			console.log("Saved responses");
-		});
 	});
 }
 

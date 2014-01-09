@@ -23,25 +23,11 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], funct
 	}
 
 	function toggle_icon_row(selector) {
-		if (($(selector).siblings().size() > 0))
+		if ($(selector).siblings('.list-group').is(":visible"))
 		{
-			$(selector).siblings('.list-group').slideUp('fast', function(){
-				$(selector).siblings('.list-group').remove();
-			});
+			$(selector).siblings('.list-group').slideUp('fast');
 		} else {
-
-			var status = {
-					id: $(selector).parent().attr('data-id'),
-					votes: $(selector).parent().attr('data-votes'),
-					ISO8601timestamp: $(selector).parent().attr('data-ISO8601timestamp')
-				};
-				
-			var extra_bar = noiysUi.generate_icon_row_html(status, "");
-
-			$(selector).parent().append(extra_bar);
-
-			noiseStarred.update_star_html(status.id);
-
+			$(selector).siblings('.list-group').show();
 			$("span.timeago").timeago();
 		}
 	}
