@@ -4,7 +4,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 
 		if (prepend) {
 			$(wrapper).prepend(noiysUi.generate_status_html(status));
-			$(wrapper + " div").first().hide().fadeIn();
+			$(wrapper + " panel").first().hide().fadeIn();
 		} else {
 			$(wrapper + " .final").before(noiysUi.generate_status_html(status));
 			$(wrapper + " > div").show();
