@@ -61,10 +61,18 @@ module.exports = function(app) {
 			if (requestType && (requestType.indexOf('json') > -1)) {
 
 				if (status) {
-					statusMessageFactory.create(status, function(message) {
-						response.contentType('json');
-						response.send(message);
-					});
+					console.log("QUERY", request.query);
+					if(request.query['reply'] && (request.query['reply'] !== "undefined")) {
+						statusMessageFactory.createAsReply(status, function(message) {
+							response.contentType('json');
+							response.send(message);
+						});
+					} else {
+						statusMessageFactory.create(status, function(message) {
+							response.contentType('json');
+							response.send(message);
+						});
+					}
 				} else {
 					response.send(404);
 				}

@@ -17,7 +17,6 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 	function append_status(status, wrapper, selectorToAppendTo) {
 		
 		$(selectorToAppendTo).append(status.replyHtml);
-		//$(wrapper + " #" + statusIDToAppendTo + " ul li div").slideDown();
 		
 		noiseStarred.update_star_html(status.id);
 		$("span.timeago").timeago();

@@ -73,7 +73,29 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					callback(false);
 				} else {
 					noiysUiError.show_error();
-					_rollbar.push(xhr.status + " error: " + "status/" + timestamp);
+					_rollbar.push(xhr.status + " error: " + "status/" + statusID);
+					callback();
+				}
+			}
+		});
+	}
+
+	function getStatusAsReply(statusID, callback) {
+		$.ajax({
+			url: "status/" + statusID + "?reply=true",
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				noiysUiError.hide_error();
+				if (xhr.status == 200) {
+					var status = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_status(status);
+					callback(status);
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					noiysUiError.show_error();
+					_rollbar.push(xhr.status + " error: " + "status/" + statusID);
 					callback();
 				}
 			}
@@ -186,6 +208,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		getStatus: getStatus,
 		getStatusRandom: getStatusRandom,
 		getStatusSince: getStatusSince,
+		getStatusAsReply: getStatusAsReply,
 
 		getStatusesHome: getStatusesHome,
 		getStatusesFromIDs: getStatusesFromIDs,

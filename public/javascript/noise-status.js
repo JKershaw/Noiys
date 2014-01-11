@@ -25,7 +25,7 @@ define(['underscore', 'noise-publish-status', 'noise-api', 'noiys-ui', 'noise-st
 		});
 
 		_.each(replies_ids, function(reply_id){
-			noiysApi.getStatus(reply_id, function(status) {
+			noiysApi.getStatusAsReply(reply_id, function(status) {
 				noisePublishStatus.append_status(status, wrapper, selectorToAppendTo);
 				finished();
 			});
