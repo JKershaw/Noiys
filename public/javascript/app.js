@@ -90,8 +90,7 @@ define([
 
 		$('body').on('click', 'a.button-show-replies', function(e) {
     		e.stopPropagation();
-			$(this).html('Loading ...');
-			noiysStatus.show_replies($(this).attr('data-id'), get_currently_visible_wrapper(), $(this).attr('data-responses-array').split(","));
+			noiysStatus.show_replies(this, get_currently_visible_wrapper());
 		});
 
 		$('body').on('click', 'a.button-search', function(e) {

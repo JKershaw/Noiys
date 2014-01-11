@@ -1,11 +1,7 @@
-define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], function(noisePublishStatus, noiysApi, noiysUi, noiseStarred) {
+define(['underscore', 'noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], function(_, noisePublishStatus, noiysApi, noiysUi, noiseStarred) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);
-	}
-
-	function replace(status, wrapper, statusIDToReplace) {
-		noisePublishStatus.replace_status(status, wrapper, statusIDToReplace);
 	}
 
 	function post(status_text, callback) {
@@ -14,12 +10,26 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], funct
 		});
 	}
 
-	function show_replies(status_id, wrapper, replies_ids) {
-		for (var i = 0; i < replies_ids.length; i++) {
-			noiysApi.getStatus(replies_ids[i], function(status) {
-				replace(status, wrapper, status_id);
+	function show_replies(selector, wrapper) {
+
+		var status_id = $(selector).attr('data-id');
+		var replies_ids = $(selector).attr('data-responses-array').split(",");
+
+		var selectorToAppendTo = $(selector).closest(".panel");
+		
+		var selector_parent = $(selector).parent();
+		$(selector_parent).html('Loading ...');
+		
+		var finished = _.after(replies_ids.length, function() {
+			$(selector_parent).html('Loaded!').fadeOut(1000);
+		});
+
+		_.each(replies_ids, function(reply_id){
+			noiysApi.getStatus(reply_id, function(status) {
+				noisePublishStatus.append_status(status, wrapper, selectorToAppendTo);
+				finished();
 			});
-		}
+		});
 	}
 
 	function toggle_icon_row(selector) {
@@ -41,7 +51,6 @@ define(['noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], funct
 	return {
 		toggle_icon_row: toggle_icon_row,
 		publish: publish,
-		replace: replace,
 		post: post,
 		show_replies: show_replies,
 		show_older_notes: show_older_notes

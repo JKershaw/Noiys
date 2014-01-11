@@ -10,13 +10,7 @@ define([], function() {
 				</div>";
 	}
 
-
-	function generate_status_html(status) {
-		return status.html;
-	}
-
 	return {
-		generate_show_quote_html: generate_show_quote_html,
-		generate_status_html: generate_status_html
+		generate_show_quote_html: generate_show_quote_html
 	}
 });
