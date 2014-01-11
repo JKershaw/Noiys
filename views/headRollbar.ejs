@@ -1,6 +1,6 @@
 <script>
 	var _rollbarParams = {
-		"server.environment": "production"
+		"server.environment": "<%=environment%>"
 	};
 	_rollbarParams["notifier.snippet_version"] = "2";
 	var _rollbar = ["2909848dae4c45afa0444a227b4163cb", _rollbarParams];
@@ -30,4 +30,5 @@
 			w.attachEvent("onload", i);
 		}
 	})(window, document);
+}
 </script>

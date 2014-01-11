@@ -4,7 +4,11 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 module.exports = function(app) {
 	app.get('/', function(request, response) {
 		noiysDatabase.removeOldStatuses(function() {
-			var model = {firebug: false};
+			var model = {
+					firebug: false,
+					environment: process.env.environment
+			};
+			
 			if (request.query['firebug'])
 			{
 				model = {firebug: true};
