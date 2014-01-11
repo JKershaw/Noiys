@@ -181,7 +181,7 @@ define([
 		if (localStorage.current_tab) {
 			change_feed_type(localStorage.current_tab)
 		} else {
-			change_feed_type("random");
+			change_feed_type("home");
 		}
 	}
 
