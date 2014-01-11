@@ -75,12 +75,16 @@ module.exports = function(app) {
 
 					statusMessageFactory.create(status, function(message) {
 						var model = {
-							text: message.text
+							text: message.text,
+							environment: process.env.environment
 						};
 						response.render('individual-status.ejs', model);
 					});
 				} else {
-					response.render('individual-status-404.ejs');
+					var model = {
+						environment: process.env.environment
+					};
+					response.render('individual-status-404.ejs', model);
 				}
 			}
 
