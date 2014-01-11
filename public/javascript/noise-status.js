@@ -26,7 +26,7 @@ define(['underscore', 'noise-publish-status', 'noise-api', 'noiys-ui', 'noise-st
 
 		_.each(replies_ids, function(reply_id){
 			noiysApi.getStatusAsReply(reply_id, function(status) {
-				noisePublishStatus.append_status(status, wrapper, selectorToAppendTo);
+				noisePublishStatus.append_status(status, selectorToAppendTo);
 				finished();
 			});
 		});
@@ -42,7 +42,22 @@ define(['underscore', 'noise-publish-status', 'noise-api', 'noiys-ui', 'noise-st
 		}
 	}
 
-	function show_older_notes(selector) {
+	function show_older_notes(selector, parent_id) {
+
+		var selectorToAppendTo = $(selector).closest("ul");
+
+		var selector_parent = $(selector).parent();
+		$(selector_parent).html('Loading ...');
+		
+		noiysApi.getStatusAsParent(parent_id, function(status) {
+
+			console.log("returned with ", status);
+			
+			noisePublishStatus.prepend_status(status, selectorToAppendTo);
+
+			$(selector_parent).hide();
+		});
+
 		$(selector).parent().siblings(".list-status").fadeIn();
 		$(selector).parent().hide();
 	}

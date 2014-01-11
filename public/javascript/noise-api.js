@@ -124,6 +124,12 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		});
 	}
 
+
+	function getStatusAsParent(parent_ID, callback) {
+		var options = ["parentID=" + parent_ID];
+		getStatuses(options, callback);
+	}
+
 	function getStatusesFromIDs(IDs, callback) {
 		var options = ["IDs=" + IDs.join(',')];
 		getStatuses(options, callback);
@@ -209,6 +215,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		getStatusRandom: getStatusRandom,
 		getStatusSince: getStatusSince,
 		getStatusAsReply: getStatusAsReply,
+		getStatusAsParent: getStatusAsParent,
 
 		getStatusesHome: getStatusesHome,
 		getStatusesFromIDs: getStatusesFromIDs,

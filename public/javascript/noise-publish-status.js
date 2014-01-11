@@ -14,7 +14,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 		$("span.timeago").timeago();
 	}
 
-	function append_status(status, wrapper, selectorToAppendTo) {
+	function append_status(status, selectorToAppendTo) {
 		
 		$(selectorToAppendTo).append(status.replyHtml);
 		
@@ -22,8 +22,17 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], f
 		$("span.timeago").timeago();
 	}
 
+	function prepend_status(status, selectorToPrependTo) {
+		
+		$(selectorToPrependTo).prepend(status.parentHtml);
+		
+		noiseStarred.update_star_html(status.id);
+		$("span.timeago").timeago();
+	}
+
 	return {
 		publish_status: publish_status,
-		append_status: append_status
+		append_status: append_status,
+		prepend_status: prepend_status
 	}
 });

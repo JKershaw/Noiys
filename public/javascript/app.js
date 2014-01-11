@@ -85,7 +85,7 @@ define([
 
 		$('body').on('click', 'a.button-show-older-notes', function(e) {
     		e.stopPropagation();
-			noiysStatus.show_older_notes($(this));
+			noiysStatus.show_older_notes($(this), $(this).attr('data-id'));
 		});
 
 		$('body').on('click', 'a.button-show-replies', function(e) {
