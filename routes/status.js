@@ -29,9 +29,8 @@ module.exports = function(app) {
 					status.parent = quotes[0].replace("@", "");
 				}
 
-
-				find_ancestors(status, function(ancestors) {
-					status.ancestors = ancestors;
+				find_ancestor(status, function(ancestor) {
+					status.ancestor = ancestor;
 
 					noiysDatabase.saveStatus(status, function(saved) {
 
@@ -212,5 +211,23 @@ function find_ancestors(status, callback) {
 
 	} else {
 		callback(ancestors);
+	}
+}
+
+
+function find_ancestor(status, callback) {
+
+	if (status.parent) {
+
+		noiysDatabase.findStatus(status.parent, function(parentStatus) {
+			if (parentStatus && parentStatus.ancestor) {
+				callback(parentStatus.ancestor);
+			} else {
+				callback(parentStatus.id);
+			}
+		});
+
+	} else {
+		callback("");
 	}
 }

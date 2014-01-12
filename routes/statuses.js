@@ -61,27 +61,31 @@ function handle_home_statuses(request, response) {
 		var seen_conversation_ids = [];
 		var tmp_statuses = [];
 
+		console.log(statuses.length);
+
 		for(var i=0;i<statuses.length;i++) {
 			
-			console.log("Looking for: ", statuses[i].ancestors[0]);
+			//console.log("Looking for: ", statuses[i].ancestor);
 			
-			if ((statuses[i].ancestors[0] == undefined) || seen_conversation_ids.indexOf(statuses[i].ancestors[0]) == -1) {
-				if (statuses[i].ancestors[0]) {
-					seen_conversation_ids.push(statuses[i].ancestors[0]);
+			if ((statuses[i].ancestor == undefined) || seen_conversation_ids.indexOf(statuses[i].ancestor) == -1) {
+				if (statuses[i].ancestor) {
+					seen_conversation_ids.push(statuses[i].ancestor);
 				} else {
 					seen_conversation_ids.push(statuses[i].id);
 				}
 				tmp_statuses.push(statuses[i]);
-				console.log("NEW");
+				//console.log("NEW", seen_conversation_ids);
 			} else {
 				console.log("OLD");
 			}
 		}
 
 		statuses = tmp_statuses;
+		console.log(statuses.length);
 
 		// get the top 20 remaining posts
 		statuses = statuses.slice(0, 20);
+		console.log(statuses.length);
 
 		var messages = new Array(),
 			statusMessageFactory = new StatusMessageFactory();
