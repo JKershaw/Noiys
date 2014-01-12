@@ -9,7 +9,7 @@ requirejs.config({
 		jquery: "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min",
 		bootstrap: "//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min",
 		timeago: "lib/timeago",
-		underscore: "//underscorejs.org/underscore-min"
+		underscore: "lib/underscore"
 	},
 	shim: {
 		underscore: {
