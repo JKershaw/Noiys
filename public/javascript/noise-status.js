@@ -1,4 +1,4 @@
-define(['underscore', 'noise-publish-status', 'noise-api', 'noiys-ui', 'noise-starred'], function(_, noisePublishStatus, noiysApi, noiysUi, noiseStarred) {
+define(['underscore', 'noise-publish-status', 'noise-api', 'noise-starred'], function(_, noisePublishStatus, noiysApi, noiseStarred) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);

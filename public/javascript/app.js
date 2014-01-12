@@ -17,19 +17,20 @@ define([
 	var feed_type = "random";
 
 	$(document).ready(function() {
-		$("#post_status").click(function() {
+
+		$('body').on('click', '#post_status', function(e) {
 			post_status();
 		});
 
-		$("#pause_feed").click(function() {
+		$('body').on('click', '#pause_feed', function(e) {
 			noiysFeed.toggle_manual_pause();
 		});
 
-		$("#load_older_statuses").click(function() {
+		$('body').on('click', '#load_older_statuses', function(e) {
 			load_older_chronological_statuses_clicked();
 		});
 
-		$("#search_statuses_button").click(function() {
+		$('body').on('click', '#search_statuses_button', function(e) {
 			run_search();
 		});
 
@@ -39,13 +40,13 @@ define([
 			}
 		});
 
-		$("#button-go-up").click(function() {
+		$('body').on('click', '#button-go-up', function(e) {
 			$('html, body').animate({
 				scrollTop: 0
 			}, 'fast');
 		});
 
-		$("#top-nav-tabs > li > a").click(function() {
+		$('body').on('click', '#top-nav-tabs > li > a', function(e) {
 			change_feed_type($(this).attr('data-feed'));
 		});
 

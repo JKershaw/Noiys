@@ -1,4 +1,4 @@
-define(['jquery', 'noise-starred', 'noiys-vote', 'noiys-ui', 'noise-starred'], function($, noiseStarred, noiysVote, noiysUi, noiseStarred) {
+define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred'], function($, noiseStarred, noiysVote, noiseStarred) {
 
 	function publish_status(status, wrapper, prepend) {
 

@@ -22,22 +22,25 @@ define(['underscore', 'noise-api', 'noiys-vote-count'], function(_, noiysApi, no
 	}
 
 	function check_all_votes(){
-		console.log("Refreshing all votes");
-
+		
 		var keys = noiysVoteCount.get_statusIDs();
 
-		noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
-			if (statuses) {
-				_.each(statuses, function(status){
-					if (status.votes != $(".votes-" + status.id).text())
-					{
-						noiysVoteCount.set_count(status.id, status.votes);
-						refresh(status.id);
-					}
-				});
-			}
-			vote_checker_timeout = setTimeout(check_all_votes, 5000);
-		});
+		if (keys.length > 0) {
+			console.log("Refreshing all votes: ", keys);
+
+			noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
+				if (statuses) {
+					_.each(statuses, function(status){
+						if (status.votes != $(".votes-" + status.id).text())
+						{
+							noiysVoteCount.set_count(status.id, status.votes);
+							refresh(status.id);
+						}
+					});
+				}
+				vote_checker_timeout = setTimeout(check_all_votes, 5000);
+			});
+		}
 	}
 
 	function inititalise_vote_updater() {
