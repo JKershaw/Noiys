@@ -11,7 +11,10 @@ module.exports = function(app) {
 			
 			if (request.query['firebug'])
 			{
-				model = {firebug: true};
+				model = {
+					firebug: true,
+					environment: process.env.environment
+				};
 			}
 			response.render('index.ejs', model);
 		});
