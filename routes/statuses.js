@@ -50,13 +50,38 @@ function handle_home_statuses(request, response) {
 
 	noiysDatabase.getStatuses(function(statuses) {
 
+		// sort by score
 		statuses.sort(function compare(a, b) {
 			if (a.score > b.score) return -1;
 			if (a.score < b.score) return 1;
 			return 0;
 		});
 
-		statuses = statuses.slice(0, 30);
+		// leave only the highest scored status from any given conversation
+		var seen_conversation_ids = [];
+		var tmp_statuses = [];
+
+		for(var i=0;i<statuses.length;i++) {
+			
+			console.log("Looking for: ", statuses[i].ancestors[0]);
+			
+			if ((statuses[i].ancestors[0] == undefined) || seen_conversation_ids.indexOf(statuses[i].ancestors[0]) == -1) {
+				if (statuses[i].ancestors[0]) {
+					seen_conversation_ids.push(statuses[i].ancestors[0]);
+				} else {
+					seen_conversation_ids.push(statuses[i].id);
+				}
+				tmp_statuses.push(statuses[i]);
+				console.log("NEW");
+			} else {
+				console.log("OLD");
+			}
+		}
+
+		statuses = tmp_statuses;
+
+		// get the top 20 remaining posts
+		statuses = statuses.slice(0, 20);
 
 		var messages = new Array(),
 			statusMessageFactory = new StatusMessageFactory();
