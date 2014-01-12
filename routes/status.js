@@ -186,35 +186,6 @@ function add_response_to_status(status_id, response_id) {
 	});
 }
 
-function find_ancestors(status, callback) {
-
-	var quotes = status.text.match(/@[a-f0-9]{24,24}/g);
-	var ancestors = Array();
-
-	if (quotes) {
-
-		var finished = _.after(quotes.length, function() {
-			callback(ancestors);
-		});
-
-		_.each(quotes, function(quote) {
-
-			noiysDatabase.findStatus(quote, function(status) {
-				if (status && status.ancestors) {
-					ancestors.push(status.ancestors);
-				} else {
-					ancestors.push(quote.replace("@", ""));
-				}
-				finished();
-			});
-		});
-
-	} else {
-		callback(ancestors);
-	}
-}
-
-
 function find_ancestor(status, callback) {
 
 	if (status.parent) {

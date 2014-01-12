@@ -14,9 +14,6 @@ noiysDatabase.getStatuses(function(statuses) {
 
 	_.each(statuses, function(status){
 
-		if (!status.ancestor && status.ancestors){
-			status.ancestor = status.ancestors[0];
-		}
 		status.score = calculate_score(status);
 
 		noiysDatabase.saveStatus(status, function() {
