@@ -67,11 +67,13 @@ function handle_home_statuses(request, response) {
 			
 			//console.log("Looking for: ", statuses[i].ancestor);
 			
-			if ((statuses[i].ancestor == undefined) || seen_conversation_ids.indexOf(statuses[i].ancestor) == -1) {
-				if (statuses[i].ancestor) {
-					seen_conversation_ids.push(statuses[i].ancestor);
-				} else {
+			if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined) || (seen_conversation_ids.indexOf(statuses[i].ancestor) == -1)) {
+				if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
+					console.log("adding: ", statuses[i].id);
 					seen_conversation_ids.push(statuses[i].id);
+				} else {
+					seen_conversation_ids.push(statuses[i].ancestor);
+					console.log("adding: ", statuses[i].ancestor);
 				}
 				tmp_statuses.push(statuses[i]);
 				//console.log("NEW", seen_conversation_ids);
