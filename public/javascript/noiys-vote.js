@@ -25,7 +25,7 @@ define(['underscore', 'noise-api', 'noiys-vote-count'], function(_, noiysApi, no
 		
 		var keys = noiysVoteCount.get_statusIDs();
 
-		if (keys.length > 0) {
+		//if (keys.length > 0) {
 			console.log("Refreshing all votes: ", keys);
 
 			noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
@@ -40,7 +40,7 @@ define(['underscore', 'noise-api', 'noiys-vote-count'], function(_, noiysApi, no
 				}
 				vote_checker_timeout = setTimeout(check_all_votes, 5000);
 			});
-		}
+		//}
 	}
 
 	function inititalise_vote_updater() {
