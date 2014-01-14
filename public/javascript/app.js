@@ -217,8 +217,9 @@ define([
 	}
 
 	function refresh_my_stars() {
-
+		
 		noiysStarred.get_my_starred_statuses(function(statuses){
+			$("#stars_statuses").html("");
 			_.each(statuses, function(status) {
 				noiysStatus.publish(status, "#stars_statuses", true);
 			});
@@ -233,6 +234,8 @@ define([
 
 		noiysMine.get_my_statuses(function(statuses){
 			if (statuses && statuses.length > 0) {
+
+				$("#me_statuses").html("");
 				_.each(statuses, function(status) {
 					noiysStatus.publish(status, "#me_statuses", true);
 				});
