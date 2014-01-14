@@ -243,13 +243,15 @@ define([
 	function refresh_my_statuses() {
 
 		noiysMine.get_my_statuses(function(statuses){
-			_.each(statuses, function(status) {
-				noiysStatus.publish(status, "#me_statuses", true);
-			});
+			if (statuses && statuses.length > 0) {
+				_.each(statuses, function(status) {
+					noiysStatus.publish(status, "#me_statuses", true);
+				});
 
-			$('#me_statuses>div').sort(function(a, b) {
-				return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
-			}).appendTo("#me_statuses");
+				$('#me_statuses>div').sort(function(a, b) {
+					return $(a).attr("timestamp") < $(b).attr("timestamp") ? 1 : -1;
+				}).appendTo("#me_statuses");
+			}
 		});
 	}
 
