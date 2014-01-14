@@ -21,14 +21,6 @@ module.exports = function(app) {
 			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
-
-		// remove this after 14th Jan
-		} else if(request.query['parentID'] && (request.query['parentID'] !== "parentID")) {
-
-			noiysDatabase.findStatus(request.query.parentID, function(status) {
-				handle_returned_parent_status(status, response);
-			});
-
 		} else if(request.query['home'] == "true") {
 			handle_home_statuses(request, response, (request.query['raw'] == "true"));
 		} else {
@@ -123,14 +115,4 @@ function handle_returned_statuses(statuses, response, raw) {
 		}
 	});
 	
-}
-
-function handle_returned_parent_status(status, response) {
-	var statusMessageFactory = new StatusMessageFactory();
-
-	statusMessageFactory.createAsParent(status, function(message) {
-		response.contentType('json');
-		response.send(message);
-	});
-
 }
