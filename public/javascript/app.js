@@ -79,11 +79,6 @@ define([
 			refresh_my_stars();
 		});
 
-		$('body').on('click', 'a.button-show-hidden-quote', function(e) {
-    		e.stopPropagation();
-			show_hidden_quote($(this).attr('data-id'), get_currently_visible_wrapper());
-		});
-
 		$('body').on('click', 'a.button-show-older-notes', function(e) {
     		e.stopPropagation();
 			noiysStatus.show_older_notes($(this), $(this).attr('data-id'));
@@ -201,12 +196,6 @@ define([
 			$("#search_statuses_button").text("Search");
 			$('#search_statuses_button').prop('disabled', false);
 		});
-	}
-
-	function show_hidden_quote(statusID, wrapper) {
-		$(wrapper + " #" + statusID + " * .show_quote_link").remove();
-		var quote_to_hide_selector = $(wrapper + " #" + statusID + " > div.panel-body > div.panel > div.panel-body > div.panel > div.panel-body > div.panel");
-		quote_to_hide_selector.fadeIn();
 	}
 
 	function goto_search(search_term) {
