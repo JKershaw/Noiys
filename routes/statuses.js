@@ -61,20 +61,20 @@ function handle_home_statuses(request, response) {
 		var seen_conversation_ids = [];
 		var tmp_statuses = [];
 
+		// strip out duplicates
 		console.log(statuses.length);
 
 		for(var i=0;i<statuses.length;i++) {
 			
-			//console.log("Looking for: ", statuses[i].ancestor);
+			var current_status_ancestor = statuses[i].ancestor;
+
+			if ((statuses[i].ancestor == "")  || (statuses[i].ancestor == undefined)) {
+				current_status_ancestor = statuses[i].id;
+			}
 			
-			if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined) || (seen_conversation_ids.indexOf(statuses[i].ancestor) == -1)) {
-				if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
-					console.log("adding: ", statuses[i].id);
-					seen_conversation_ids.push(statuses[i].id);
-				} else {
-					seen_conversation_ids.push(statuses[i].ancestor);
-					console.log("adding: ", statuses[i].ancestor);
-				}
+			if (seen_conversation_ids.indexOf(current_status_ancestor) == -1) {
+				console.log("adding: ", current_status_ancestor);
+				seen_conversation_ids.push(current_status_ancestor);
 				tmp_statuses.push(statuses[i]);
 				//console.log("NEW", seen_conversation_ids);
 			} else {
