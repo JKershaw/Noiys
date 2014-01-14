@@ -21,6 +21,8 @@ module.exports = function(app) {
 			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
+
+		// remove this after 14th Jan
 		} else if(request.query['parentID'] && (request.query['parentID'] !== "parentID")) {
 
 			noiysDatabase.findStatus(request.query.parentID, function(status) {
@@ -82,7 +84,7 @@ function handle_home_statuses(request, response, raw) {
 		statuses = statuses.slice(0, 20);
 
 		handle_returned_statuses(statuses, response, raw);
-		
+
 	});
 }
 

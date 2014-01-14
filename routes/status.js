@@ -66,6 +66,11 @@ module.exports = function(app) {
 							response.contentType('json');
 							response.send(message);
 						});
+					} else if(request.query['parent'] && (request.query['parent'] !== "undefined")) {
+						statusMessageFactory.createAsParent(status, function(message) {
+							response.contentType('json');
+							response.send(message);
+						});
 					} else {
 						statusMessageFactory.create(status, function(message) {
 							response.contentType('json');

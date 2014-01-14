@@ -125,9 +125,26 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 	}
 
 
-	function getStatusAsParent(parent_ID, callback) {
-		var options = ["parentID=" + parent_ID];
-		getStatuses(options, callback);
+	function getStatusAsParent(statusID, callback) {
+		$.ajax({
+			url: "status/" + statusID + "?parent=true",
+			type: 'GET',
+			contentType: 'application/json',
+			complete: function(xhr, textStatus) {
+				noiysUiError.hide_error();
+				if (xhr.status == 200) {
+					var status = JSON.parse(xhr.responseText);
+					noiysVoteCount.set_count_from_status(status);
+					callback(status);
+				} else if (xhr.status == 404) {
+					callback(false);
+				} else {
+					noiysUiError.show_error();
+					_rollbar.push(xhr.status + " error: " + "status/" + statusID);
+					callback();
+				}
+			}
+		});
 	}
 
 	function getStatusesFromIDs(IDs, callback) {
