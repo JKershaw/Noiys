@@ -1,7 +1,7 @@
 var assert = require('assert'),
 	NoiysDatabase = require('../../lib/NoiysDatabase'),
-	//connection_string = "mongodb://localhost",
 	connection_string = "mongodb://noiys:5ea6d0c8a0684fc6cba80e2691b7b90d@linus.mongohq.com:10015/noiys-test",
+	connection_string = "mongodb://localhost",
 	noiysDatabase = new NoiysDatabase(connection_string);
 
 console.log("testing Mongo");

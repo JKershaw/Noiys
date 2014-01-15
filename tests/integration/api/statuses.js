@@ -161,36 +161,5 @@ describe('Getting from /statuses', function(done) {
 				});
 			});
 		});
-
-
-	});
-});
-
-describe('Getting from /statuses/feed', function(done) {
-
-	it("visiting /statuses/feed returns a 200 with several statuses", function(done) {
-
-		http.get('http://localhost:3000/statuses/feed', function(res) {
-
-			assert.equal(200, res.statusCode);
-
-			res.on('data', function(chunk) {
-				data = JSON.parse(chunk);
-
-				assert.equal(true, data.length > 2);
-
-				var always_older = true;
-
-				for (var i = 0; i < data.length; i++) {
-					expect(data[i].text).to.exist;
-					expect(data[i].id).to.exist;
-					expect(data[i].age).to.exist;
-					expect(data[i].timestamp).to.exist;
-					expect(data[i].ISO8601timestamp).to.exist;
-
-				}
-				done();
-			});
-		});
 	});
 });

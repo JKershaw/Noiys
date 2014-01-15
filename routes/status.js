@@ -60,20 +60,20 @@ module.exports = function(app) {
 			if (requestType && (requestType.indexOf('json') > -1)) {
 
 				if (status) {
+					
 					console.log("QUERY", request.query);
+					response.contentType('json');
+					
 					if(request.query['reply'] && (request.query['reply'] !== "undefined")) {
 						statusMessageFactory.createAsReply(status, function(message) {
-							response.contentType('json');
 							response.send(message);
 						});
 					} else if(request.query['parent'] && (request.query['parent'] !== "undefined")) {
 						statusMessageFactory.createAsParent(status, function(message) {
-							response.contentType('json');
 							response.send(message);
 						});
 					} else {
 						statusMessageFactory.create(status, function(message) {
-							response.contentType('json');
 							response.send(message);
 						});
 					}
@@ -87,7 +87,7 @@ module.exports = function(app) {
 
 					statusMessageFactory.create(status, function(message) {
 						var model = {
-							text: message.text,
+							status: message.text,
 							environment: process.env.environment
 						};
 						response.render('individual-status.ejs', model);
@@ -99,10 +99,7 @@ module.exports = function(app) {
 					response.render('individual-status-404.ejs', model);
 				}
 			}
-
 		});
-
-
 	});
 
 	app.get('/status', function(request, response) {
