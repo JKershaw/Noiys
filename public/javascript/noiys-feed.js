@@ -81,7 +81,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 	function intitialise_chronological() {
 		if (!init_chronological) {
 			init_chronological = true;
-			console.debug("intitialise_chronological");
 			$('#main_info').show().html("Just loading the latest notes now.");
 
 			noiysApi.getStatusesLatest(function(statuses){
@@ -105,7 +104,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 	}
 
 	function get_and_show_chronological_status() {
-		console.debug("get_and_show_chronological_status called");
 		clear_chronological_feed_timeout();
 
 		if (!is_paused() && (newest_status_timestamp > 0) && (current_feed_type == 'chronological')) {
@@ -119,7 +117,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 						get_and_show_chronological_status()
 					}, 5000);
 				} else if (status === false) {
-					console.debug("No new statuses found");
 					chronological_status_timeout = setTimeout(function() {
 						get_and_show_chronological_status()
 					}, 10000);
@@ -134,8 +131,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 	}
 
 	function get_and_show_older_chronological_statuses(callback) {
-		console.debug("get_and_show_older_chronological_statuses called");
-
+		
 		if (oldest_status_timestamp < Number.MAX_VALUE) {
 
 			noiysApi.getStatusesBefore(oldest_status_timestamp, function(statuses) {
@@ -157,8 +153,7 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 
 
 	function get_and_show_search_statuses(search_term, callback) {
-		console.debug("get_and_show_search_statuses called");
-
+		
 		noiysApi.getStatusesSearch(search_term, function(statuses) {
 
 			if (statuses) {
@@ -185,7 +180,6 @@ define(['noise-api', 'noise-status'], function(noiysApi, noiysStatus) {
 	function initialise_home() {
 		if (!init_home) {
 			init_home = true;
-			console.debug("intitialise_home");
 
 			$('#main_info').show().html("Just loading your home feed now.");
 
