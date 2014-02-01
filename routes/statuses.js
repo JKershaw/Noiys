@@ -5,7 +5,8 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 
 module.exports = function(app) {
 
-	var number_of_statuses = 20;
+	var initial_number_of_statuses = 5,
+		number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
 
@@ -22,7 +23,7 @@ module.exports = function(app) {
 		} else if(request.query['home'] == "true") {
 			handle_home_statuses(request, response, (request.query['raw'] == "true"));
 		} else {
-			noiysDatabase.findRecentStatuses(number_of_statuses, function(statuses) {
+			noiysDatabase.findRecentStatuses(initial_number_of_statuses, function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
 		}
