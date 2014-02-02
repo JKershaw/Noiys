@@ -5,7 +5,7 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 
 module.exports = function(app) {
 
-	var initial_number_of_statuses = 5,
+	var initial_number_of_statuses = 15,
 		number_of_statuses = 20;
 
 	app.get('/statuses', function(request, response) {
