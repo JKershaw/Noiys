@@ -1,0 +1,56 @@
+pkill node
+set -e
+
+export MONGO_CONNECTION_STRING=mongodb://localhost
+export PORT=3000
+
+mongo statuses --eval "db.dropDatabase()"
+
+if [ $# -gt 0  ]; then
+
+	echo "------------------------------------------"
+	echo "Syncing with GitHub"
+	echo "------------------------------------------"
+
+	git pull github master
+else
+  echo "Skipping Git Pull from GitHub"
+fi
+
+if [ $# -lt 0  ]; then
+	echo "Running JSHint"
+	jshint ./tests/integration ./tests/unit
+fi
+
+echo "=========================================="
+echo "Unit Tests"
+echo "=========================================="
+
+echo "Unit Tests"
+mocha tests/unit/ --ui qunit --reporter nyan --timeout 5000
+echo "Unit tests complete"
+
+echo "=========================================="
+echo "Integration Tests"
+echo "=========================================="
+
+echo "Integration Tests"
+foreman start &
+sleep 1
+mocha tests/integration/ --recursive --ui tdd --reporter spec --timeout 10000
+echo "Integration tests complete"
+
+pkill node
+
+echo "All tests passed!"
+
+if [ $# -gt 0  ]; then
+	MESSAGE="$@"
+	echo "Committing with message '$MESSAGE'"
+	git add -A
+	git commit -am "$MESSAGE"
+	echo "Git Committed"
+	git push
+else
+  echo "No commit message, no commit"
+fi
