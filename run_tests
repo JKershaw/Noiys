@@ -1,9 +1,6 @@
 pkill node
 set -e
 
-export MONGO_CONNECTION_STRING=mongodb://localhost
-export PORT=3000
-
 mongo statuses --eval "db.dropDatabase()"
 
 if [ $# -gt 0  ]; then
@@ -12,7 +9,7 @@ if [ $# -gt 0  ]; then
 	echo "Syncing with GitHub"
 	echo "------------------------------------------"
 
-	git pull github master
+	git pull github
 else
   echo "Skipping Git Pull from GitHub"
 fi
