@@ -184,7 +184,7 @@ define([
 		$("#load_older_statuses").text("Loading...");
 		$('#load_older_statuses').prop('disabled', true);
 		noiysFeed.get_and_show_older_chronological_statuses(function() {
-			$("#load_older_statuses").text("Load older statuses");
+			$("#load_older_statuses").text("Load older notes");
 			$('#load_older_statuses').prop('disabled', false);
 		});
 	}
