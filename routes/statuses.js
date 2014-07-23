@@ -10,6 +10,8 @@ module.exports = function(app) {
 
 	app.get('/statuses', function(request, response) {
 
+		response.setHeader('Content-Type', 'application/json');
+
 		console.log("GETTING statuses =>", request.query);
 
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
