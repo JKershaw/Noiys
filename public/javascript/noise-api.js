@@ -183,7 +183,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: ajax_url,
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
@@ -206,7 +206,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "search/" + encodeURIComponent(search_term),
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
