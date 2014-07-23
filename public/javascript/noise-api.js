@@ -48,7 +48,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "status",
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				var status = JSON.parse(xhr.responseText);
@@ -62,7 +62,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "status/" + statusID,
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
@@ -84,7 +84,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "status/" + statusID + "?reply=true",
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
@@ -106,7 +106,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "status?since=" + timestamp,
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
@@ -129,7 +129,7 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 		$.ajax({
 			url: "status/" + statusID + "?parent=true",
 			type: 'GET',
-			contentType: 'application/json',
+			//contentType: 'application/json',
 			complete: function(xhr, textStatus) {
 				noiysUiError.hide_error();
 				if (xhr.status == 200) {
