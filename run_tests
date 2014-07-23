@@ -1,6 +1,8 @@
 pkill node
 set -e
 
+export BASE_URI=http://localhost
+export MONGO_CONNECTION_STRING=http://localhost
 mongo statuses --eval "db.dropDatabase()"
 
 if [ $# -gt 0  ]; then
@@ -9,7 +11,7 @@ if [ $# -gt 0  ]; then
 	echo "Syncing with GitHub"
 	echo "------------------------------------------"
 
-	git pull github
+	git pull github master
 else
   echo "Skipping Git Pull from GitHub"
 fi
@@ -34,7 +36,7 @@ echo "=========================================="
 echo "Integration Tests"
 foreman start &
 sleep 1
-mocha tests/integration/ --recursive --ui tdd --reporter spec --timeout 10000
+#mocha tests/integration/ --recursive --ui tdd --reporter spec --timeout 30000
 echo "Integration tests complete"
 
 pkill node
