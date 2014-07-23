@@ -6,7 +6,7 @@ requirejs.config({
 	waitSeconds: 30,
 	baseUrl: "javascript",
 	paths: {
-		jquery: "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min",
+		jquery: "//code.jquery.com/jquery-1.10.2.min.js",
 		bootstrap: "//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min",
 		timeago: "lib/timeago",
 		underscore: "lib/underscore"
