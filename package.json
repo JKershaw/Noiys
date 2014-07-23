@@ -5,7 +5,8 @@
     "express": "3.1.x",
     "ejs": "*",
     "mongojs": "*",
-    "underscore":"*"
+    "underscore":"*",
+    "debug":"*"
   },
   "devDependencies": {
     "zombie": "*",
