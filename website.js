@@ -8,7 +8,7 @@ app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
 app.use(express.logger());
 app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
-app.use(express.bodyParser());
+app.use(express.bodyParser({strict:false}));
 app.use(express.static(ASSETS_DIRECTORY));
 
 require("./routes/home")(app);
