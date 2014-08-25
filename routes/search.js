@@ -14,12 +14,9 @@ module.exports = function(app) {
 
 		HTMLEncoder().encode(request.params.search_term, function(search_term) {
 
-			console.log("SEARCHING statuses for: ", search_term);
-
 			noiysDatabase.findStatusesBySearch(search_term, function(statuses) {
 
 				if (statuses.length > 0) {
-					console.log("found! ", statuses.length);
 					var messages = new Array();
 
 					var finished = _.after(statuses.length, function() {

@@ -5,11 +5,10 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 module.exports = function(app) {
 	app.post('/vote', function(request, response) {
 
-		console.log("POSTING a vote");
-
 		noiysDatabase.findStatus(request.body.id, function(status) {
 			if (status) {
 				status.votes = status.votes + 1;
+				console.log(status);
 				noiysDatabase.saveStatus(status, function() {
 
 					var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress || request.socket.remoteAddress || request.connection.socket.remoteAddress;

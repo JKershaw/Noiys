@@ -9,7 +9,6 @@ module.exports = function(app) {
 	var statusMessageFactory = new StatusMessageFactory();
 
 	app.post('/status', function(request, response) {
-		console.log("POSTING a status: ");
 
 		HTMLEncoder().encode(request.body.text, function(encodedText) {
 
@@ -35,7 +34,6 @@ module.exports = function(app) {
 					noiysDatabase.saveStatus(status, function(saved) {
 
 						if (quotes) {
-							console.log("there are quotes!");
 							process_quotes(saved.id, quotes);
 						}
 
@@ -51,17 +49,16 @@ module.exports = function(app) {
 
 	app.get('/status/:ID', function(request, response) {
 
-		console.log("GETTING a specific status: ", request.params.ID);
-
-
 		noiysDatabase.findStatus(request.params.ID, function(status) {
+
+
+				console.log("From the DB:", status);
 
 			var requestType = request.get('Content-Type');
 			if (requestType && (requestType.indexOf('json') > -1)) {
 
 				if (status) {
 					
-					console.log("QUERY", request.query);
 					response.contentType('json');
 					
 					if(request.query['reply'] && (request.query['reply'] !== "undefined")) {
@@ -105,7 +102,6 @@ module.exports = function(app) {
 	app.get('/status', function(request, response) {
 
 		if (request.query['since'] && (request.query['since'] !== "undefined")) {
-			console.log("Getting a SINCE status");
 			get_since_status(request.query['since'], function(status) {
 
 				if (status) {
@@ -118,7 +114,6 @@ module.exports = function(app) {
 				}
 			});
 		} else {
-			console.log("Getting a RANDOM status");
 			get_random_status(function(status) {
 				if (status) {
 					statusMessageFactory.create(status, function(message) {
@@ -168,8 +163,6 @@ function process_quotes(id, quotes) {
 }
 
 function add_response_to_status(status_id, response_id) {
-	console.log("Status:", status_id);
-	console.log("Response: ", response_id);
 
 	noiysDatabase.findStatus(status_id, function(status) {
 
@@ -181,7 +174,6 @@ function add_response_to_status(status_id, response_id) {
 			status.responses.push(response_id);
 
 			noiysDatabase.saveStatus(status, function() {
-				console.log("Saved responses");
 			});
 			
 		}

@@ -1,6 +1,7 @@
 var express = require("express"),
 	app = express(),
     path = require('path'),
+	logger = require('morgan'),
     ROOT_DIRECTORY = __dirname,
     ASSETS_DIRECTORY = path.join(ROOT_DIRECTORY, 'public');
 
@@ -10,6 +11,8 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 app.use(express.bodyParser({strict:false}));
 app.use(express.static(ASSETS_DIRECTORY));
+
+app.use(logger('dev'));
 
 require("./routes/home")(app);
 

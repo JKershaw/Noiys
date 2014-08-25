@@ -6,13 +6,54 @@ var expect = require('chai').expect,
 
 require('chai').should();
 
-describe('Getting from /statuses', function(done) {
+var statusText = "Aww yeah";
 
-	it("visiting /statuses returns a 200 with several statuses", function(done) {
+describe('Getting from /statuses', function (done) {
 
-		http.get('http://localhost:3000/statuses', function(res) {
+	before(function (done) {
+		var post_details = {
+			url: 'http://localhost:3000/status',
+			form: {
+				text: statusText
+			}
+		}
 
-			res.on("data", function(chunk) {
+		request.post(post_details, function (error, response, body) {
+
+			setTimeout(function () {
+				var post_details = {
+					url: 'http://localhost:3000/status',
+					form: {
+						text: statusText
+					}
+				}
+
+				request.post(post_details, function (error, response, body) {
+
+					setTimeout(function () {
+						var post_details = {
+							url: 'http://localhost:3000/status',
+							form: {
+								text: statusText
+							}
+						}
+
+						request.post(post_details, function (error, response, body) {
+							done();
+						});
+					}, 100);
+
+				});
+			}, 100);
+
+		});
+	});
+
+	it("visiting /statuses returns a 200 with several statuses", function (done) {
+
+		http.get('http://localhost:3000/statuses', function (res) {
+
+			res.on("data", function (chunk) {
 				data = JSON.parse(chunk);
 
 				assert.equal(200, res.statusCode);
@@ -41,11 +82,11 @@ describe('Getting from /statuses', function(done) {
 		});
 	});
 
-	it("visiting /statuses?raw=true returns a 200 with several raw statuses", function(done) {
+	it("visiting /statuses?raw=true returns a 200 with several raw statuses", function (done) {
 
-		http.get('http://localhost:3000/statuses?raw=true', function(res) {
+		http.get('http://localhost:3000/statuses?raw=true', function (res) {
 
-			res.on("data", function(chunk) {
+			res.on("data", function (chunk) {
 				data = JSON.parse(chunk);
 
 				assert.equal(200, res.statusCode);
@@ -67,11 +108,11 @@ describe('Getting from /statuses', function(done) {
 		});
 	});
 
-	it("visiting /statuses for the home feed returns a 200 with several statuses", function(done) {
+	it("visiting /statuses for the home feed returns a 200 with several statuses", function (done) {
 
-		http.get('http://localhost:3000/statuses?home=true', function(res) {
+		http.get('http://localhost:3000/statuses?home=true', function (res) {
 
-			res.on("data", function(chunk) {
+			res.on("data", function (chunk) {
 				data = JSON.parse(chunk);
 
 				assert.equal(200, res.statusCode);
@@ -91,16 +132,16 @@ describe('Getting from /statuses', function(done) {
 		});
 	});
 
-	it("visiting /statuses with a before", function(done) {
+	it("visiting /statuses with a before", function (done) {
 
 		var before_timestamp = Math.round(new Date().getTime() / 1000);
-		http.get('http://localhost:3000/statuses?before=' + before_timestamp, function(res) {
+		http.get('http://localhost:3000/statuses?before=' + before_timestamp, function (res) {
 
-			res.on("data", function(chunk) {
+			res.on("data", function (chunk) {
 				data = JSON.parse(chunk);
 
 				assert.equal(200, res.statusCode);
-				assert.equal(true, data.length > 2);
+				assert.equal(true, data.length > 1);
 
 				var always_older = true;
 
@@ -125,7 +166,7 @@ describe('Getting from /statuses', function(done) {
 		});
 	});
 
-	it("I can get multiple statuses back from /statuses/ID1,ID2", function(done) {
+	it("I can get multiple statuses back from /statuses/ID1,ID2", function (done) {
 
 		var status1ID, status2ID;
 
@@ -142,15 +183,14 @@ describe('Getting from /statuses', function(done) {
 			}
 		};
 
-		request.post(post_details, function(error, response, body) {
+		request.post(post_details, function (error, response, body) {
 			status1ID = body;
-			request.post(post2_details, function(error, response, body) {
+			request.post(post2_details, function (error, response, body) {
 				status2ID = body;
-				http.get('http://localhost:3000/statuses?IDs=' + status1ID + "," + status2ID, function(res) {
-					console.log("Got response: " + res.statusCode);
+				http.get('http://localhost:3000/statuses?IDs=' + status1ID + "," + status2ID, function (res) {
 					assert.equal(200, res.statusCode);
 
-					res.on("data", function(chunk) {
+					res.on("data", function (chunk) {
 						data = JSON.parse(chunk);
 
 						assert.equal("Status 1", data[0].text);

@@ -12,8 +12,6 @@ module.exports = function(app) {
 
 		//response.setHeader('Content-Type', 'application/json');
 
-		console.log("GETTING statuses =>", request.query);
-
 		if (request.query['before'] && (request.query['before'] !== "undefined")) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));

@@ -1,0 +1,33 @@
+echo "=========================================="
+echo "API Integration Tests"
+echo "=========================================="
+
+pkill node
+
+set -e
+
+foreman start &
+sleep 1
+
+for D in tests/integration/api/*; do
+	firstLine=$(head -n 1 $D)
+
+#	if [[ $CI == true ]] || [[ $firstLine =~ .*testLocal.* ]];
+#	then
+
+		echo "Dropping database"
+		mongo "noiys" --eval "db.dropDatabase()"
+
+		echo "Running test: $D"
+		mocha $D --recursive --ui tdd --reporter spec --timeout 30000
+#	else
+#		echo "Skipping test: $D"
+#	fi
+done
+
+pkill node
+
+echo "API Integration tests complete"
+
+
+echo "No Front End Integration tests"

@@ -21,25 +21,9 @@ if [ $# -lt 0  ]; then
 	jshint ./tests/integration ./tests/unit
 fi
 
-echo "=========================================="
-echo "Unit Tests"
-echo "=========================================="
+./run_tests_unit
 
-echo "Unit Tests"
-mocha tests/unit/ --ui qunit --reporter nyan --timeout 5000
-echo "Unit tests complete"
-
-echo "=========================================="
-echo "Integration Tests"
-echo "=========================================="
-
-echo "Integration Tests"
-foreman start &
-sleep 1
-#mocha tests/integration/ --recursive --ui tdd --reporter spec --timeout 30000
-echo "Integration tests complete"
-
-pkill node
+./run_tests_integration
 
 echo "All tests passed!"
 

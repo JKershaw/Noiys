@@ -6,7 +6,8 @@
     "ejs": "*",
     "mongojs": "*",
     "underscore":"*",
-    "debug":"*"
+    "debug":"*",
+    "morgan": "*"
   },
   "devDependencies": {
     "zombie": "*",
