@@ -4,13 +4,13 @@ var NoiysDatabase = require('../lib/NoiysDatabase'),
 	StatusMessageFactory = require('../lib/StatusMessageFactory'),
 	HTMLEncoder = require('../lib/HTMLEncoder');
 
-module.exports = function(app) {
+module.exports = function (app) {
 
 	var statusMessageFactory = new StatusMessageFactory();
 
-	app.post('/status', function(request, response) {
+	app.post('/status', function (request, response) {
 
-		HTMLEncoder().encode(request.body.text, function(encodedText) {
+		HTMLEncoder().encode(request.body.text, function (encodedText) {
 
 			encodedText = encodedText.trim();
 			if (encodedText && (encodedText != "") && (encodedText.length > 0)) {
@@ -28,10 +28,10 @@ module.exports = function(app) {
 					status.parent = quotes[0].replace("@", "");
 				}
 
-				find_ancestor(status, function(ancestor) {
+				find_ancestor(status, function (ancestor) {
 					status.ancestor = ancestor;
 
-					noiysDatabase.saveStatus(status, function(saved) {
+					noiysDatabase.saveStatus(status, function (saved) {
 
 						if (quotes) {
 							process_quotes(saved.id, quotes);
@@ -47,65 +47,64 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/status/:ID', function(request, response) {
+	app.get('/status/:ID', function (request, response) {
 
-		noiysDatabase.findStatus(request.params.ID, function(status) {
+		var requestType = request.get('Content-Type');
+		var isJsonReply = requestType && (requestType.indexOf('json') > -1);
 
+		noiysDatabase.findStatus(request.params.ID, function (status) {
 
-				console.log("From the DB:", status);
+			if (status) {
 
-			var requestType = request.get('Content-Type');
-			if (requestType && (requestType.indexOf('json') > -1)) {
-
-				if (status) {
-					
+				if (request.query['reply'] && (request.query['reply'] !== "undefined")) {
 					response.contentType('json');
-					
-					if(request.query['reply'] && (request.query['reply'] !== "undefined")) {
-						statusMessageFactory.createAsReply(status, function(message) {
-							response.send(message);
-						});
-					} else if(request.query['parent'] && (request.query['parent'] !== "undefined")) {
-						statusMessageFactory.createAsParent(status, function(message) {
+					statusMessageFactory.createAsReply(status, function (message) {
+						response.send(message);
+					});
+				} else if (request.query['parent'] && (request.query['parent'] !== "undefined")) {
+					response.contentType('json');
+					statusMessageFactory.createAsParent(status, function (message) {
+						response.send(message);
+					});
+				} else {
+					if (isJsonReply) {
+						statusMessageFactory.create(status, function (message) {
+							response.contentType('json');
 							response.send(message);
 						});
 					} else {
-						statusMessageFactory.create(status, function(message) {
-							response.send(message);
+						statusMessageFactory.create(status, function (message) {
+							var model = {
+								status: message.text,
+								environment: process.env.environment
+							};
+							response.render('individual-status.ejs', model);
 						});
 					}
-				} else {
-					response.send(404);
 				}
-
 			} else {
-
-				if (status) {
-
-					statusMessageFactory.create(status, function(message) {
-						var model = {
-							status: message.text,
-							environment: process.env.environment
-						};
-						response.render('individual-status.ejs', model);
-					});
+				// No status found
+				if (isJsonReply) {
+					response.send(404);
 				} else {
 					var model = {
 						environment: process.env.environment
 					};
 					response.render('individual-status-404.ejs', model);
+
 				}
 			}
+
 		});
 	});
 
-	app.get('/status', function(request, response) {
+	app.get('/status', function (request, response) {
 
 		if (request.query['since'] && (request.query['since'] !== "undefined")) {
-			get_since_status(request.query['since'], function(status) {
+			get_since_status(request.query['since'], function (status) {
 
 				if (status) {
-					statusMessageFactory.create(status, function(message) {
+					statusMessageFactory.create(status, function (message) {
 						response.contentType('json');
 						response.send(message);
 					});
@@ -114,9 +113,9 @@ module.exports = function(app) {
 				}
 			});
 		} else {
-			get_random_status(function(status) {
+			get_random_status(function (status) {
 				if (status) {
-					statusMessageFactory.create(status, function(message) {
+					statusMessageFactory.create(status, function (message) {
 						response.contentType('json');
 						response.send(message);
 					});
@@ -130,7 +129,7 @@ module.exports = function(app) {
 
 function get_random_status(callback) {
 
-	noiysDatabase.getStatuses(function(statuses) {
+	noiysDatabase.getStatuses(function (statuses) {
 
 		if (statuses.length > 0) {
 			var status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -148,7 +147,7 @@ function get_random_status(callback) {
 }
 
 function get_since_status(since, callback) {
-	noiysDatabase.findStatusesSince(since, function(statuses) {
+	noiysDatabase.findStatusesSince(since, function (statuses) {
 		var status = statuses[0];
 		callback(status);
 	});
@@ -164,18 +163,17 @@ function process_quotes(id, quotes) {
 
 function add_response_to_status(status_id, response_id) {
 
-	noiysDatabase.findStatus(status_id, function(status) {
+	noiysDatabase.findStatus(status_id, function (status) {
 
-		if (status){
+		if (status) {
 			if (!status.responses) {
 				status.responses = [];
 			}
 
 			status.responses.push(response_id);
 
-			noiysDatabase.saveStatus(status, function() {
-			});
-			
+			noiysDatabase.saveStatus(status, function () {});
+
 		}
 	});
 }
@@ -184,7 +182,7 @@ function find_ancestor(status, callback) {
 
 	if (status.parent) {
 
-		noiysDatabase.findStatus(status.parent, function(parentStatus) {
+		noiysDatabase.findStatus(status.parent, function (parentStatus) {
 			if (parentStatus && parentStatus.ancestor) {
 				callback(parentStatus.ancestor);
 			} else {
