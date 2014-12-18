@@ -22,13 +22,13 @@ require("./routes/vote")(app);
 require("./routes/search")(app);
 
 //maintenance mode
-app.use(function(request, response, next) {
-	var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+// app.use(function(request, response, next) {
+// 	var ip = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
 
-	if (ip = "39.0.2171.71") {
-		response.end(404);
-	}
-});
+// 	if (ip = "39.0.2171.71") {
+// 		response.end(404);
+// 	}
+// });
 
 
 var port = process.env.PORT || 3000;
