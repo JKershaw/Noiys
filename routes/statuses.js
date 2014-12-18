@@ -44,26 +44,24 @@ function handle_home_statuses(request, response, raw) {
 		var tmp_statuses = [];
 
 		// strip out duplicates
-		// for (var i = 0; i < statuses.length; i++) {
+		for (var i = 0; i < statuses.length; i++) {
 
-		// 	var current_status_ancestor = statuses[i].ancestor;
+			var current_status_ancestor = statuses[i].ancestor;
 
-		// 	if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
-		// 		current_status_ancestor = statuses[i].id;
-		// 	}
+			if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
+				current_status_ancestor = statuses[i].id;
+			}
 
-		// 	if (seen_conversation_ids.indexOf(current_status_ancestor) == -1) {
-		// 		seen_conversation_ids.push(current_status_ancestor);
-		// 		tmp_statuses.push(statuses[i]);
-		// 	}
-		// }
-
-		statuses = tmp_statuses;
+			if (seen_conversation_ids.indexOf(current_status_ancestor) === -1) {
+				seen_conversation_ids.push(current_status_ancestor);
+				tmp_statuses.push(statuses[i]);
+			}
+		}
 
 		// get the top 20 remaining posts
-		statuses = statuses.slice(0, 20);
+		tmp_statuses = tmp_statuses.slice(0, 20);
 
-		handle_returned_statuses(statuses, response, raw);
+		handle_returned_statuses(tmp_statuses, response, raw);
 
 	});
 }
