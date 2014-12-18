@@ -6,13 +6,13 @@ var NoiysDatabase = require('./lib/NoiysDatabase'),
 	noiysDatabase = new NoiysDatabase(process.env.MONGO_CONNECTION_STRING),
 	_ = require("underscore")._;
 
-noiysDatabase.getStatuses(function(statuses) { 
+noiysDatabase.getStatuses(function(statuses) {
 
 	var finished = _.after(statuses.length, function() {
 		process.exit()
 	});
 
-	_.each(statuses, function(status){
+	_.each(statuses, function(status) {
 
 		status.score = calculate_score(status);
 
@@ -27,9 +27,12 @@ function calculate_score(status) {
 
 	var votes = parseInt(status.votes),
 		words = status.text.split(' ').length,
-		words = 0,
 		age = Math.round(new Date().getTime() / 1000) - status.timestamp,
-		age_multiplier =  1 + (age / 86400);
+		age_multiplier = 1 + (age / 86400);
+
+	if (words > 100) {
+		words = 100;
+	}
 
 	return (votes + words) * age_multiplier;
 }
