@@ -25,16 +25,18 @@ noiysDatabase.getStatuses(function(statuses) {
 
 function calculate_score(status) {
 
-	var votes = parseInt(status.votes),
+	var votes = Number(status.votes),
 		words = status.text.split(' ').length,
 		age = Math.round(new Date().getTime() / 1000) - status.timestamp,
-		age_multiplier = 1 + (age / 86400);
+		age_multiplier = age / 86400;
 
 	if (words > 100) {
 		words = 100;
 	}
 
-	var age_multiplier = (age_multiplier / 2) + 0.5
+	words = 0;
+
+	var age_multiplier = 0.5 + (age_multiplier / 2);
 
 	return (votes + words) * age_multiplier;
 }
