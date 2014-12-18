@@ -23,6 +23,11 @@ module.exports = function (app) {
 					ip: request.headers['x-forwarded-for'] || request.connection.remoteAddress
 				};
 
+				if (status.ip == "23.233.134.52") {
+					return response.send(400);
+				} 
+
+
 				var quotes = encodedText.match(/@[a-f0-9]{24,24}/g);
 
 				if (quotes) {
