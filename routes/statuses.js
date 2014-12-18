@@ -16,11 +16,11 @@ module.exports = function(app) {
 			noiysDatabase.findStatusesBefore(request.query['before'], number_of_statuses, function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
-		} else if(request.query['IDs'] && (request.query['IDs'] !== "undefined")) {
+		} else if (request.query['IDs'] && (request.query['IDs'] !== "undefined")) {
 			noiysDatabase.getStatusesFromIDs(request.query['IDs'].split(","), function(statuses) {
 				handle_returned_statuses(statuses, response, (request.query['raw'] == "true"));
 			});
-		} else if(request.query['home'] == "true") {
+		} else if (request.query['home'] == "true") {
 			handle_home_statuses(request, response, (request.query['raw'] == "true"));
 		} else {
 			noiysDatabase.findRecentStatuses(initial_number_of_statuses, function(statuses) {
@@ -36,9 +36,7 @@ function handle_home_statuses(request, response, raw) {
 
 		// sort by score
 		statuses.sort(function compare(a, b) {
-			if (a.score > b.score) return -1;
-			if (a.score < b.score) return 1;
-			return 0;
+			return b.score - a.score;
 		});
 
 		// leave only the highest scored status from any given conversation
@@ -46,19 +44,19 @@ function handle_home_statuses(request, response, raw) {
 		var tmp_statuses = [];
 
 		// strip out duplicates
-		for(var i=0;i<statuses.length;i++) {
-			
-			var current_status_ancestor = statuses[i].ancestor;
+		// for (var i = 0; i < statuses.length; i++) {
 
-			if ((statuses[i].ancestor == "")  || (statuses[i].ancestor == undefined)) {
-				current_status_ancestor = statuses[i].id;
-			}
-			
-			if (seen_conversation_ids.indexOf(current_status_ancestor) == -1) {
-				seen_conversation_ids.push(current_status_ancestor);
-				tmp_statuses.push(statuses[i]);
-			}
-		}
+		// 	var current_status_ancestor = statuses[i].ancestor;
+
+		// 	if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
+		// 		current_status_ancestor = statuses[i].id;
+		// 	}
+
+		// 	if (seen_conversation_ids.indexOf(current_status_ancestor) == -1) {
+		// 		seen_conversation_ids.push(current_status_ancestor);
+		// 		tmp_statuses.push(statuses[i]);
+		// 	}
+		// }
 
 		statuses = tmp_statuses;
 
@@ -71,8 +69,8 @@ function handle_home_statuses(request, response, raw) {
 }
 
 function handle_returned_statuses(statuses, response, raw) {
-	
-	if(!statuses || statuses.length ==0){
+
+	if (!statuses || statuses.length == 0) {
 		response.send(404);
 	}
 
@@ -104,5 +102,5 @@ function handle_returned_statuses(statuses, response, raw) {
 			});
 		}
 	});
-	
+
 }
