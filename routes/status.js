@@ -19,7 +19,8 @@ module.exports = function (app) {
 					text: encodedText,
 					timestamp: Math.round(new Date().getTime() / 1000),
 					votes: 0,
-					score: 0
+					score: 0,
+					ip: request.headers['x-forwarded-for'] || request.connection.remoteAddress
 				};
 
 				var quotes = encodedText.match(/@[a-f0-9]{24,24}/g);
