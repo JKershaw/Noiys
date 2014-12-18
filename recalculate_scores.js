@@ -34,5 +34,7 @@ function calculate_score(status) {
 		words = 100;
 	}
 
+	var age_multiplier = (age_multiplier / 2) + 0.5
+
 	return (votes + words) * age_multiplier;
 }
