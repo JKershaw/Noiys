@@ -28,43 +28,64 @@ module.exports = function(app) {
 			});
 		}
 	});
+
+
+	function handle_home_statuses(request, response, raw) {
+
+		var projection = {
+			score: 1,
+			ancestor: 1
+		};
+
+		noiysDatabase.getStatusesWithProjection({}, projection, function(statuses) {
+
+			// sort by score
+			statuses.sort(function compare(a, b) {
+				return b.score - a.score;
+			});
+
+			// leave only the highest scored status from any given conversation
+			var seen_conversation_ids = [];
+			var tmp_statuses = [];
+
+			// strip out duplicates
+			for (var i = 0; i < statuses.length; i++) {
+
+				var current_status_ancestor = statuses[i].ancestor;
+
+				if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
+					current_status_ancestor = statuses[i].id;
+				}
+
+				if (seen_conversation_ids.indexOf(current_status_ancestor) === -1) {
+					seen_conversation_ids.push(current_status_ancestor);
+					tmp_statuses.push(statuses[i]);
+				}
+			}
+
+			// get the top 20 remaining posts
+			tmp_statuses = tmp_statuses.slice(0, 20);
+
+			// we have the Ids, now to get the actual statuses
+
+			var id_array = [];
+			for (var i = 0; i < tmp_statuses.length; i++) {
+				id_array.push(tmp_statuses[i].id);
+			}
+
+			noiysDatabase.getStatusesFromIDs(id_array, function(statuses) {
+				statuses.sort(function compare(a, b) {
+					return b.score - a.score;
+				});
+				handle_returned_statuses(statuses, response, raw);
+			});
+
+
+		});
+	}
+
 };
 
-function handle_home_statuses(request, response, raw) {
-
-	noiysDatabase.getStatuses(function(statuses) {
-
-		// sort by score
-		statuses.sort(function compare(a, b) {
-			return b.score - a.score;
-		});
-
-		// leave only the highest scored status from any given conversation
-		var seen_conversation_ids = [];
-		var tmp_statuses = [];
-
-		// strip out duplicates
-		for (var i = 0; i < statuses.length; i++) {
-
-			var current_status_ancestor = statuses[i].ancestor;
-
-			if ((statuses[i].ancestor == "") || (statuses[i].ancestor == undefined)) {
-				current_status_ancestor = statuses[i].id;
-			}
-
-			if (seen_conversation_ids.indexOf(current_status_ancestor) === -1) {
-				seen_conversation_ids.push(current_status_ancestor);
-				tmp_statuses.push(statuses[i]);
-			}
-		}
-
-		// get the top 20 remaining posts
-		tmp_statuses = tmp_statuses.slice(0, 20);
-
-		handle_returned_statuses(tmp_statuses, response, raw);
-
-	});
-}
 
 function handle_returned_statuses(statuses, response, raw) {
 
