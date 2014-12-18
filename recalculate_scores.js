@@ -27,6 +27,7 @@ function calculate_score(status) {
 
 	var votes = parseInt(status.votes),
 		words = status.text.split(' ').length,
+		words = 0,
 		age = Math.round(new Date().getTime() / 1000) - status.timestamp,
 		age_multiplier =  1 + (age / 86400);
 
