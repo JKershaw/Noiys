@@ -3,7 +3,6 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 	var my_hidden = Array();
 	
 	function hide(statusID) {
-		console.debug("hiding post");
 
 		// add this to the list of hidden statuses
 		my_hidden.push(statusID);
@@ -14,17 +13,9 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 	}
 
 	function hide_all_hidden(statusID) {
+		console.debug("Hiding " + statusID);
 		for (var i = 0; i < my_hidden.length; i++) {
 			$('*[data-noteID="' + statusID + '"]').hide();
-		}
-	}
-
-	function is_hidden(statusID) {
-		var index = my_hidden.indexOf(statusID);
-		if (index > -1) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -46,7 +37,6 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 	
 	return {
 		hide: hide,
-		is_hidden: is_hidden,
 		inititalise_my_hidden: inititalise_my_hidden,
 		hide_all_hidden: hide_all_hidden
 	}
