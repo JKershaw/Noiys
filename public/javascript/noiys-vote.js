@@ -25,22 +25,18 @@ define(['underscore', 'noise-api', 'noiys-vote-count'], function(_, noiysApi, no
 		
 		var keys = noiysVoteCount.get_statusIDs();
 
-		//if (keys.length > 0) {
-			console.log("Refreshing all votes: ", keys);
-
-			noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
-				if (statuses) {
-					_.each(statuses, function(status){
-						if (status.votes != $(".votes-" + status.id).text())
-						{
-							noiysVoteCount.set_count(status.id, status.votes);
-							refresh(status.id);
-						}
-					});
-				}
-				vote_checker_timeout = setTimeout(check_all_votes, 5000);
-			});
-		//}
+		noiysApi.getRawStatusesFromIDs(keys, function(statuses) {
+			if (statuses) {
+				_.each(statuses, function(status){
+					if (status.votes != $(".votes-" + status.id).text())
+					{
+						noiysVoteCount.set_count(status.id, status.votes);
+						refresh(status.id);
+					}
+				});
+			}
+			vote_checker_timeout = setTimeout(check_all_votes, 5000);
+		});
 	}
 
 	function inititalise_vote_updater() {
