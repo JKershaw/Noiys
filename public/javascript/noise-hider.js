@@ -12,10 +12,9 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 		hide_all_hidden();
 	}
 
-	function hide_all_hidden(statusID) {
-		console.debug("Hiding " + statusID);
+	function hide_all_hidden() {
 		for (var i = 0; i < my_hidden.length; i++) {
-			$('*[data-noteID="' + statusID + '"]').hide();
+			$('*[data-noteID="' + my_hidden[i] + '"]').hide();
 		}
 	}
 
