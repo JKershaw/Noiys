@@ -1,4 +1,4 @@
-define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred'], function($, noiseStarred, noiysVote, noiseStarred) {
+define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred', 'noise-hider'], function($, noiseStarred, noiysHider, noiysVote, noiseStarred) {
 
 	function publish_status(status, wrapper, prepend) {
 
@@ -12,6 +12,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred'], function($, n
 		
 		noiseStarred.update_star_html(status.id);
 		$("span.timeago").timeago();
+		noiysHider.hide_all_hidden();
 	}
 
 	function append_status(status, selectorToAppendTo) {
@@ -20,6 +21,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred'], function($, n
 		
 		noiseStarred.update_star_html(status.id);
 		$("span.timeago").timeago();
+		noiysHider.hide_all_hidden();
 	}
 
 	function prepend_status(status, selectorToPrependTo) {
@@ -28,6 +30,7 @@ define(['jquery', 'noise-starred', 'noiys-vote', 'noise-starred'], function($, n
 		
 		noiseStarred.update_star_html(status.id);
 		$("span.timeago").timeago();
+		noiysHider.hide_all_hidden();
 	}
 
 	return {
