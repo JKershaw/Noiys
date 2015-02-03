@@ -13,14 +13,12 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 	}
 
 	function hide_all_hidden() {
-		console.log("Hiding everything which should be hidden:" + JSON.stringify(my_hidden));
 		for (var i = 0; i < my_hidden.length; i++) {
 			$('*[data-noteID="' + my_hidden[i] + '"]').hide();
 		}
 	}
 
 	function perma_save_my_hidden() {
-		console.debug("perma save hidden: " + JSON.stringify(my_hidden));
 		localStorage.my_hidden = JSON.stringify(my_hidden);
 	}
 
@@ -28,7 +26,6 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 		if (localStorage.my_hidden) {
 			my_hidden = JSON.parse(localStorage.my_hidden);
 		}
-		console.debug("perma load hidden: " + localStorage.my_hidden);
 	}
 
 	function inititalise_my_hidden() {
