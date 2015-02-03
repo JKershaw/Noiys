@@ -3,6 +3,7 @@ define([
 		'underscore', 
 		'noise-mine', 
 		'noise-starred', 
+		'noise-hide', 
 		'noise-status', 
 		'noiys-vote', 
 		'noiys-feed'], function(
@@ -10,6 +11,7 @@ define([
 			_, 
 			noiysMine, 
 			noiysStarred, 
+			noiysHider,
 			noiysStatus, 
 			noiysVote,
 			noiysFeed) {
@@ -79,6 +81,11 @@ define([
 			refresh_my_stars();
 		});
 
+		$('body').on('click', 'a.button-hide', function(e) {
+    		e.stopPropagation();
+			noiysHider.hide($(this).attr('data-id'));
+		});
+
 		$('body').on('click', 'a.button-show-older-notes', function(e) {
     		e.stopPropagation();
 			noiysStatus.show_older_notes($(this), $(this).attr('data-id'));
@@ -108,6 +115,9 @@ define([
 		refresh_my_statuses();
 
 		noiysVote.inititalise_vote_updater();
+
+		noiysHider.inititalise_my_hidden();
+		noiysHider.hide_all_hidden();
 
 		hide_loding_page();
 	});

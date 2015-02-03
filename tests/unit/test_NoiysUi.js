@@ -106,13 +106,13 @@ test("Valid status given, generated status row html has link button", function(d
 
 test("Valid status given, want a hidden status html", function(done) {
 	var generated_html = noiysUi.generate_status_html(valid_status, true, true);
-	generated_html.should.contain("<div style=\"display: none\" class=\"panel panel-default status_panel id-" + valid_status.id + "\" timestamp=\"" + valid_status.timestamp + "\" id=\"" + valid_status.id + "\">");
+	generated_html.should.contain("<div style=\"display: none\" class=\"panel panel-default status_panel id-" + valid_status.id + "\" timestamp=\"" + valid_status.timestamp + "\" id=\"" + valid_status.id + "\"");
 	done();
 });
 
 test("Valid status given, want a visible status html", function(done) {
 	var generated_html = noiysUi.generate_status_html(valid_status, false, true);
-	generated_html.should.contain("<div class=\"panel panel-default status_panel id-" + valid_status.id + "\" timestamp=\"" + valid_status.timestamp + "\" id=\"" + valid_status.id + "\">");
+	generated_html.should.contain("<div class=\"panel panel-default status_panel id-" + valid_status.id + "\" timestamp=\"" + valid_status.timestamp + "\" id=\"" + valid_status.id + "\"");
 	done();
 });
 
