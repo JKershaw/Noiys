@@ -3,7 +3,7 @@ define([
 		'underscore', 
 		'noise-mine', 
 		'noise-starred', 
-		'noise-hide', 
+		'noise-hider', 
 		'noise-status', 
 		'noiys-vote', 
 		'noiys-feed'], function(
