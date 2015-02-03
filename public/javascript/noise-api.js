@@ -71,6 +71,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					callback(status);
 				} else if (xhr.status == 404) {
 					callback(false);
+				} else if (xhr.status == 204) {
+					callback(false);
 				} else {
 					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "status/" + statusID);
@@ -92,6 +94,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					noiysVoteCount.set_count_from_status(status);
 					callback(status);
 				} else if (xhr.status == 404) {
+					callback(false);
+				} else if (xhr.status == 204) {
 					callback(false);
 				} else {
 					noiysUiError.show_error();
@@ -115,6 +119,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					callback(status);
 				} else if (xhr.status == 404) {
 					callback(false);
+				} else if (xhr.status == 204) {
+					callback(false);
 				} else {
 					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + "status?since=" + timestamp);
@@ -137,6 +143,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					noiysVoteCount.set_count_from_status(status);
 					callback(status);
 				} else if (xhr.status == 404) {
+					callback(false);
+				} else if (xhr.status == 204) {
 					callback(false);
 				} else {
 					noiysUiError.show_error();
@@ -192,6 +200,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					callback(statuses);
 				} else if (xhr.status == 404) {
 					callback(false);
+				} else if (xhr.status == 204) {
+					callback(false);
 				} else {
 					noiysUiError.show_error();
 					_rollbar.push(xhr.status + " error: " + ajax_url);
@@ -214,6 +224,8 @@ define(['jquery', 'noiys-ui-error', 'noiys-vote-count'], function($, noiysUiErro
 					noiysVoteCount.set_count_from_statuses(statuses);
 					callback(statuses);
 				} else if (xhr.status == 404) {
+					callback(false);
+				} else if (xhr.status == 204) {
 					callback(false);
 				} else {
 					noiysUiError.show_error();
