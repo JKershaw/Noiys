@@ -175,6 +175,7 @@ define([
 		}
 
 		noiysFeed.change(selected_feed_type);
+		noiysHider.hide_all_hidden();
 	}
 
 	function get_currently_visible_wrapper() {

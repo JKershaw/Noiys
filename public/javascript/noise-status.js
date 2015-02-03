@@ -1,4 +1,4 @@
-define(['underscore', 'noise-publish-status', 'noise-api', 'noise-starred'], function(_, noisePublishStatus, noiysApi, noiseStarred) {
+define(['underscore', 'noise-publish-status', 'noise-api', 'noise-starred', 'noise-hider'], function(_, noisePublishStatus, noiysApi, noiseStarred, noiysHider) {
 
 	function publish(status, wrapper, prepend) {
 		noisePublishStatus.publish_status(status, wrapper, prepend);
@@ -22,6 +22,7 @@ define(['underscore', 'noise-publish-status', 'noise-api', 'noise-starred'], fun
 		
 		var finished = _.after(replies_ids.length, function() {
 			$(selector_parent).html('Loaded!').fadeOut(1000);
+			noiysHider.hide_all_hidden();
 		});
 
 		_.each(replies_ids, function(reply_id){
@@ -56,6 +57,7 @@ define(['underscore', 'noise-publish-status', 'noise-api', 'noise-starred'], fun
 			noisePublishStatus.prepend_status(status, selectorToAppendTo);
 
 			$(selector_parent).hide();
+			noiysHider.hide_all_hidden();
 		});
 
 		$(selector).parent().siblings(".list-status").fadeIn();
