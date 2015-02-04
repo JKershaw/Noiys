@@ -13,7 +13,14 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 	}
 
 	function hide_all_hidden() {
+
+		var nidden_html = " \
+				<div class=\"panel panel-default status_panel> \
+					<div class=\"panel-body\"><i>Note hidden. Nidden.</i></div> \
+				</div>";
+
 		for (var i = 0; i < my_hidden.length; i++) {
+			$('*[data-noteID="' + my_hidden[i] + '"]').append(nidden_html);
 			$('*[data-noteID="' + my_hidden[i] + '"]').hide();
 		}
 	}
