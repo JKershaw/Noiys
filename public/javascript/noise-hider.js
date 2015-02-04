@@ -14,14 +14,18 @@ define(['underscore', 'noise-api'], function(_, noiseApi) {
 
 	function hide_all_hidden() {
 
+		var nidden_string = "<span style=\"color: grey;\"><i>Note hidden. Nidden.</i></span>";
 		var nidden_html = " \
-				<div class=\"panel panel-default status_panel> \
-					<div class=\"panel-body\"><i>Note hidden. Nidden.</i></div> \
-				</div>";
+			<div class=\"panel-body\">" + nidden_string + "</div> \
+			";
+		var nidden_ul = " \
+			<li class=\"list-group-item list-status\">" + nidden_string + "</li> \
+			";
 
 		for (var i = 0; i < my_hidden.length; i++) {
-			$('*[data-noteID="' + my_hidden[i] + '"]').append(nidden_html);
-			$('*[data-noteID="' + my_hidden[i] + '"]').hide();
+			$('.panel[data-noteID="' + my_hidden[i] + '"]').html(nidden_html);
+			$('li[data-noteID="' + my_hidden[i] + '"]').html(nidden_string);
+			$('ul[data-noteID="' + my_hidden[i] + '"]').html(nidden_ul);
 		}
 	}
 
