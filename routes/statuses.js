@@ -63,8 +63,8 @@ module.exports = function(app) {
 				}
 			}
 
-			// get the top 20 remaining posts
-			tmp_statuses = tmp_statuses.slice(0, 20);
+			// get the top 100 remaining posts
+			tmp_statuses = tmp_statuses.slice(0, 100);
 
 			// we have the Ids, now to get the actual statuses
 
