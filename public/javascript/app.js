@@ -86,6 +86,11 @@ define([
 			noiysHider.hide($(this).attr('data-id'));
 		});
 
+		$('body').on('click', 'a.button-unhide', function(e) {
+    		e.stopPropagation();
+			noiysHider.unhide($(this).attr('data-id'));
+		});
+
 		$('body').on('click', 'a.button-show-older-notes', function(e) {
     		e.stopPropagation();
 			noiysStatus.show_older_notes($(this), $(this).attr('data-id'));
