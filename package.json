@@ -14,7 +14,7 @@
     "morgan": "*"
   },
   "devDependencies": {
-    "zombie": "*",
+    "zombie": "3.*",
     "mocha": "*",
     "chai": "*",
     "jshint": "*",

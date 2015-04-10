@@ -6,14 +6,14 @@ module.exports = function(app) {
 		noiysDatabase.removeOldStatuses(function() {
 			var model = {
 					firebug: false,
-					environment: process.env.environment
+					environment: process.env.ENVIRONMENT
 			};
 			
 			if (request.query['firebug'])
 			{
 				model = {
 					firebug: true,
-					environment: process.env.environment
+					environment: process.env.ENVIRONMENT
 				};
 			}
 			response.render('index.ejs', model);

@@ -82,7 +82,7 @@ module.exports = function (app) {
 						statusMessageFactory.create(status, function (message) {
 							var model = {
 								status: message.text,
-								environment: process.env.environment
+								environment: process.env.ENVIRONMENT
 							};
 							response.render('individual-status.ejs', model);
 						});
@@ -94,7 +94,7 @@ module.exports = function (app) {
 					response.send(404);
 				} else {
 					var model = {
-						environment: process.env.environment
+						environment: process.env.ENVIRONMENT
 					};
 					response.render('individual-status-404.ejs', model);
 

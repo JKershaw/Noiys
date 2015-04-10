@@ -25,5 +25,5 @@ var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
-	console.log("Environment: ", process.env.environment);
+	console.log("Environment: ", process.env.ENVIRONMENT);
 });
